@@ -68,7 +68,7 @@ export function Lugares({ proyeccion, etiquetasFijas = false }) {
             <Html
               position={[0, 1.5, 0]}
               center
-              {...(etiquetasFijas ? {} : { distanceFactor: 28 })}
+              {...(etiquetasFijas ? {} : { distanceFactor: 36 })}
               className={activo ? 'etiqueta activa' : 'etiqueta'}
               occlude={false}
             >

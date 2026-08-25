@@ -208,6 +208,19 @@ plazo, y el mapa lo va reflejando visualmente.
 - **Megapuerto en Paraguaná**.
 - **Evento: al superar $100.000 de PIB per cápita se unen Curazao, Bonaire y Aruba**
   (tipo Esequibo: modal + aparecen las islas como lugares jugables).
+- **Ventana — imagen HD panorámica de Caracas/El Ávila** para reemplazar la foto actual
+  (generarla en alta resolución, formato panorámico apaisado).
+- **Ventana — luces nocturnas en la ciudad**: cuando anochece, que se enciendan
+  ventanitas/puntos de luz en algunos edificios del fondo de la vista (capa de puntos
+  cálidos sobre la foto, visible solo de noche).
+- **Al menos una misión por capital de estado** (sesión de contenido: ~19 medidas
+  nuevas). Ya cubiertas: Caracas, Maracaibo, Valencia, San Cristóbal, Mérida.
+  Faltan (coordenadas ya en ve-state-capitals de mapitas): Barcelona, San Fernando
+  (Apure), Maracay, Barinas, Ciudad Bolívar, San Carlos (Cojedes), Coro, San Juan de
+  los Morros, Barquisimeto, Los Teques, Maturín, La Asunción, Guanare, Cumaná,
+  Trujillo, San Felipe, Gran Roque, La Guaira (ya en backlog con su ley), Tucupita,
+  Puerto Ayacucho. Cada una con una medida con identidad propia (no relleno genérico),
+  al estilo de las existentes.
 
 ## Eventos especiales
 - [x] **Sistema de eventos + El Esequibo se vuelve estado** (24-ago): eventos únicos por
