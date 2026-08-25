@@ -168,12 +168,19 @@ plazo, y el mapa lo va reflejando visualmente.
 - **Democracy 4** — modelo de políticas (costo + delay + efectos encadenados); su UI no.
 - Anti-referencia: **Victoria 3** — profundidad enterrada en menús. Acá: 5 números y un mapa.
 
-## Ideas visuales (de Marcel, sin implementar)
-- **El mapa sobre un escritorio, con lámpara gigante**: que la maqueta parezca estar
-  apoyada en un escritorio real (superficie de madera, quizás objetos de escritorio al
-  fondo) y una lámpara de escritorio gigante junto al mapa que **se prende sola** cuando
-  el sol se esconde — la lámpara sería la fuente de luz nocturna (reemplaza o acompaña
-  a la luna). Refuerza la fantasía de diorama/maqueta física.
+## Ideas visuales
+- [x] **Escritorio + lámpara gigante** (24-ago): mesa de madera bajo el mapa, el mar es
+  la "bandeja de agua" del diorama, y una lámpara de escritorio low-poly al NE que se
+  prende sola (spotlight cálido + bombillo que brilla) cuando el sol baja. Se oculta en
+  modo mundo. Pendiente fino: objetos de escritorio de fondo (lápices, taza...).
+- [x] **Mundo completo con Venezuela resaltada** (24-ago, pedido de Marcel): botón
+  flotante 🌎 en la partida alterna en vivo — 175 países planos en color apagado
+  (1 draw call, `mundo-paises.geojson` de mapitas), Venezuela sigue extruida y verde;
+  el mar se agranda a océano, fog y zoom de cámara se adaptan. Marcel decide cuál
+  fantasía queda (escritorio vs planeta) — por ahora conviven con el toggle.
+- [x] **Relieve estilizado** (24-ago): conos low-poly en los Andes (Táchira→Trujillo,
+  pico mayor en Mérida) y Cordillera de la Costa (Ávila sobre Caracas), y **tepuyes**
+  (cilindros de tapa plana) en la Gran Sabana con el Auyantepui. Coordenadas reales.
 
 ## Fin de partida (decidido 24-ago, sin implementar)
 - El juego termina al alcanzar el **Hito 5** (salario real $3.000): pantalla de victoria
@@ -184,11 +191,14 @@ plazo, y el mapa lo va reflejando visualmente.
   guarda el último alcanzado) + pantalla de victoria + scorecard parcial en pausa.
 - Referencia: partida bien jugada ≈ 35-45 años simulados (~15-30 min reales).
 
-## Eventos especiales (de Marcel)
-- **El Esequibo se vuelve estado** (al alcanzar salario mínimo real de $2.000 = Hito 4):
-  el Esequibo solicita confirmación de entidad territorial y se convierte oficialmente
-  en otro estado. Visual: el territorio se integra al mapa como estado pleno (¿cambio de
-  color + nuevos lugares jugables?). Implementar cuando exista el sistema de eventos.
+## Eventos especiales
+- [x] **Sistema de eventos + El Esequibo se vuelve estado** (24-ago): eventos únicos por
+  hito en `data/eventos.js` — modal que pausa la sim, se registra en el save. Al Hito 4
+  (salario $2.000) el Esequibo se confirma como estado: modal narrativo + aparece el
+  lugar "Esequibo" (Tumeremo) con 2 medidas (Integración territorial → Recursos del
+  Esequibo). Pendiente visual: dibujar el polígono del territorio en el mapa (el adm0
+  actual no lo trae; mapitas tiene el dato de Guayana Esequiba para integrarlo).
+- Sistema listo para más eventos: crisis petrolera, sequía en El Guri, boom migratorio...
 
 ## Abierto / por definir
 - Escala del tiempo (¿1 tick = 1 semana? ¿partida completa = 30–40 años?).
