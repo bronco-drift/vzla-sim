@@ -42,6 +42,25 @@ export function PanelEscena() {
         onCambio={(v) => setEscena({ solFijo: v })}
       />
 
+      <div className="escena-modo">
+        <span>💡 Luz de la lámpara</span>
+        <div className="escena-segmentos">
+          {[
+            ['auto', 'Auto'],
+            ['on', 'Encendida'],
+            ['off', 'Apagada'],
+          ].map(([valor, texto]) => (
+            <button
+              key={valor}
+              className={(escena.lampara.modo ?? 'auto') === valor ? 'seg activo' : 'seg'}
+              onClick={() => setEscena({ lampara: { modo: valor } })}
+            >
+              {texto}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <Deslizador
         etiqueta="💡 Lámpara — X"
         valor={escena.lampara.x}

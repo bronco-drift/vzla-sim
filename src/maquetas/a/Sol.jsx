@@ -95,15 +95,12 @@ export function Sol() {
     // Ambient floor keeps the night readable without "sunlight"
     ambienteRef.current.intensity = 0.35 + dia * 0.4
 
-    // ---- Dawn/dusk filter: tint background and fog ----
-    // crepusculo peaks when the sun crosses the horizon (|altura| small).
+    // ---- Background/fog day-night blend ----
+    // (Dawn/dusk orange tint removed for now — Marcel's call, 24-ago.)
     // t blends the palette: 0 = desk (wood), 1 = world (sky).
     const t = Math.min(1, Math.max(0, (escalaVisual.current - 1) / 15))
-    const crepusculo = Math.max(0, 1 - Math.abs(solAltura) / 0.28)
     cielo.current.lerpColors(MADERA_NOCHE, MADERA_DIA, dia)
-    cielo.current.lerp(MADERA_CREPUSCULO, crepusculo * 0.5)
     auxiliar.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
-    auxiliar.lerp(CIELO_CREPUSCULO, crepusculo * 0.65)
     cielo.current.lerp(auxiliar, t)
     if (scene.background?.isColor) scene.background.copy(cielo.current)
     if (scene.fog) scene.fog.color.copy(cielo.current)
