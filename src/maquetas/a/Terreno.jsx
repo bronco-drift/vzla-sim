@@ -61,7 +61,7 @@ export function Terreno({ geojson, proyeccion, onClickSuelo }) {
       </mesh>
       {/* Sea: water tray in desk mode, full ocean in world mode */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]} receiveShadow>
-        <planeGeometry args={mundoGlobal ? [4000, 4000] : [130, 95]} />
+        <planeGeometry args={mundoGlobal ? [4000, 4000] : [96, 70]} />
         <meshStandardMaterial color="#1f5378" />
       </mesh>
     </group>

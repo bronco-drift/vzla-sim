@@ -31,7 +31,7 @@ export function Escritorio() {
       </mesh>
 
       {/* Giant desk lamp, NE corner, leaning over the map */}
-      <group position={[64, 0, -34]} rotation={[0, -0.8, 0]}>
+      <group position={[52, 0, -28]} rotation={[0, -0.8, 0]}>
         {/* base */}
         <mesh position={[0, 1.5, 0]} castShadow>
           <cylinderGeometry args={[7, 9, 3, 10]} />
@@ -57,7 +57,7 @@ export function Escritorio() {
       {/* Warm lamp light aimed at the country */}
       <spotLight
         ref={luzRef}
-        position={[47, 27, -22]}
+        position={[38, 26, -18]}
         angle={0.85}
         penumbra={0.6}
         distance={160}

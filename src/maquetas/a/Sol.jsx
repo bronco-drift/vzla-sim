@@ -22,10 +22,15 @@ const COLOR_DIA = new THREE.Color('#fff4e0')
 const COLOR_ATARDECER = new THREE.Color('#ff9a4d')
 const COLOR_LUNA = new THREE.Color('#8ea2d6')
 
-// Sky/fog palette for the live filter
+// Sky/fog palettes for the live filter. Desk mode fades to warm wood
+// (the background IS a desk), world mode fades to sky blues.
 const CIELO_NOCHE = new THREE.Color('#0a0f1a')
 const CIELO_DIA = new THREE.Color('#1d3a57')
 const CIELO_CREPUSCULO = new THREE.Color('#7a3d2a')
+const MADERA_NOCHE = new THREE.Color('#191008')
+const MADERA_DIA = new THREE.Color('#553a22')
+const MADERA_CREPUSCULO = new THREE.Color('#6e4322')
+const auxiliar = new THREE.Color() // scratch color, avoids per-frame allocation
 
 export function Sol() {
   const luzSolRef = useRef()
@@ -89,11 +94,16 @@ export function Sol() {
     // Ambient floor keeps the night readable without "sunlight"
     ambienteRef.current.intensity = 0.35 + dia * 0.4
 
-    // ---- Dawn/dusk filter: tint sky and fog ----
-    // crepusculo peaks when the sun crosses the horizon (|altura| small)
+    // ---- Dawn/dusk filter: tint background and fog ----
+    // crepusculo peaks when the sun crosses the horizon (|altura| small).
+    // t blends the palette: 0 = desk (wood), 1 = world (sky).
+    const t = Math.min(1, Math.max(0, (escalaVisual.current - 1) / 15))
     const crepusculo = Math.max(0, 1 - Math.abs(solAltura) / 0.28)
-    cielo.current.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
-    cielo.current.lerp(CIELO_CREPUSCULO, crepusculo * 0.65)
+    cielo.current.lerpColors(MADERA_NOCHE, MADERA_DIA, dia)
+    cielo.current.lerp(MADERA_CREPUSCULO, crepusculo * 0.5)
+    auxiliar.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
+    auxiliar.lerp(CIELO_CREPUSCULO, crepusculo * 0.65)
+    cielo.current.lerp(auxiliar, t)
     if (scene.background?.isColor) scene.background.copy(cielo.current)
     if (scene.fog) scene.fog.color.copy(cielo.current)
   })
