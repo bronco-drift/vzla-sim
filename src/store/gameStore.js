@@ -6,6 +6,7 @@ import { tick } from '../core/sim.js'
 import { HITOS } from '../core/hitos.js'
 import { medidaPorId } from '../data/medidas.js'
 import { estadoMedida, requisitosCumplidos } from '../core/medidas.js'
+import { EVENTOS } from '../data/eventos.js'
 
 // Real-time loop: every TICK_MS we advance velocidad * DIAS_POR_TICK_X1
 // sim-days. At x1 that is 30 simulated days per second (~12s per year).
@@ -25,6 +26,8 @@ export const useGameStore = create((set, get) => ({
   lugarSeleccionado: null, // id from data/lugares.js, or null
   toasts: [],             // [{ id, texto }]
   menuPausa: false,
+  mundoGlobal: false,     // view pref: show the whole world around Venezuela
+  eventoActivo: null,     // event being shown in a modal (pauses the sim)
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -89,13 +92,29 @@ export const useGameStore = create((set, get) => ({
     const { game } = get()
     if (game) set({ game: { ...game, victoriaVista: true } })
   },
+
+  toggleMundoGlobal() {
+    set((s) => ({ mundoGlobal: !s.mundoGlobal }))
+  },
+
+  cerrarEvento() {
+    const { game, eventoActivo } = get()
+    if (!game || !eventoActivo) return
+    set({
+      eventoActivo: null,
+      game: {
+        ...game,
+        eventosVistos: { ...(game.eventosVistos ?? {}), [eventoActivo.id]: game.dias },
+      },
+    })
+  },
 }))
 
 function iniciarLoop(set, get) {
   detenerLoop()
   intervalo = setInterval(() => {
-    const { game, menuPausa } = get()
-    if (!game || game.velocidad === 0 || menuPausa) return
+    const { game, menuPausa, eventoActivo } = get()
+    if (!game || game.velocidad === 0 || menuPausa || eventoActivo) return
 
     const previo = game
     const nuevo = tick(game, game.velocidad * DIAS_POR_TICK_X1)
@@ -115,11 +134,19 @@ function detenerLoop() {
   intervalo = null
 }
 
-/** Detect milestone and measure-completion transitions -> toasts. */
+/** Detect milestone and measure-completion transitions -> toasts/events. */
 function notificarCambios(set, get, previo, nuevo) {
   if (nuevo.hitoActual > previo.hitoActual) {
     const hito = HITOS[nuevo.hitoActual]
     agregarToast(set, get, `🏆 Hito alcanzado: ${hito.nombre} (${hito.referencia})`)
+  }
+
+  // One-time story events unlocked by milestone
+  for (const evento of EVENTOS) {
+    if (!(nuevo.eventosVistos ?? {})[evento.id] && nuevo.hitoActual >= evento.requiereHito) {
+      set({ eventoActivo: evento })
+      break // one modal at a time
+    }
   }
   for (const id of Object.keys(nuevo.medidas)) {
     const medida = medidaPorId(id)

@@ -36,7 +36,9 @@ export function MaquetaC() {
       </div>
 
       <div className="datos-lugares">
-        {LUGARES.map((lugar) => {
+        {LUGARES.filter(
+          (l) => !l.requiereEvento || (game.eventosVistos ?? {})[l.requiereEvento],
+        ).map((lugar) => {
           const medidas = medidasDeLugar(lugar.id)
           const activas = medidas.filter((m) => game.medidas[m.id]).length
           const plenas = medidas.filter(

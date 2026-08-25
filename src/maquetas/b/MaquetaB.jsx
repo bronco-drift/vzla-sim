@@ -8,6 +8,7 @@ import { useGameStore } from '../../store/gameStore.js'
 
 export function MaquetaB() {
   const seleccionarLugar = useGameStore((s) => s.seleccionarLugar)
+  const mundoGlobal = useGameStore((s) => s.mundoGlobal)
 
   return (
     <Canvas
@@ -17,11 +18,11 @@ export function MaquetaB() {
       onPointerMissed={() => seleccionarLugar(null)}
     >
       <color attach="background" args={['#0d141d']} />
-      <fog attach="fog" args={['#0d141d', 90, 220]} />
+      <fog attach="fog" args={mundoGlobal ? ['#0d141d', 400, 2000] : ['#0d141d', 90, 220]} />
       <Sol />
       <Mundo etiquetasFijas />
       {/* Pan and zoom only: the board never tilts */}
-      <MapControls makeDefault enableRotate={false} minZoom={7} maxZoom={60} />
+      <MapControls makeDefault enableRotate={false} minZoom={mundoGlobal ? 0.5 : 7} maxZoom={60} />
     </Canvas>
   )
 }

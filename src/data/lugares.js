@@ -83,6 +83,31 @@ export const LUGARES = [
     lat: 10.9577,
     descripcion: 'La perla del Caribe. Turismo internacional.',
   },
+  {
+    id: 'llanos',
+    nombre: 'Los Llanos',
+    tipo: 'sitio',
+    lon: -67.8,
+    lat: 8.6,
+    descripcion: 'La despensa del país: ganado, arroz y maíz hasta el horizonte.',
+  },
+  {
+    id: 'canaima',
+    nombre: 'Canaima',
+    tipo: 'sitio',
+    lon: -62.85,
+    lat: 6.25,
+    descripcion: 'Tepuyes y el Salto Ángel. Naturaleza única en el planeta.',
+  },
+  {
+    id: 'esequibo',
+    nombre: 'Esequibo',
+    tipo: 'ciudad',
+    lon: -61.5031,
+    lat: 7.3014,
+    requiereEvento: 'esequibo',
+    descripcion: 'El nuevo estado. Confirmada su entidad territorial, hay todo por construir.',
+  },
 ]
 
 export function lugarPorId(id) {

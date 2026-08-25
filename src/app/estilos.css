@@ -462,6 +462,28 @@ body {
   transition: width 0.3s;
 }
 
+/* ---- Floating world toggle ---- */
+
+.btn-flotante {
+  position: absolute;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  left: max(14px, env(safe-area-inset-left));
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 22px;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  z-index: 15;
+}
+
+.btn-flotante.activo {
+  border-color: var(--acento);
+  box-shadow: 0 0 0 2px var(--acento);
+}
+
 /* ---- Toasts ---- */
 
 .toasts {

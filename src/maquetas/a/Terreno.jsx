@@ -1,11 +1,14 @@
 // Country terrain: the national outline (GeoJSON MultiPolygon) extruded
-// into a low-poly diorama slab, floating over a sea plane.
+// into a low-poly diorama slab, floating over a sea plane. The sea is a
+// small "water tray" in desk mode and a whole ocean in world mode.
 import { useMemo } from 'react'
 import * as THREE from 'three'
+import { useGameStore } from '../../store/gameStore.js'
 
 export const GROSOR_TERRENO = 0.8
 
 export function Terreno({ geojson, proyeccion, onClickSuelo }) {
+  const mundoGlobal = useGameStore((s) => s.mundoGlobal)
   const geometria = useMemo(() => {
     const shapes = []
 
@@ -56,9 +59,9 @@ export function Terreno({ geojson, proyeccion, onClickSuelo }) {
       >
         <meshStandardMaterial color="#4b8f57" flatShading />
       </mesh>
-      {/* Sea: large plane slightly below the terrain top */}
+      {/* Sea: water tray in desk mode, full ocean in world mode */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]} receiveShadow>
-        <planeGeometry args={[400, 400]} />
+        <planeGeometry args={mundoGlobal ? [4000, 4000] : [130, 95]} />
         <meshStandardMaterial color="#1f5378" />
       </mesh>
     </group>

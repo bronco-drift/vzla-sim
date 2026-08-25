@@ -9,16 +9,20 @@ import { Editor } from '../editor/Editor.jsx'
 import { Toasts } from './Toasts.jsx'
 import { MenuPausa } from './MenuPausa.jsx'
 import { Victoria } from './Victoria.jsx'
+import { EventoModal } from './EventoModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 
 export function App() {
   const pantalla = useGameStore((s) => s.pantalla)
+  const mundoGlobal = useGameStore((s) => s.mundoGlobal)
+  const toggleMundoGlobal = useGameStore((s) => s.toggleMundoGlobal)
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
 
-  const Maqueta = MAQUETAS[maquetaActiva()].Componente
+  const idMaqueta = maquetaActiva()
+  const Maqueta = MAQUETAS[idMaqueta].Componente
   return (
     <div className="partida">
       <Hud />
@@ -26,9 +30,20 @@ export function App() {
         <Maqueta />
         <PanelCiudad />
         <Toasts />
+        {/* World-view toggle: only meaningful on the 3D maquetas */}
+        {idMaqueta !== 'c' && (
+          <button
+            className={mundoGlobal ? 'btn-flotante activo' : 'btn-flotante'}
+            onClick={toggleMundoGlobal}
+            title="Ver el mundo completo"
+          >
+            🌎
+          </button>
+        )}
       </div>
       <MenuPausa />
       <Victoria />
+      <EventoModal />
     </div>
   )
 }

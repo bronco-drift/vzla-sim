@@ -5,9 +5,14 @@ import { bboxDeGeojson, crearProyeccion } from '../../mundo/proyeccion.js'
 import { Terreno } from './Terreno.jsx'
 import { Lugares } from './Lugares.jsx'
 import { Objetos } from './Objetos.jsx'
+import { MundoGlobal } from './MundoGlobal.jsx'
+import { Escritorio } from './Escritorio.jsx'
+import { Relieve } from './Relieve.jsx'
+import { useGameStore } from '../../store/gameStore.js'
 
 export function Mundo({ etiquetasFijas = false }) {
   const [geojson, setGeojson] = useState(null)
+  const mundoGlobal = useGameStore((s) => s.mundoGlobal)
 
   useEffect(() => {
     fetch('/data/venezuela-adm0.geojson')
@@ -26,8 +31,10 @@ export function Mundo({ etiquetasFijas = false }) {
   return (
     <group>
       <Terreno geojson={geojson} proyeccion={proyeccion} />
+      <Relieve proyeccion={proyeccion} />
       <Lugares proyeccion={proyeccion} etiquetasFijas={etiquetasFijas} />
       <Objetos />
+      {mundoGlobal ? <MundoGlobal proyeccion={proyeccion} /> : <Escritorio />}
     </group>
   )
 }

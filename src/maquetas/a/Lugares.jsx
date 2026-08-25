@@ -20,10 +20,16 @@ const TIPOS_PROGRESO = ['edificio', 'fabrica', 'casa', 'torre']
 export function Lugares({ proyeccion, etiquetasFijas = false }) {
   const seleccionado = useGameStore((s) => s.lugarSeleccionado)
   const seleccionarLugar = useGameStore((s) => s.seleccionarLugar)
+  const game = useGameStore((s) => s.game)
+
+  // Event-gated places stay hidden until their event fires (editor shows all)
+  const visibles = LUGARES.filter(
+    (l) => !l.requiereEvento || !game || (game.eventosVistos ?? {})[l.requiereEvento],
+  )
 
   return (
     <group>
-      {LUGARES.map((lugar) => {
+      {visibles.map((lugar) => {
         const { x, z } = proyeccion.aMundo(lugar.lon, lugar.lat)
         const activo = seleccionado === lugar.id
         const esCiudad = lugar.tipo === 'ciudad'

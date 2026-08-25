@@ -9,6 +9,7 @@ import { useGameStore } from '../../store/gameStore.js'
 
 export function MaquetaA() {
   const seleccionarLugar = useGameStore((s) => s.seleccionarLugar)
+  const mundoGlobal = useGameStore((s) => s.mundoGlobal)
 
   // shadows="soft" = PCFSoftShadowMap: smooth shadow edges
   return (
@@ -18,7 +19,8 @@ export function MaquetaA() {
       onPointerMissed={() => seleccionarLugar(null)}
     >
       <color attach="background" args={['#101722']} />
-      <fog attach="fog" args={['#101722', 70, 140]} />
+      {/* World view needs a much deeper fog so the planet doesn't vanish */}
+      <fog attach="fog" args={mundoGlobal ? ['#101722', 300, 1400] : ['#101722', 70, 140]} />
 
       <Sol />
       <Mundo />
@@ -30,7 +32,7 @@ export function MaquetaA() {
         enableRotate={true}
         maxPolarAngle={Math.PI / 2.4}
         minDistance={8}
-        maxDistance={70}
+        maxDistance={mundoGlobal ? 500 : 70}
       />
     </Canvas>
   )
