@@ -178,9 +178,9 @@ plazo, y el mapa lo va reflejando visualmente.
   (1 draw call, `mundo-paises.geojson` de mapitas), Venezuela sigue extruida y verde;
   el mar se agranda a océano, fog y zoom de cámara se adaptan. Marcel decide cuál
   fantasía queda (escritorio vs planeta) — por ahora conviven con el toggle.
-- [x] **Relieve estilizado** (24-ago): conos low-poly en los Andes (Táchira→Trujillo,
-  pico mayor en Mérida) y Cordillera de la Costa (Ávila sobre Caracas), y **tepuyes**
-  (cilindros de tapa plana) en la Gran Sabana con el Auyantepui. Coordenadas reales.
+- ~~Relieve estilizado con conos/tepuyes~~ **DESCARTADO** (24-ago): se probó y Marcel
+  lo rechazó — "se ve feo". Si algún día se retoma el relieve, que sea con otra técnica
+  (desplazamiento suave del terreno, no primitivas sueltas encima).
 
 ## Fin de partida (decidido 24-ago, sin implementar)
 - El juego termina al alcanzar el **Hito 5** (salario real $3.000): pantalla de victoria
