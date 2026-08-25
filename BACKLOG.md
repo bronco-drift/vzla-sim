@@ -116,6 +116,10 @@ plazo, y el mapa lo va reflejando visualmente.
   horizonte. Movimiento interpolado a 60fps (la sim tickea a 10/s).
 - **Filtro de amanecer/atardecer**: cielo y niebla se tiñen en vivo (navy noche →
   azul día → naranja cálido en los cruces del horizonte).
+- **En modo mundo 🌎 el sol recorre TODO el planeta** (24-ago, opción A elegida por
+  Marcel): órbita y esferas escalan ×16 con transición suave; luz global única (sin
+  terminador por zonas — no tiene sentido con el sol anual simbólico). El globo
+  esférico real quedó anotado como posible maqueta D futura, NO convertir el plano.
 
 ## Stack y arquitectura (decidido)
 - **Vite + React 19 + Zustand + Three.js vía react-three-fiber + drei.**

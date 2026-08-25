@@ -34,12 +34,21 @@ export function Sol() {
   const lunaRef = useRef()
   const ambienteRef = useRef()
   const anguloVisual = useRef(Math.PI / 2) // start at noon
+  const escalaVisual = useRef(1) // 1 = Venezuela orbit, ~16 = world orbit
   const cielo = useRef(new THREE.Color())
   const { scene } = useThree()
 
   useFrame((_, delta) => {
-    const game = useGameStore.getState().game
+    const { game, mundoGlobal } = useGameStore.getState()
     if (!game || !luzSolRef.current) return
+
+    // World view: the sun rises on one edge of the planet and sets on the
+    // other — same orbit, giant scale. Eased so the toggle feels smooth.
+    const escalaObjetivo = mundoGlobal ? 16 : 1
+    escalaVisual.current += (escalaObjetivo - escalaVisual.current) * Math.min(1, delta * 2.5)
+    const radio = RADIO * escalaVisual.current
+    const alturaOrbita = ALTURA * escalaVisual.current
+    const tamano = 1 + (escalaVisual.current - 1) * 0.45
 
     // One orbit per simulated year
     const frac = (game.dias % 365) / 365
@@ -54,8 +63,8 @@ export function Sol() {
     const angulo = anguloVisual.current
 
     // ---- Sun ----
-    const sx = Math.cos(angulo) * RADIO
-    const sy = Math.sin(angulo) * ALTURA
+    const sx = Math.cos(angulo) * radio
+    const sy = Math.sin(angulo) * alturaOrbita
     const solAltura = Math.sin(angulo) // 1 noon, 0 horizon, <0 night
     const dia = Math.max(0, solAltura)
 
@@ -63,6 +72,7 @@ export function Sol() {
     luzSolRef.current.color.lerpColors(COLOR_ATARDECER, COLOR_DIA, Math.min(dia * 2, 1))
     luzSolRef.current.intensity = dia * 1.8 // ZERO below the horizon
     solRef.current.position.set(sx, sy, PROFUNDIDAD)
+    solRef.current.scale.setScalar(tamano)
     solRef.current.visible = solAltura > -0.12
 
     // ---- Moon: opposite side of the orbit ----
@@ -73,6 +83,7 @@ export function Sol() {
     luzLunaRef.current.position.set(lx, Math.max(ly, 2), PROFUNDIDAD)
     luzLunaRef.current.intensity = Math.max(0, lunaAltura) * 0.55
     lunaRef.current.position.set(lx, ly, PROFUNDIDAD)
+    lunaRef.current.scale.setScalar(tamano)
     lunaRef.current.visible = lunaAltura > -0.12
 
     // Ambient floor keeps the night readable without "sunlight"
@@ -106,7 +117,8 @@ export function Sol() {
       />
       <mesh ref={solRef} position={[RADIO, ALTURA, PROFUNDIDAD]}>
         <sphereGeometry args={[2.2, 16, 16]} />
-        <meshBasicMaterial color="#ffd75e" />
+        {/* fog={false}: the sun must glow even across the world-view fog */}
+        <meshBasicMaterial color="#ffd75e" fog={false} />
       </mesh>
 
       {/* Moon: dim blue fill, no shadows (cheap) */}
@@ -118,7 +130,7 @@ export function Sol() {
       />
       <mesh ref={lunaRef} position={[-RADIO, -ALTURA, PROFUNDIDAD]}>
         <sphereGeometry args={[1.6, 16, 16]} />
-        <meshBasicMaterial color="#cfd9ee" />
+        <meshBasicMaterial color="#cfd9ee" fog={false} />
       </mesh>
     </>
   )
