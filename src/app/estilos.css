@@ -484,6 +484,58 @@ body {
   box-shadow: 0 0 0 2px var(--acento);
 }
 
+.btn-flotante.segundo {
+  left: max(70px, calc(env(safe-area-inset-left) + 56px));
+}
+
+/* ---- Scene editor panel ---- */
+
+.panel-escena {
+  position: absolute;
+  bottom: calc(70px + env(safe-area-inset-bottom));
+  left: max(14px, env(safe-area-inset-left));
+  width: 280px;
+  max-width: calc(100% - 28px);
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  padding: 14px;
+  z-index: 16;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-escena h2 {
+  font-size: 16px;
+}
+
+.escena-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.escena-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--texto-suave);
+}
+
+.escena-slider input[type='range'] {
+  width: 100%;
+  accent-color: var(--acento);
+}
+
+.escena-slider.off {
+  opacity: 0.45;
+}
+
 /* ---- Toasts ---- */
 
 .toasts {

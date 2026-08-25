@@ -15,6 +15,25 @@ const DIAS_POR_TICK_X1 = 3
 const TICKS_POR_AUTOSAVE = 50 // every ~5 real seconds
 
 const CLAVE_PARTIDA = 'vzla-sim.partida'
+const CLAVE_ESCENA = 'vzla-sim.escena'
+
+// Scene preferences (desk lamp position, pinned sun) — visual tuning,
+// persisted separately from the save so it survives new games.
+const ESCENA_DEFAULT = {
+  solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
+  lampara: { x: 52, z: -28, rot: -0.8 },
+}
+
+function cargarEscena() {
+  try {
+    const crudo = localStorage.getItem(CLAVE_ESCENA)
+    if (!crudo) return ESCENA_DEFAULT
+    const guardada = JSON.parse(crudo)
+    return { ...ESCENA_DEFAULT, ...guardada, lampara: { ...ESCENA_DEFAULT.lampara, ...guardada.lampara } }
+  } catch {
+    return ESCENA_DEFAULT
+  }
+}
 
 let intervalo = null
 let contadorAutosave = 0
@@ -28,6 +47,8 @@ export const useGameStore = create((set, get) => ({
   menuPausa: false,
   mundoGlobal: false,     // view pref: show the whole world around Venezuela
   eventoActivo: null,     // event being shown in a modal (pauses the sim)
+  escena: cargarEscena(), // desk-scene tuning (lamp position, pinned sun)
+  panelEscena: false,     // scene-editing panel open?
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -95,6 +116,21 @@ export const useGameStore = create((set, get) => ({
 
   toggleMundoGlobal() {
     set((s) => ({ mundoGlobal: !s.mundoGlobal }))
+  },
+
+  togglePanelEscena() {
+    set((s) => ({ panelEscena: !s.panelEscena }))
+  },
+
+  /** Merge scene tuning (lamp/sun) and persist it. */
+  setEscena(cambios) {
+    const escena = {
+      ...get().escena,
+      ...cambios,
+      lampara: { ...get().escena.lampara, ...(cambios.lampara ?? {}) },
+    }
+    localStorage.setItem(CLAVE_ESCENA, JSON.stringify(escena))
+    set({ escena })
   },
 
   cerrarEvento() {

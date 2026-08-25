@@ -44,7 +44,7 @@ export function Sol() {
   const { scene } = useThree()
 
   useFrame((_, delta) => {
-    const { game, mundoGlobal } = useGameStore.getState()
+    const { game, mundoGlobal, escena } = useGameStore.getState()
     if (!game || !luzSolRef.current) return
 
     // World view: the sun rises on one edge of the planet and sets on the
@@ -55,8 +55,9 @@ export function Sol() {
     const alturaOrbita = ALTURA * escalaVisual.current
     const tamano = 1 + (escalaVisual.current - 1) * 0.45
 
-    // One orbit per simulated year
-    const frac = (game.dias % 365) / 365
+    // One orbit per simulated year — unless the scene editor pinned the
+    // sun at a fixed point of its track (escena.solFijo, 0..1).
+    const frac = escena.solFijo ?? (game.dias % 365) / 365
     const objetivo = frac * Math.PI * 2
 
     // Ease the visual angle toward the simulation's angle (wrap-aware)

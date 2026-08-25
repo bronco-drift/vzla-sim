@@ -1,6 +1,7 @@
 // Desk-diorama fantasy: the map sits on a wooden desk, and a giant desk
-// lamp turns itself on when the sun goes down. Hidden in world view
-// (there the fantasy is a planet, not a model on a desk).
+// lamp turns itself on when the sun goes down. The spotlight lives INSIDE
+// the lamp head, so light always comes from the bulb wherever the lamp
+// is moved (position comes from the scene editor, persisted).
 import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { useGameStore } from '../../store/gameStore.js'
@@ -8,14 +9,15 @@ import { useGameStore } from '../../store/gameStore.js'
 export function Escritorio() {
   const luzRef = useRef()
   const bombilloRef = useRef()
+  const lampara = useGameStore((s) => s.escena.lampara)
 
   // Lamp switches on when the sun is low/below the horizon, with a
   // smooth ramp so it feels like a warm click-on.
   useFrame((_, delta) => {
-    const game = useGameStore.getState().game
+    const { game, escena } = useGameStore.getState()
     if (!game || !luzRef.current) return
-    const angulo = ((game.dias % 365) / 365) * Math.PI * 2
-    const solAltura = Math.sin(angulo)
+    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    const solAltura = Math.sin(frac * Math.PI * 2)
     const objetivo = solAltura < 0.12 ? 220 : 0
     luzRef.current.intensity += (objetivo - luzRef.current.intensity) * Math.min(1, delta * 3)
     const prendida = luzRef.current.intensity > 30
@@ -30,8 +32,8 @@ export function Escritorio() {
         <meshStandardMaterial color="#5c4028" />
       </mesh>
 
-      {/* Giant desk lamp, NE corner, leaning over the map */}
-      <group position={[52, 0, -28]} rotation={[0, -0.8, 0]}>
+      {/* Giant desk lamp, position editable from the scene panel */}
+      <group position={[lampara.x, 0, lampara.z]} rotation={[0, lampara.rot, 0]}>
         {/* base */}
         <mesh position={[0, 1.5, 0]} castShadow>
           <cylinderGeometry args={[7, 9, 3, 10]} />
@@ -52,19 +54,18 @@ export function Escritorio() {
           <sphereGeometry args={[2.4, 10, 10]} />
           <meshBasicMaterial color="#3a3f4a" />
         </mesh>
+        {/* Warm light FROM the bulb, aimed at the map center (world origin) */}
+        <spotLight
+          ref={luzRef}
+          position={[-15.5, 27.5, 0]}
+          angle={0.85}
+          penumbra={0.6}
+          distance={220}
+          decay={1.2}
+          intensity={0}
+          color="#ffd9a0"
+        />
       </group>
-
-      {/* Warm lamp light aimed at the country */}
-      <spotLight
-        ref={luzRef}
-        position={[38, 26, -18]}
-        angle={0.85}
-        penumbra={0.6}
-        distance={160}
-        decay={1.2}
-        intensity={0}
-        color="#ffd9a0"
-      />
     </group>
   )
 }
