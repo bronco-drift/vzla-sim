@@ -126,41 +126,42 @@ export function Escritorio() {
         <meshStandardMaterial color="#2c1f15" />
       </mesh>
 
-      {/* Window on the wall: white frame + cross, glass shows the sky */}
-      <group position={[-42, 60, -81.5]}>
+      {/* Window on the wall: white frame + cross, glass shows the sky.
+          Layers are spaced ≥0.6 apart to avoid z-fighting flicker. */}
+      <group position={[-42, 60, -80.8]}>
         {/* glass (color driven by the day/night cycle) */}
         <mesh ref={vidrioRef} position={[0, 0, -0.4]}>
           <planeGeometry args={[68, 52]} />
           <meshBasicMaterial color="#1d3a57" />
         </mesh>
-        {/* frame */}
-        <mesh position={[0, 27.5, 0]}>
-          <boxGeometry args={[74, 3.5, 3]} />
-          <meshStandardMaterial color="#f0ebe0" flatShading />
-        </mesh>
-        <mesh position={[0, -27.5, 0]}>
-          <boxGeometry args={[74, 3.5, 3]} />
-          <meshStandardMaterial color="#f0ebe0" flatShading />
-        </mesh>
-        <mesh position={[-35.2, 0, 0]}>
-          <boxGeometry args={[3.5, 58.5, 3]} />
-          <meshStandardMaterial color="#f0ebe0" flatShading />
-        </mesh>
-        <mesh position={[35.2, 0, 0]}>
-          <boxGeometry args={[3.5, 58.5, 3]} />
-          <meshStandardMaterial color="#f0ebe0" flatShading />
-        </mesh>
         {/* cross bars */}
-        <mesh position={[0, 0, -0.1]}>
-          <boxGeometry args={[2, 52, 2]} />
+        <mesh position={[0, 0, 0.2]}>
+          <boxGeometry args={[2, 52, 1.2]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[0, 0, -0.1]}>
-          <boxGeometry args={[68, 2, 2]} />
+        <mesh position={[0, 0, 0.25]}>
+          <boxGeometry args={[68, 2, 1.2]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        {/* frame */}
+        <mesh position={[0, 27.5, 0.6]}>
+          <boxGeometry args={[74, 3.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, -27.5, 0.6]}>
+          <boxGeometry args={[74, 3.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[-35.2, 0, 0.6]}>
+          <boxGeometry args={[3.5, 58.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[35.2, 0, 0.6]}>
+          <boxGeometry args={[3.5, 58.5, 2.4]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
         {/* sill */}
-        <mesh position={[0, -30.5, 1.5]}>
+        <mesh position={[0, -30.5, 1.3]}>
           <boxGeometry args={[78, 2.5, 6]} />
           <meshStandardMaterial color="#e2dccc" flatShading />
         </mesh>
