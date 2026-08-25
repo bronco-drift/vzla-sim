@@ -195,6 +195,20 @@ plazo, y el mapa lo va reflejando visualmente.
   guarda el último alcanzado) + pantalla de victoria + scorecard parcial en pausa.
 - Referencia: partida bien jugada ≈ 35-45 años simulados (~15-30 min reales).
 
+## Backlog de misiones (de Marcel, 24-ago noche)
+- **Decoración del escritorio**: retrato de Bolívar y póster del "nuevo ideal nacional"
+  en la pared / sobre el escritorio.
+- [x] **Ventana en la pared** (hecha 24-ago): marco blanco con cruz, vidrio que muestra
+  el cielo real (celeste de día, oscuro de noche) y alféizar.
+- **Ferrocarril partes 2 y 3** (continuación de los trenes de San Cristóbal) y que las
+  **vías vayan apareciendo dibujadas en el mapa** a medida que se construyen.
+- **Mejora de todas las autopistas del país** (medida nacional; ¿también dibujadas?).
+- **Recuperación de La Guaira** — con prerequisito: **sanción de la ley de construcción
+  de La Guaira** (medida legal previa a la obra).
+- **Megapuerto en Paraguaná**.
+- **Evento: al superar $100.000 de PIB per cápita se unen Curazao, Bonaire y Aruba**
+  (tipo Esequibo: modal + aparecen las islas como lugares jugables).
+
 ## Eventos especiales
 - [x] **Sistema de eventos + El Esequibo se vuelve estado** (24-ago): eventos únicos por
   hito en `data/eventos.js` — modal que pausa la sim, se registra en el save. Al Hito 4

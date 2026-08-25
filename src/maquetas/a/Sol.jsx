@@ -32,6 +32,12 @@ const MADERA_DIA = new THREE.Color('#553a22')
 const MADERA_CREPUSCULO = new THREE.Color('#6e4322')
 const auxiliar = new THREE.Color() // scratch color, avoids per-frame allocation
 
+/** Sky color for a given daylight factor (0 = night, 1 = noon).
+    Used by the office window "glass" to show the outside sky. */
+export function colorCielo(dia, out) {
+  return out.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
+}
+
 export function Sol() {
   const luzSolRef = useRef()
   const solRef = useRef()

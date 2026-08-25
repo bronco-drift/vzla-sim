@@ -6,11 +6,13 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
+import { colorCielo } from './Sol.jsx'
 
 export function Escritorio() {
   const luzRef = useRef()
   const bombilloRef = useRef()
   const luzCuartoRef = useRef()
+  const vidrioRef = useRef()
   const lampara = useGameStore((s) => s.escena.lampara)
 
   // Checkerboard floor: procedural CanvasTexture, no image files
@@ -51,6 +53,9 @@ export function Escritorio() {
     const objetivoCuarto = cuarto.encendida ? (cuarto.intensidad ?? 1500) : 0
     luzCuartoRef.current.intensity +=
       (objetivoCuarto - luzCuartoRef.current.intensity) * Math.min(1, delta * 3)
+
+    // Window glass shows the real sky outside (day/night)
+    if (vidrioRef.current) colorCielo(Math.max(0, solAltura), vidrioRef.current.material.color)
   })
 
   return (
@@ -120,6 +125,46 @@ export function Escritorio() {
         <boxGeometry args={[4000, 12, 4]} />
         <meshStandardMaterial color="#2c1f15" />
       </mesh>
+
+      {/* Window on the wall: white frame + cross, glass shows the sky */}
+      <group position={[-42, 60, -81.5]}>
+        {/* glass (color driven by the day/night cycle) */}
+        <mesh ref={vidrioRef} position={[0, 0, -0.4]}>
+          <planeGeometry args={[68, 52]} />
+          <meshBasicMaterial color="#1d3a57" />
+        </mesh>
+        {/* frame */}
+        <mesh position={[0, 27.5, 0]}>
+          <boxGeometry args={[74, 3.5, 3]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, -27.5, 0]}>
+          <boxGeometry args={[74, 3.5, 3]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[-35.2, 0, 0]}>
+          <boxGeometry args={[3.5, 58.5, 3]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[35.2, 0, 0]}>
+          <boxGeometry args={[3.5, 58.5, 3]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        {/* cross bars */}
+        <mesh position={[0, 0, -0.1]}>
+          <boxGeometry args={[2, 52, 2]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, 0, -0.1]}>
+          <boxGeometry args={[68, 2, 2]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        {/* sill */}
+        <mesh position={[0, -30.5, 1.5]}>
+          <boxGeometry args={[78, 2.5, 6]} />
+          <meshStandardMaterial color="#e2dccc" flatShading />
+        </mesh>
+      </group>
 
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group
