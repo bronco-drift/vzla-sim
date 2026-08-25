@@ -112,9 +112,22 @@ export function Escritorio() {
         decay={1.1}
         color="#f2ede2"
       />
-      {/* white office wall right behind the desk, with dark baseboard */}
-      <mesh position={[0, 90, -86]} receiveShadow>
-        <boxGeometry args={[4000, 340, 8]} />
+      {/* white office wall built in 4 segments AROUND the window hole
+          (hole: x -76..-8, y 24..76) so the view behind has real depth */}
+      <mesh position={[-1038, 90, -86]} receiveShadow>
+        <boxGeometry args={[1924, 340, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[996, 90, -86]} receiveShadow>
+        <boxGeometry args={[2008, 340, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[-42, 168, -86]} receiveShadow>
+        <boxGeometry args={[68, 184, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[-42, -28, -86]} receiveShadow>
+        <boxGeometry args={[68, 104, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
       <mesh position={[0, -74, -81]}>

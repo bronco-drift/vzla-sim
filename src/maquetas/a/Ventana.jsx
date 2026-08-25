@@ -1,6 +1,11 @@
-// Office window with a real view: the Ávila photo with its sky cut out
-// (per-pixel, done in a 2D canvas at load), layered over the dynamic
-// "glass" that follows the day/night cycle. Depth from inside the room.
+// Office window: a REAL hole in the wall (the wall is built around it in
+// Escritorio.jsx). The Ávila view hangs far behind the hole and the sky
+// plane even farther, so camera movement produces true 3D parallax —
+// the mountain moves like something distant, because it IS distant.
+//
+// Sky removal: hand-traced ridge silhouette over the photo (a per-pixel
+// heuristic failed on clouds and foreground branches), plus a crop that
+// drops the leafy corners of the original shot.
 import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -10,48 +15,51 @@ import { colorCielo } from './Sol.jsx'
 const NOCHE_VISTA = new THREE.Color('#39415a') // mountain tint at night
 const DIA_VISTA = new THREE.Color('#ffffff')
 
-/** Heuristic: is this pixel sky? (blueish, or bright white cloud) */
-function esCielo(r, g, b) {
-  return (b > r + 8 && b > 100) || (r > 170 && g > 170 && b > 170)
+// Crop of the source photo (1024x768): drops sky headroom and the
+// foreground branches on both upper corners.
+const CROP = { x: 100, y: 150, ancho: 800, alto: 618 }
+
+// Hand-traced Ávila ridge line in CROPPED coordinates [x, y].
+// Everything above the line (minus a small safety margin) becomes sky.
+const CRESTA = [
+  [0, 60], [100, 88], [180, 58], [240, 38], [320, 52],
+  [400, 78], [500, 112], [600, 132], [700, 142], [800, 152],
+]
+
+/** Linear interpolation of the ridge height at column x. */
+function alturaCresta(x) {
+  for (let i = 1; i < CRESTA.length; i++) {
+    const [x0, y0] = CRESTA[i - 1]
+    const [x1, y1] = CRESTA[i]
+    if (x <= x1) return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0)
+  }
+  return CRESTA[CRESTA.length - 1][1]
 }
 
 export function Ventana() {
-  const vidrioRef = useRef()
+  const cieloRef = useRef()
   const vistaRef = useRef()
   const [texturaVista, setTexturaVista] = useState(null)
 
-  // Load the photo and make the sky transparent, column by column:
-  // everything above the first solid mountain pixel becomes alpha 0.
   useEffect(() => {
     const img = new Image()
     img.src = '/textures/avila.webp'
     img.onload = () => {
       const c = document.createElement('canvas')
-      c.width = img.width
-      c.height = img.height
+      c.width = CROP.ancho
+      c.height = CROP.alto
       const ctx = c.getContext('2d')
-      ctx.drawImage(img, 0, 0)
+      ctx.drawImage(img, CROP.x, CROP.y, CROP.ancho, CROP.alto, 0, 0, CROP.ancho, CROP.alto)
       const datos = ctx.getImageData(0, 0, c.width, c.height)
       const px = datos.data
 
       for (let x = 0; x < c.width; x++) {
-        let corte = 0
-        let seguidos = 0
-        for (let y = 0; y < c.height; y++) {
-          const i = (y * c.width + x) * 4
-          if (!esCielo(px[i], px[i + 1], px[i + 2])) {
-            if (++seguidos >= 4) {
-              corte = y - 3
-              break
-            }
-          } else {
-            seguidos = 0
-          }
+        const corte = Math.round(alturaCresta(x)) + 4 // margin under the ridge
+        for (let y = 0; y < Math.min(corte, c.height); y++) {
+          px[(y * c.width + x) * 4 + 3] = 0
         }
-        for (let y = 0; y < corte; y++) px[(y * c.width + x) * 4 + 3] = 0
-        // small feather so the ridge edge isn't jagged
-        for (let f = 0; f < 3 && corte + f < c.height; f++) {
-          px[((corte + f) * c.width + x) * 4 + 3] = Math.round((255 * (f + 1)) / 4)
+        for (let f = 0; f < 4 && corte + f < c.height; f++) {
+          px[((corte + f) * c.width + x) * 4 + 3] = Math.round((255 * (f + 1)) / 5)
         }
       }
 
@@ -62,63 +70,65 @@ export function Ventana() {
     }
   }, [])
 
-  // Glass follows the sky; the mountain view darkens at night
+  // Sky plane follows the day/night cycle; the view darkens at night
   useFrame(() => {
     const { game, escena } = useGameStore.getState()
-    if (!game || !vidrioRef.current) return
+    if (!game || !cieloRef.current) return
     const frac = escena.solFijo ?? (game.dias % 365) / 365
     const dia = Math.max(0, Math.sin(frac * Math.PI * 2))
-    colorCielo(dia, vidrioRef.current.material.color)
+    colorCielo(dia, cieloRef.current.material.color)
     if (vistaRef.current) {
       vistaRef.current.material.color.lerpColors(NOCHE_VISTA, DIA_VISTA, dia)
     }
   })
 
   return (
-    // Layers spaced ≥0.3 apart to avoid z-fighting flicker
-    <group position={[-42, 50, -80.8]}>
-      {/* glass sky (color driven by the day/night cycle) */}
-      <mesh ref={vidrioRef} position={[0, 0, -0.4]}>
-        <planeGeometry args={[68, 52]} />
-        <meshBasicMaterial color="#1d3a57" />
-      </mesh>
-      {/* the view: Ávila + Caracas, sky cut out */}
+    <group>
+      {/* Frame + cross + sill, sitting on the wall around the hole */}
+      <group position={[-42, 50, -80.8]}>
+        <mesh position={[0, 0, 0.2]}>
+          <boxGeometry args={[2, 52, 1.2]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, 0, 0.25]}>
+          <boxGeometry args={[68, 2, 1.2]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, 27.5, 0.6]}>
+          <boxGeometry args={[74, 3.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, -27.5, 0.6]}>
+          <boxGeometry args={[74, 3.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[-35.2, 0, 0.6]}>
+          <boxGeometry args={[3.5, 58.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[35.2, 0, 0.6]}>
+          <boxGeometry args={[3.5, 58.5, 2.4]} />
+          <meshStandardMaterial color="#f0ebe0" flatShading />
+        </mesh>
+        <mesh position={[0, -30.5, 1.3]}>
+          <boxGeometry args={[78, 2.5, 6]} />
+          <meshStandardMaterial color="#e2dccc" flatShading />
+        </mesh>
+      </group>
+
+      {/* The distant view: Ávila far behind the hole (real parallax).
+          fog={false}: distance fog would wash the photo out. */}
       {texturaVista && (
-        <mesh ref={vistaRef} position={[0, 0, -0.1]}>
-          <planeGeometry args={[68, 52]} />
-          <meshBasicMaterial map={texturaVista} transparent />
+        <mesh ref={vistaRef} position={[-42, 46, -170]}>
+          <planeGeometry args={[176, 136]} />
+          <meshBasicMaterial map={texturaVista} transparent fog={false} />
         </mesh>
       )}
-      {/* cross bars */}
-      <mesh position={[0, 0, 0.2]}>
-        <boxGeometry args={[2, 52, 1.2]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      <mesh position={[0, 0, 0.25]}>
-        <boxGeometry args={[68, 2, 1.2]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      {/* frame */}
-      <mesh position={[0, 27.5, 0.6]}>
-        <boxGeometry args={[74, 3.5, 2.4]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      <mesh position={[0, -27.5, 0.6]}>
-        <boxGeometry args={[74, 3.5, 2.4]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      <mesh position={[-35.2, 0, 0.6]}>
-        <boxGeometry args={[3.5, 58.5, 2.4]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      <mesh position={[35.2, 0, 0.6]}>
-        <boxGeometry args={[3.5, 58.5, 2.4]} />
-        <meshStandardMaterial color="#f0ebe0" flatShading />
-      </mesh>
-      {/* sill */}
-      <mesh position={[0, -30.5, 1.3]}>
-        <boxGeometry args={[78, 2.5, 6]} />
-        <meshStandardMaterial color="#e2dccc" flatShading />
+
+      {/* Sky, even farther back, colored by the day/night cycle */}
+      <mesh ref={cieloRef} position={[-42, 90, -430]}>
+        <planeGeometry args={[600, 400]} />
+        <meshBasicMaterial color="#1d3a57" fog={false} />
       </mesh>
     </group>
   )
