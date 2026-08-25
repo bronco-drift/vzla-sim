@@ -18,22 +18,55 @@ export function Escritorio() {
     if (!game || !luzRef.current) return
     const frac = escena.solFijo ?? (game.dias % 365) / 365
     const solAltura = Math.sin(frac * Math.PI * 2)
-    const objetivo = solAltura < 0.12 ? 220 : 0
+    const objetivo = solAltura < 0.12 ? (escena.lampara.intensidad ?? 220) : 0
     luzRef.current.intensity += (objetivo - luzRef.current.intensity) * Math.min(1, delta * 3)
-    const prendida = luzRef.current.intensity > 30
+    const prendida = luzRef.current.intensity > objetivo * 0.15 && objetivo > 0
     bombilloRef.current.material.color.set(prendida ? '#ffe9a8' : '#3a3f4a')
   })
 
   return (
     <group>
-      {/* Wooden desk under everything */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]} receiveShadow>
+      {/* Executive desk (proportions from Marcel's reference photo):
+          thick top with overhang + molding, body with dark panels, plinth */}
+      {/* top — the map tray sits on this surface */}
+      <mesh position={[0, -3.1, 0]} receiveShadow castShadow>
+        <boxGeometry args={[320, 6, 210]} />
+        <meshStandardMaterial color="#6e4526" flatShading />
+      </mesh>
+      {/* molding strip under the top */}
+      <mesh position={[0, -6.9, 0]} castShadow>
+        <boxGeometry args={[328, 2.2, 218]} />
+        <meshStandardMaterial color="#59371e" flatShading />
+      </mesh>
+      {/* body (narrower: the top overhangs like the photo) */}
+      <mesh position={[0, -24, 0]} castShadow>
+        <boxGeometry args={[280, 34, 158]} />
+        <meshStandardMaterial color="#653e22" flatShading />
+      </mesh>
+      {/* dark front panels */}
+      {[-92, 0, 92].map((x) => (
+        <mesh key={x} position={[x, -23, 80.2]}>
+          <boxGeometry args={[62, 22, 1.6]} />
+          <meshStandardMaterial color="#241a12" flatShading />
+        </mesh>
+      ))}
+      {/* plinth */}
+      <mesh position={[0, -43.5, 0]} castShadow>
+        <boxGeometry args={[290, 5, 168]} />
+        <meshStandardMaterial color="#4a2e19" flatShading />
+      </mesh>
+      {/* office floor */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -46, 0]} receiveShadow>
         <planeGeometry args={[4000, 4000]} />
-        <meshStandardMaterial color="#5c4028" />
+        <meshStandardMaterial color="#241c16" />
       </mesh>
 
-      {/* Giant desk lamp, position editable from the scene panel */}
-      <group position={[lampara.x, 0, lampara.z]} rotation={[0, lampara.rot, 0]}>
+      {/* Giant desk lamp, position/size editable from the scene panel */}
+      <group
+        position={[lampara.x, 0, lampara.z]}
+        rotation={[0, lampara.rot, 0]}
+        scale={lampara.escala ?? 1}
+      >
         {/* base */}
         <mesh position={[0, 1.5, 0]} castShadow>
           <cylinderGeometry args={[7, 9, 3, 10]} />

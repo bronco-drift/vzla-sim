@@ -21,7 +21,7 @@ const CLAVE_ESCENA = 'vzla-sim.escena'
 // persisted separately from the save so it survives new games.
 const ESCENA_DEFAULT = {
   solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
-  lampara: { x: 52, z: -28, rot: -0.8 },
+  lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1 },
 }
 
 function cargarEscena() {

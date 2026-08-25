@@ -66,6 +66,22 @@ export function PanelEscena() {
         paso={0.05}
         onCambio={(v) => setEscena({ lampara: { rot: v } })}
       />
+      <Deslizador
+        etiqueta="💡 Lámpara — tamaño"
+        valor={escena.lampara.escala ?? 1}
+        min={0.4}
+        max={2.5}
+        paso={0.05}
+        onCambio={(v) => setEscena({ lampara: { escala: v } })}
+      />
+      <Deslizador
+        etiqueta="💡 Lámpara — intensidad"
+        valor={escena.lampara.intensidad ?? 220}
+        min={0}
+        max={600}
+        paso={10}
+        onCambio={(v) => setEscena({ lampara: { intensidad: v } })}
+      />
     </aside>
   )
 }
