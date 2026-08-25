@@ -25,6 +25,8 @@ const INDICADORES = [
   { campo: 'inflacion', nombre: 'Inflación', color: '#e06456', valor: (g) => (g.inflacion * 100).toFixed(0) + '%', formato: (v) => (v * 100).toFixed(0) + '%' },
   { campo: 'poblacion', nombre: 'Población', color: '#7aa7e0', valor: (g) => g.poblacion.toFixed(1) + 'M', formato: (v) => v.toFixed(1) + 'M' },
   { campo: 'capitalHumano', nombre: 'Capital humano', color: '#b58fd6', valor: (g) => g.capitalHumano.toFixed(0), formato: (v) => v.toFixed(0) },
+  { campo: 'pobreza', nombre: 'Pobreza', color: '#e08a56', valor: (g) => ((g.pobreza ?? 0) * 100).toFixed(0) + '%', formato: (v) => (v * 100).toFixed(0) + '%' },
+  { campo: 'aprobacion', nombre: 'Aprobación', color: '#6cc4d4', valor: (g) => ((g.aprobacion ?? 0) * 100).toFixed(0) + '%', formato: (v) => (v * 100).toFixed(0) + '%' },
   { campo: 'caja', nombre: 'Caja', color: '#8fa3b8', valor: (g) => fmtUsd(g.caja) + 'M', formato: (v) => fmtUsd(v) + 'M' },
 ]
 

@@ -50,6 +50,19 @@ export function tick(state, days) {
     caja: state.caja + ingresoAnual * anios,
   }
 
+  // Poverty follows the real wage with a lag (people feel it slowly);
+  // approval follows poverty and punishes high inflation. Informative
+  // for now — elections/consequences arrive with design phase 2.
+  const salarioNuevo = salarioReal(next)
+  const pobrezaObjetivo = 1 / (1 + Math.pow(salarioNuevo / 450, 1.3))
+  next.pobreza = state.pobreza + (pobrezaObjetivo - state.pobreza) * Math.min(1, 0.3 * anios)
+  const aprobacionObjetivo = Math.min(
+    0.95,
+    Math.max(0.08, 0.92 - next.pobreza * 0.62 - (next.inflacion > 0.5 ? 0.15 : 0)),
+  )
+  next.aprobacion =
+    state.aprobacion + (aprobacionObjetivo - state.aprobacion) * Math.min(1, 0.5 * anios)
+
   // Milestones react to the market wage (see MODELO.md table).
   // Record the day each one is reached — that's the player's scorecard.
   next.hitoActual = checkHito(salarioReal(next), next.hitoActual)
@@ -72,6 +85,8 @@ export function tick(state, days) {
         poblacion: next.poblacion,
         caja: next.caja,
         capitalHumano: next.capitalHumano,
+        pobreza: next.pobreza,
+        aprobacion: next.aprobacion,
       },
     ]
   }

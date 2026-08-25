@@ -240,6 +240,116 @@ export const MEDIDAS = [
     rampa: 1,
     efectos: { crecimiento: 0.001, ingresoAnual: 600 },
   },
+  // ---- Infraestructura nacional ----
+  {
+    id: 'guaira-ley',
+    lugarId: 'la-guaira',
+    nombre: 'Ley de construcción de La Guaira',
+    descripcion:
+      'El marco legal primero: usos de costa, permisos ágiles y reglas claras ' +
+      'para reconstruir el litoral sin repetir errores.',
+    costo: 500,
+    obra: 1,
+    rampa: 0.5,
+    efectos: { crecimiento: 0.001 },
+  },
+  {
+    id: 'guaira-recuperacion',
+    lugarId: 'la-guaira',
+    nombre: 'Recuperación de La Guaira',
+    descripcion:
+      'Puerto modernizado, malecón y fachada costera nueva: la entrada marítima ' +
+      'de Caracas vuelve a brillar.',
+    costo: 6_000,
+    obra: 3,
+    rampa: 2,
+    requiere: ['guaira-ley'],
+    efectos: { crecimiento: 0.005, ingresoAnual: 2_000 },
+  },
+  {
+    id: 'tren-fase2',
+    lugarId: 'puerto-cabello',
+    nombre: 'Ferrocarril nacional — Fase 2 (centro)',
+    descripcion:
+      'La red llega al corazón industrial: Puerto Cabello, Valencia y Barquisimeto ' +
+      'conectados sobre rieles.',
+    costo: 12_000,
+    obra: 4,
+    rampa: 2,
+    requiere: ['sancristobal-trenes'],
+    efectos: { crecimiento: 0.006, poblacionAnual: 0.002 },
+  },
+  {
+    id: 'tren-fase3',
+    lugarId: 'ciudad-guayana',
+    nombre: 'Ferrocarril nacional — Fase 3 (oriente)',
+    descripcion:
+      'Caracas y Guayana unidas por tren de carga y pasajeros: el hierro viaja ' +
+      'sobre rieles hasta el Orinoco.',
+    costo: 15_000,
+    obra: 5,
+    rampa: 2,
+    requiere: ['tren-fase2'],
+    efectos: { crecimiento: 0.007, ingresoAnual: 2_000 },
+  },
+  {
+    id: 'autopistas',
+    lugarId: 'caracas',
+    nombre: 'Renovar las autopistas del país',
+    descripcion:
+      'Asfalto, iluminación, peajes modernos y seguridad vial en toda la red ' +
+      'nacional de autopistas.',
+    costo: 10_000,
+    obra: 3,
+    rampa: 2,
+    efectos: { crecimiento: 0.005 },
+  },
+  {
+    id: 'paraguana-megapuerto',
+    lugarId: 'paraguana',
+    nombre: 'Megapuerto de Paraguaná',
+    descripcion:
+      'Aguas profundas frente a las rutas del canal de Panamá: el hub logístico ' +
+      'del Caribe sur.',
+    costo: 14_000,
+    obra: 4,
+    rampa: 2,
+    requiereHito: 0,
+    efectos: { crecimiento: 0.006, ingresoAnual: 5_000 },
+  },
+
+  // ---- Islas ABC (aparecen con su evento) ----
+  {
+    id: 'curazao-refineria',
+    lugarId: 'curazao',
+    nombre: 'Refinería y puerto de Willemstad',
+    descripcion: 'Modernizar la histórica refinería y su puerto franco.',
+    costo: 6_000,
+    obra: 3,
+    rampa: 2,
+    efectos: { crecimiento: 0.003, ingresoAnual: 3_000 },
+  },
+  {
+    id: 'aruba-turismo',
+    lugarId: 'aruba',
+    nombre: 'Corredor turístico Aruba–Paraguaná',
+    descripcion: 'Ferries, vuelos y hotelería integrada entre la isla y la península.',
+    costo: 4_000,
+    obra: 2,
+    rampa: 2,
+    efectos: { crecimiento: 0.003, ingresoAnual: 2_500 },
+  },
+  {
+    id: 'bonaire-santuario',
+    lugarId: 'bonaire',
+    nombre: 'Santuario marino de Bonaire',
+    descripcion: 'Proteger los arrecifes y convertir el buceo en marca mundial.',
+    costo: 2_000,
+    obra: 2,
+    rampa: 2,
+    efectos: { capitalHumano: 0.4, ingresoAnual: 1_200 },
+  },
+
   {
     id: 'amazonas-mineria',
     lugarId: 'amazonas',

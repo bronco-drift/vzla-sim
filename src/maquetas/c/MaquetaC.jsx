@@ -16,6 +16,8 @@ const PANELES = [
   { campo: 'inflacion', nombre: 'Inflación', color: '#e06456', formato: (v) => (v * 100).toFixed(0) + '%' },
   { campo: 'poblacion', nombre: 'Población', color: '#7aa7e0', formato: (v) => v.toFixed(1) + 'M' },
   { campo: 'capitalHumano', nombre: 'Capital humano', color: '#b58fd6', formato: (v) => v.toFixed(0) },
+  { campo: 'pobreza', nombre: 'Pobreza', color: '#e08a56', formato: (v) => (v * 100).toFixed(0) + '%' },
+  { campo: 'aprobacion', nombre: 'Aprobación', color: '#6cc4d4', formato: (v) => (v * 100).toFixed(0) + '%' },
   { campo: 'caja', nombre: 'Caja', color: '#8fa3b8', formato: (v) => fmtUsd(v) + 'M' },
 ]
 

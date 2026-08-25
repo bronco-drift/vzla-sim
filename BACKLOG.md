@@ -195,19 +195,26 @@ plazo, y el mapa lo va reflejando visualmente.
   guarda el último alcanzado) + pantalla de victoria + scorecard parcial en pausa.
 - Referencia: partida bien jugada ≈ 35-45 años simulados (~15-30 min reales).
 
-## Backlog de misiones (de Marcel, 24-ago noche)
-- **Decoración del escritorio**: retrato de Bolívar y póster del "nuevo ideal nacional"
-  en la pared / sobre el escritorio.
-- [x] **Ventana en la pared** (hecha 24-ago): marco blanco con cruz, vidrio que muestra
-  el cielo real (celeste de día, oscuro de noche) y alféizar.
-- **Ferrocarril partes 2 y 3** (continuación de los trenes de San Cristóbal) y que las
-  **vías vayan apareciendo dibujadas en el mapa** a medida que se construyen.
-- **Mejora de todas las autopistas del país** (medida nacional; ¿también dibujadas?).
-- **Recuperación de La Guaira** — con prerequisito: **sanción de la ley de construcción
-  de La Guaira** (medida legal previa a la obra).
-- **Megapuerto en Paraguaná**.
-- **Evento: al superar $100.000 de PIB per cápita se unen Curazao, Bonaire y Aruba**
-  (tipo Esequibo: modal + aparecen las islas como lugares jugables).
+## Backlog de misiones (de Marcel, 24-ago noche — estado 25-ago)
+- [x] **Decoración del escritorio** (25-ago): retrato de Bolívar estilizado en la pared
+  (marco dorado, banda tricolor), folleto "Nuevo Ideal Nacional" apoyado sobre el
+  escritorio, y vaso con bolígrafos. Todo dibujado procedural (CanvasTexture).
+- [x] **Ventana en la pared** (24-ago) → evolucionó a hueco real con vista del Ávila.
+- [x] **Ferrocarril partes 2 y 3** (25-ago): medidas encadenadas — Fase 2 (centro, en
+  Puerto Cabello, requiere los trenes de San Cristóbal) → Fase 3 (oriente, en Ciudad
+  Guayana). **PENDIENTE la parte visual: vías dibujadas apareciendo en el mapa.**
+- [x] **Autopistas del país** (25-ago): medida nacional en Caracas.
+  **PENDIENTE visual: ¿autopistas dibujadas en el mapa?**
+- [x] **La Guaira** (25-ago): "Ley de construcción" ($500M, legislar) → desbloquea
+  "Recuperación de La Guaira" ($6.000M, puerto+malecón).
+- [x] **Megapuerto de Paraguaná** (25-ago): $14.000M, requiere Hito 1.
+- [x] **Evento islas ABC** (25-ago): al superar $100.000 de PIB pc, Curazao, Bonaire y
+  Aruba se unen por referéndum — modal + 3 islas nuevas con una medida cada una
+  (refinería Willemstad / corredor Aruba–Paraguaná / santuario de Bonaire).
+- [x] **Pobreza y aprobación** (25-ago, adelanto de fase 2): pobreza sigue al salario
+  real con rezago (curva calibrada: $172→~80%, $600→~41%, $3.000→~8%); aprobación
+  sigue a la pobreza y castiga inflación alta. En HUD, gráficos e historia. Por ahora
+  informativas — elecciones/consecuencias quedan para la fase 2 completa.
 - **Ventana — imagen HD panorámica de Caracas/El Ávila** para reemplazar la foto actual
   (generarla en alta resolución, formato panorámico apaisado).
 - **Ventana — luces nocturnas en la ciudad**: cuando anochece, que se enciendan

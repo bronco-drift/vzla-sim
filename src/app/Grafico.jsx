@@ -1,8 +1,10 @@
 // Hand-made SVG line chart — no chart library, theme-aware, tiny.
 import { START_YEAR } from '../core/state.js'
 
-export function Grafico({ historia, campo, formato = (v) => v.toFixed(0), color = '#f5c518' }) {
-  if (!historia || historia.length < 2) {
+export function Grafico({ historia: historiaCruda, campo, formato = (v) => v.toFixed(0), color = '#f5c518' }) {
+  // Old saves may lack newer metrics in early snapshots — skip those
+  const historia = (historiaCruda ?? []).filter((h) => h[campo] != null)
+  if (historia.length < 2) {
     return <p className="grafico-vacio">Todavía no hay historia — dejá correr el tiempo.</p>
   }
 

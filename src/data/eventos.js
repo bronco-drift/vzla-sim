@@ -12,4 +12,14 @@ export const EVENTOS = [
       'nuevo estado de Venezuela. Un territorio inmenso, lleno de recursos, ' +
       'aparece en tu mapa — y hay todo por construir.',
   },
+  {
+    id: 'islas-abc',
+    requierePibPc: 100_000, // beyond top-mundial: one of the richest economies alive
+    titulo: 'Curazao, Bonaire y Aruba se unen',
+    texto:
+      'Con $100.000 de PIB per cápita, Venezuela es una de las economías más ' +
+      'prósperas del planeta. En referéndums históricos, Curazao, Bonaire y ' +
+      'Aruba votan unirse al país. El Caribe entero cambia de color: tres islas ' +
+      'nuevas aparecen en tu mapa.',
+  },
 ]

@@ -1,7 +1,7 @@
 // Zustand store: THE single source of truth. The engine writes here,
 // every maqueta and UI panel only reads from here and calls actions.
 import { create } from 'zustand'
-import { createInitialState } from '../core/state.js'
+import { createInitialState, pibPerCapita } from '../core/state.js'
 import { tick } from '../core/sim.js'
 import { HITOS } from '../core/hitos.js'
 import { medidaPorId } from '../data/medidas.js'
@@ -189,9 +189,12 @@ function notificarCambios(set, get, previo, nuevo) {
     agregarToast(set, get, `🏆 Hito alcanzado: ${hito.nombre} (${hito.referencia})`)
   }
 
-  // One-time story events unlocked by milestone
+  // One-time story events, unlocked by milestone or GDP per capita
   for (const evento of EVENTOS) {
-    if (!(nuevo.eventosVistos ?? {})[evento.id] && nuevo.hitoActual >= evento.requiereHito) {
+    if ((nuevo.eventosVistos ?? {})[evento.id]) continue
+    const porHito = evento.requiereHito != null && nuevo.hitoActual >= evento.requiereHito
+    const porPib = evento.requierePibPc != null && pibPerCapita(nuevo) >= evento.requierePibPc
+    if (porHito || porPib) {
       set({ eventoActivo: evento })
       break // one modal at a time
     }
@@ -231,6 +234,13 @@ function cargarPartida() {
       game.hitosAlcanzados = {}
       game.victoriaVista = false
       v = 3
+    }
+    // v3 -> v4 migration: poverty + approval metrics
+    if (v === 3) {
+      game.schemaVersion = 4
+      game.pobreza = 0.82
+      game.aprobacion = 0.5
+      v = 4
     }
     if (v !== createInitialState().schemaVersion) return null // unknown schema: start fresh
     return game

@@ -5,9 +5,9 @@ export const START_YEAR = 2026
 
 // Difficulty presets: how deep the starting hole is.
 export const NIVELES = {
-  facil: { nombre: 'Fácil', caja: 20_000, inflacion: 1.2, capitalHumano: 45 },
-  realista: { nombre: 'Realista', caja: 10_000, inflacion: 2.0, capitalHumano: 40 },
-  pesadilla: { nombre: 'Pesadilla', caja: 4_000, inflacion: 3.5, capitalHumano: 32 },
+  facil: { nombre: 'Fácil', caja: 20_000, inflacion: 1.2, capitalHumano: 45, pobreza: 0.75 },
+  realista: { nombre: 'Realista', caja: 10_000, inflacion: 2.0, capitalHumano: 40, pobreza: 0.82 },
+  pesadilla: { nombre: 'Pesadilla', caja: 4_000, inflacion: 3.5, capitalHumano: 32, pobreza: 0.9 },
 }
 
 /**
@@ -30,7 +30,7 @@ export const NIVELES = {
 export function createInitialState(nivel = 'realista') {
   const preset = NIVELES[nivel] ?? NIVELES.realista
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     nivel,
     dias: 0,
     velocidad: 1,
@@ -40,6 +40,8 @@ export function createInitialState(nivel = 'realista') {
     inflacion: preset.inflacion,
     capitalHumano: preset.capitalHumano,
     caja: preset.caja,
+    pobreza: preset.pobreza, // fraction of the population in poverty
+    aprobacion: 0.5,         // public approval 0..1 (informative for now)
     hitoActual: -1,
     hitosAlcanzados: {}, // { [hitoIndex]: day it was reached } — the scorecard
     victoriaVista: false,

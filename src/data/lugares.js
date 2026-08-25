@@ -137,6 +137,52 @@ export const LUGARES = [
     descripcion:
       'La selva y sus ríos, asediados por la minería ilegal. Protegerla es proteger el futuro.',
   },
+  {
+    id: 'la-guaira',
+    nombre: 'La Guaira',
+    tipo: 'ciudad',
+    lon: -66.9347,
+    lat: 10.6017,
+    descripcion: 'El puerto de Caracas, golpeado y en pie. Su costa espera volver a brillar.',
+  },
+  {
+    id: 'paraguana',
+    nombre: 'Paraguaná',
+    tipo: 'sitio',
+    lon: -70.2,
+    lat: 11.7,
+    descripcion: 'Península de vientos y refinerías, frente a las rutas del Caribe profundo.',
+  },
+  {
+    id: 'curazao',
+    nombre: 'Curazao',
+    tipo: 'ciudad',
+    lon: -68.93,
+    lat: 12.11,
+    islote: 'arena',
+    requiereEvento: 'islas-abc',
+    descripcion: 'Willemstad y su refinería: la mayor de las islas del Caribe venezolano.',
+  },
+  {
+    id: 'aruba',
+    nombre: 'Aruba',
+    tipo: 'ciudad',
+    lon: -69.97,
+    lat: 12.52,
+    islote: 'arena',
+    requiereEvento: 'islas-abc',
+    descripcion: 'Playas de clase mundial a minutos de Paraguaná.',
+  },
+  {
+    id: 'bonaire',
+    nombre: 'Bonaire',
+    tipo: 'ciudad',
+    lon: -68.26,
+    lat: 12.2,
+    islote: 'arena',
+    requiereEvento: 'islas-abc',
+    descripcion: 'Arrecifes vírgenes y salinas rosadas: el paraíso del buceo.',
+  },
 ]
 
 export function lugarPorId(id) {

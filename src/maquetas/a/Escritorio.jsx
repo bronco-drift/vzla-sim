@@ -7,6 +7,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
 import { Ventana } from './Ventana.jsx'
+import { DecoEscritorio } from './DecoEscritorio.jsx'
 
 export function Escritorio() {
   const luzRef = useRef()
@@ -137,6 +138,9 @@ export function Escritorio() {
 
       {/* Window with the Ávila view (its own component) */}
       <Ventana />
+
+      {/* Portrait, brochure and pen cup */}
+      <DecoEscritorio />
 
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group
