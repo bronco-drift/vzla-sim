@@ -128,6 +128,15 @@ export const LUGARES = [
     descripcion:
       'Peñascos que custodian el Golfo de Venezuela. Aquí se defiende la línea del mapa.',
   },
+  {
+    id: 'amazonas',
+    nombre: 'Amazonas',
+    tipo: 'sitio',
+    lon: -66.8,
+    lat: 4.0,
+    descripcion:
+      'La selva y sus ríos, asediados por la minería ilegal. Protegerla es proteger el futuro.',
+  },
 ]
 
 export function lugarPorId(id) {

@@ -241,6 +241,18 @@ export const MEDIDAS = [
     efectos: { crecimiento: 0.001, ingresoAnual: 600 },
   },
   {
+    id: 'amazonas-mineria',
+    lugarId: 'amazonas',
+    nombre: 'Frenar la minería ilegal',
+    descripcion:
+      'Operación de estado: desmontar las mafias mineras, recuperar los ríos y ' +
+      'proteger a los pueblos indígenas. Orden territorial en la selva.',
+    costo: 3_000,
+    obra: 2,
+    rampa: 2,
+    efectos: { capitalHumano: 0.6, crecimiento: 0.002 },
+  },
+  {
     id: 'esequibo-recursos',
     lugarId: 'esequibo',
     nombre: 'Recursos del Esequibo',
