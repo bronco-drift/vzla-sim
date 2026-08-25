@@ -20,7 +20,7 @@ export function MaquetaA() {
     >
       <color attach="background" args={['#101722']} />
       {/* World view needs a much deeper fog so the planet doesn't vanish */}
-      <fog attach="fog" args={mundoGlobal ? ['#101722', 300, 1400] : ['#101722', 70, 140]} />
+      <fog attach="fog" args={mundoGlobal ? ['#101722', 300, 1400] : ['#101722', 100, 330]} />
 
       <Sol />
       <Mundo />
@@ -32,7 +32,7 @@ export function MaquetaA() {
         enableRotate={true}
         maxPolarAngle={Math.PI / 2.4}
         minDistance={8}
-        maxDistance={mundoGlobal ? 500 : 70}
+        maxDistance={mundoGlobal ? 500 : 115}
       />
     </Canvas>
   )
