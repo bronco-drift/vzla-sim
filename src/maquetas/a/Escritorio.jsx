@@ -42,10 +42,10 @@ export function Escritorio() {
           <boxGeometry args={[2.2, 30, 2.2]} />
           <meshStandardMaterial color="#3a404c" flatShading />
         </mesh>
-        {/* head (cone pointing at the map) */}
-        <mesh position={[-14, 29, 0]} rotation={[0, 0, 2.2]} castShadow>
+        {/* head (open mouth facing the map) */}
+        <mesh position={[-14, 29, 0]} rotation={[0, 0, 2.2 - Math.PI]} castShadow>
           <coneGeometry args={[6, 9, 10, 1, true]} />
-          <meshStandardMaterial color="#2e333d" flatShading />
+          <meshStandardMaterial color="#2e333d" flatShading side={2} />
         </mesh>
         {/* bulb: glows when on */}
         <mesh ref={bombilloRef} position={[-15.5, 27.5, 0]}>
