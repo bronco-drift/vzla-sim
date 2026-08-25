@@ -213,6 +213,7 @@ body {
 
 .panel-ciudad {
   position: absolute;
+  z-index: 18;
   top: 12px;
   right: max(12px, env(safe-area-inset-right));
   width: 300px;

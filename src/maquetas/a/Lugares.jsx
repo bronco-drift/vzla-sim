@@ -71,6 +71,7 @@ export function Lugares({ proyeccion, etiquetasFijas = false }) {
               {...(etiquetasFijas ? {} : { distanceFactor: 36 })}
               className={activo ? 'etiqueta activa' : 'etiqueta'}
               occlude={false}
+              zIndexRange={[4, 0]} // keep labels UNDER panels/toasts/modals
             >
               {lugar.nombre}
             </Html>
