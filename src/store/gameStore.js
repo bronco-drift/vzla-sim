@@ -49,6 +49,7 @@ export const useGameStore = create((set, get) => ({
   eventoActivo: null,     // event being shown in a modal (pauses the sim)
   escena: cargarEscena(), // desk-scene tuning (lamp position, pinned sun)
   panelEscena: false,     // scene-editing panel open?
+  resetCamara: 0,         // bump to ask the active maqueta to re-center its camera
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -120,6 +121,10 @@ export const useGameStore = create((set, get) => ({
 
   togglePanelEscena() {
     set((s) => ({ panelEscena: !s.panelEscena }))
+  },
+
+  pedirResetCamara() {
+    set((s) => ({ resetCamara: s.resetCamara + 1 }))
   },
 
   /** Merge scene tuning (lamp/sun) and persist it. */

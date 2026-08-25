@@ -108,6 +108,16 @@ export const LUGARES = [
     requiereEvento: 'esequibo',
     descripcion: 'El nuevo estado. Confirmada su entidad territorial, hay todo por construir.',
   },
+  {
+    id: 'isla-aves',
+    nombre: 'Isla de Aves',
+    tipo: 'sitio',
+    lon: -63.617,
+    lat: 15.667,
+    islote: true, // tiny land dot rendered under the marker (not in the GeoJSON)
+    descripcion:
+      'Un islote remoto que ancla una zona marítima inmensa. Presencia es soberanía.',
+  },
 ]
 
 export function lugarPorId(id) {

@@ -488,6 +488,10 @@ body {
   left: max(70px, calc(env(safe-area-inset-left) + 56px));
 }
 
+.btn-flotante.tercero {
+  left: max(126px, calc(env(safe-area-inset-left) + 112px));
+}
+
 /* ---- Scene editor panel ---- */
 
 .panel-escena {

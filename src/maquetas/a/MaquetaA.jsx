@@ -5,6 +5,7 @@ import { Canvas } from '@react-three/fiber'
 import { MapControls } from '@react-three/drei'
 import { Mundo } from './Mundo.jsx'
 import { Sol } from './Sol.jsx'
+import { ResetVista } from '../ResetVista.jsx'
 import { useGameStore } from '../../store/gameStore.js'
 
 export function MaquetaA() {
@@ -24,6 +25,7 @@ export function MaquetaA() {
 
       <Sol />
       <Mundo />
+      <ResetVista posicion={[0, 34, 26]} target={[0, 0, -4]} />
 
       {/* Free camera: drag/arrows to pan, wheel/pinch to zoom, angle capped */}
       <MapControls

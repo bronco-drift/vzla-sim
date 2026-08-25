@@ -59,9 +59,14 @@ export function Terreno({ geojson, proyeccion, onClickSuelo }) {
       >
         <meshStandardMaterial color="#4b8f57" flatShading />
       </mesh>
-      {/* Sea: water tray in desk mode, full ocean in world mode */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.25, 0]} receiveShadow>
-        <planeGeometry args={mundoGlobal ? [4000, 4000] : [96, 70]} />
+      {/* Sea: water tray in desk mode (stretched north to reach Isla de
+          Aves), full ocean in world mode */}
+      <mesh
+        rotation={[-Math.PI / 2, 0, 0]}
+        position={mundoGlobal ? [0, 0.25, 0] : [0, 0.25, -9]}
+        receiveShadow
+      >
+        <planeGeometry args={mundoGlobal ? [4000, 4000] : [86, 71]} />
         <meshStandardMaterial color="#1f5378" />
       </mesh>
     </group>

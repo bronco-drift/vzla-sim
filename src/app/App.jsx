@@ -21,6 +21,7 @@ export function App() {
 
   const togglePanelEscena = useGameStore((s) => s.togglePanelEscena)
   const panelEscena = useGameStore((s) => s.panelEscena)
+  const pedirResetCamara = useGameStore((s) => s.pedirResetCamara)
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
@@ -50,6 +51,13 @@ export function App() {
               title="Editar la escena (sol, luna, lámpara)"
             >
               💡
+            </button>
+            <button
+              className="btn-flotante tercero"
+              onClick={pedirResetCamara}
+              title="Centrar el mapa"
+            >
+              🧭
             </button>
             <PanelEscena />
           </>

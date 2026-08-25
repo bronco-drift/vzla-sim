@@ -35,6 +35,13 @@ export function Lugares({ proyeccion, etiquetasFijas = false }) {
         const esCiudad = lugar.tipo === 'ciudad'
         return (
           <group key={lugar.id} position={[x, GROSOR_TERRENO, z]}>
+            {/* Tiny islands (not in the country GeoJSON) get a sand cay */}
+            {lugar.islote && (
+              <mesh position={[0, -0.42, 0]} castShadow>
+                <cylinderGeometry args={[1.0, 1.35, 0.4, 8]} />
+                <meshStandardMaterial color="#d9c58f" flatShading />
+              </mesh>
+            )}
             <mesh
               position={[0, 0.45, 0]}
               castShadow

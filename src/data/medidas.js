@@ -217,6 +217,18 @@ export const MEDIDAS = [
     efectos: { crecimiento: 0.004, poblacionAnual: 0.003 },
   },
   {
+    id: 'aves-observatorio',
+    lugarId: 'isla-aves',
+    nombre: 'Observatorio marino de Isla de Aves',
+    descripcion:
+      'Base científica hipermoderna: investigación oceánica y presencia permanente que ' +
+      'reafirma la posesión del mar venezolano.',
+    costo: 2_500,
+    obra: 2,
+    rampa: 2,
+    efectos: { capitalHumano: 1, crecimiento: 0.002, ingresoAnual: 800 },
+  },
+  {
     id: 'esequibo-recursos',
     lugarId: 'esequibo',
     nombre: 'Recursos del Esequibo',
