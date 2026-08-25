@@ -10,6 +10,7 @@ import { useGameStore } from '../../store/gameStore.js'
 export function Escritorio() {
   const luzRef = useRef()
   const bombilloRef = useRef()
+  const luzCuartoRef = useRef()
   const lampara = useGameStore((s) => s.escena.lampara)
 
   // Checkerboard floor: procedural CanvasTexture, no image files
@@ -44,6 +45,12 @@ export function Escritorio() {
     luzRef.current.intensity += (objetivo - luzRef.current.intensity) * Math.min(1, delta * 3)
     const prendida = luzRef.current.intensity > objetivo * 0.15 && objetivo > 0
     bombilloRef.current.material.color.set(prendida ? '#ffe9a8' : '#3a3f4a')
+
+    // Room ceiling light: manual on/off from the scene panel
+    const cuarto = escena.luzCuarto ?? {}
+    const objetivoCuarto = cuarto.encendida ? (cuarto.intensidad ?? 1500) : 0
+    luzCuartoRef.current.intensity +=
+      (objetivoCuarto - luzCuartoRef.current.intensity) * Math.min(1, delta * 3)
   })
 
   return (
@@ -95,6 +102,15 @@ export function Escritorio() {
         <planeGeometry args={[4000, 4000]} />
         <meshStandardMaterial map={pisoAjedrez} />
       </mesh>
+      {/* room ceiling light: neutral white from above, no shadows (cheap) */}
+      <pointLight
+        ref={luzCuartoRef}
+        position={[0, 150, 40]}
+        intensity={0}
+        distance={900}
+        decay={1.1}
+        color="#f2ede2"
+      />
       {/* white office wall right behind the desk, with dark baseboard */}
       <mesh position={[0, 90, -86]} receiveShadow>
         <boxGeometry args={[4000, 340, 8]} />

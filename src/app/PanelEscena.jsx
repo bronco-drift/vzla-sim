@@ -43,6 +43,32 @@ export function PanelEscena() {
       />
 
       <div className="escena-modo">
+        <span>🔆 Luz del cuarto</span>
+        <div className="escena-segmentos">
+          {[
+            [true, 'Encendida'],
+            [false, 'Apagada'],
+          ].map(([valor, texto]) => (
+            <button
+              key={texto}
+              className={(escena.luzCuarto?.encendida ?? false) === valor ? 'seg activo' : 'seg'}
+              onClick={() => setEscena({ luzCuarto: { encendida: valor } })}
+            >
+              {texto}
+            </button>
+          ))}
+        </div>
+      </div>
+      <Deslizador
+        etiqueta="🔆 Cuarto — intensidad"
+        valor={escena.luzCuarto?.intensidad ?? 1500}
+        min={200}
+        max={4000}
+        paso={50}
+        onCambio={(v) => setEscena({ luzCuarto: { intensidad: v } })}
+      />
+
+      <div className="escena-modo">
         <span>💡 Luz de la lámpara</span>
         <div className="escena-segmentos">
           {[

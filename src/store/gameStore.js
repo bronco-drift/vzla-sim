@@ -22,6 +22,7 @@ const CLAVE_ESCENA = 'vzla-sim.escena'
 const ESCENA_DEFAULT = {
   solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
   lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1, modo: 'auto' }, // modo: auto | on | off
+  luzCuarto: { encendida: false, intensidad: 1500 }, // ceiling light of the "room"
 }
 
 function cargarEscena() {
@@ -29,7 +30,12 @@ function cargarEscena() {
     const crudo = localStorage.getItem(CLAVE_ESCENA)
     if (!crudo) return ESCENA_DEFAULT
     const guardada = JSON.parse(crudo)
-    return { ...ESCENA_DEFAULT, ...guardada, lampara: { ...ESCENA_DEFAULT.lampara, ...guardada.lampara } }
+    return {
+      ...ESCENA_DEFAULT,
+      ...guardada,
+      lampara: { ...ESCENA_DEFAULT.lampara, ...guardada.lampara },
+      luzCuarto: { ...ESCENA_DEFAULT.luzCuarto, ...guardada.luzCuarto },
+    }
   } catch {
     return ESCENA_DEFAULT
   }
@@ -127,12 +133,13 @@ export const useGameStore = create((set, get) => ({
     set((s) => ({ resetCamara: s.resetCamara + 1 }))
   },
 
-  /** Merge scene tuning (lamp/sun) and persist it. */
+  /** Merge scene tuning (lamp/sun/room light) and persist it. */
   setEscena(cambios) {
     const escena = {
       ...get().escena,
       ...cambios,
       lampara: { ...get().escena.lampara, ...(cambios.lampara ?? {}) },
+      luzCuarto: { ...get().escena.luzCuarto, ...(cambios.luzCuarto ?? {}) },
     }
     localStorage.setItem(CLAVE_ESCENA, JSON.stringify(escena))
     set({ escena })
