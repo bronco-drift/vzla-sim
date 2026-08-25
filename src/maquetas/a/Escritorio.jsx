@@ -78,18 +78,30 @@ export function Escritorio() {
         <boxGeometry args={[302, 5, 122]} />
         <meshStandardMaterial color="#4a2e19" flatShading />
       </mesh>
+      {/* legs: from the plinth down to the floor */}
+      {[
+        [-138, -50],
+        [138, -50],
+        [-138, 50],
+        [138, 50],
+      ].map(([x, z]) => (
+        <mesh key={`${x},${z}`} position={[x, -63, z]} castShadow>
+          <boxGeometry args={[12, 34, 12]} />
+          <meshStandardMaterial color="#3f2715" flatShading />
+        </mesh>
+      ))}
       {/* checkerboard office floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -46, 0]} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -80, 0]} receiveShadow>
         <planeGeometry args={[4000, 4000]} />
         <meshStandardMaterial map={pisoAjedrez} />
       </mesh>
       {/* white office wall right behind the desk, with dark baseboard */}
-      <mesh position={[0, 104, -86]} receiveShadow>
-        <boxGeometry args={[4000, 300, 8]} />
+      <mesh position={[0, 90, -86]} receiveShadow>
+        <boxGeometry args={[4000, 340, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
-      <mesh position={[0, -41, -81]}>
-        <boxGeometry args={[4000, 10, 4]} />
+      <mesh position={[0, -74, -81]}>
+        <boxGeometry args={[4000, 12, 4]} />
         <meshStandardMaterial color="#2c1f15" />
       </mesh>
 
