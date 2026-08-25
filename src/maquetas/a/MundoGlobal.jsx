@@ -45,7 +45,9 @@ export function MundoGlobal({ proyeccion }) {
   if (!geometria) return null
 
   return (
-    <mesh geometry={geometria} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.32, 0]}>
+    // Raised well above the sea plane (0.25): tiny gaps z-fight at
+    // world-view camera distances.
+    <mesh geometry={geometria} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.55, 0]}>
       <meshStandardMaterial color="#2a3646" flatShading />
     </mesh>
   )

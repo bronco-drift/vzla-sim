@@ -15,7 +15,9 @@ export function MaquetaA() {
   // shadows="soft" = PCFSoftShadowMap: smooth shadow edges
   return (
     <Canvas
-      camera={{ position: [0, 34, 26], fov: 45 }}
+      // near: 1 (not the 0.1 default) keeps the depth buffer precise at
+      // world-view distances — kills z-fighting shimmer far away
+      camera={{ position: [0, 34, 26], fov: 45, near: 1, far: 3000 }}
       shadows="soft"
       onPointerMissed={() => seleccionarLugar(null)}
     >
