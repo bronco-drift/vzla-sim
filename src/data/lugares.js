@@ -114,9 +114,19 @@ export const LUGARES = [
     tipo: 'sitio',
     lon: -63.617,
     lat: 15.667,
-    islote: true, // tiny land dot rendered under the marker (not in the GeoJSON)
+    islote: 'arena', // tiny land dot rendered under the marker (not in the GeoJSON)
     descripcion:
       'Un islote remoto que ancla una zona marítima inmensa. Presencia es soberanía.',
+  },
+  {
+    id: 'los-monjes',
+    nombre: 'Los Monjes',
+    tipo: 'sitio',
+    lon: -70.9,
+    lat: 12.36,
+    islote: 'roca',
+    descripcion:
+      'Peñascos que custodian el Golfo de Venezuela. Aquí se defiende la línea del mapa.',
   },
 ]
 

@@ -229,6 +229,18 @@ export const MEDIDAS = [
     efectos: { capitalHumano: 1, crecimiento: 0.002, ingresoAnual: 800 },
   },
   {
+    id: 'monjes-costa-seca',
+    lugarId: 'los-monjes',
+    nombre: 'Costa seca y soberanía del Golfo',
+    descripcion:
+      'Consolidar la tesis de la costa seca: presencia naval permanente, estación en ' +
+      'Los Monjes y delimitación firme — soberanía total sobre el Golfo de Venezuela.',
+    costo: 1_500,
+    obra: 1.5,
+    rampa: 1,
+    efectos: { crecimiento: 0.001, ingresoAnual: 600 },
+  },
+  {
     id: 'esequibo-recursos',
     lugarId: 'esequibo',
     nombre: 'Recursos del Esequibo',
