@@ -1,0 +1,125 @@
+// Day/night cycle: sun and moon orbit the map on opposite sides.
+// One full orbit = ONE simulated year (~12s at x1), so time speed is
+// directly visible: at x4 the sun visibly spins faster.
+//
+// Smoothness: the simulation ticks only 10x/second, so reading game.dias
+// directly makes the sun stutter. We keep a local visual angle and ease
+// it toward the real one every frame (60fps smooth, stays in sync).
+//
+// Night: the sun's light fades to ZERO below the horizon; the moon takes
+// over with a dim blue light. Sky and fog are tinted live: deep navy at
+// night, soft blue at noon, and a warm dawn/dusk filter near the horizon.
+import { useRef } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import * as THREE from 'three'
+import { useGameStore } from '../../store/gameStore.js'
+
+const RADIO = 55
+const ALTURA = 38
+const PROFUNDIDAD = 8
+
+const COLOR_DIA = new THREE.Color('#fff4e0')
+const COLOR_ATARDECER = new THREE.Color('#ff9a4d')
+const COLOR_LUNA = new THREE.Color('#8ea2d6')
+
+// Sky/fog palette for the live filter
+const CIELO_NOCHE = new THREE.Color('#0a0f1a')
+const CIELO_DIA = new THREE.Color('#1d3a57')
+const CIELO_CREPUSCULO = new THREE.Color('#7a3d2a')
+
+export function Sol() {
+  const luzSolRef = useRef()
+  const solRef = useRef()
+  const luzLunaRef = useRef()
+  const lunaRef = useRef()
+  const ambienteRef = useRef()
+  const anguloVisual = useRef(Math.PI / 2) // start at noon
+  const cielo = useRef(new THREE.Color())
+  const { scene } = useThree()
+
+  useFrame((_, delta) => {
+    const game = useGameStore.getState().game
+    if (!game || !luzSolRef.current) return
+
+    // One orbit per simulated year
+    const frac = (game.dias % 365) / 365
+    const objetivo = frac * Math.PI * 2
+
+    // Ease the visual angle toward the simulation's angle (wrap-aware)
+    const TAU = Math.PI * 2
+    let diff = (objetivo - anguloVisual.current) % TAU
+    if (diff > Math.PI) diff -= TAU
+    if (diff < -Math.PI) diff += TAU
+    anguloVisual.current += diff * Math.min(1, delta * 8)
+    const angulo = anguloVisual.current
+
+    // ---- Sun ----
+    const sx = Math.cos(angulo) * RADIO
+    const sy = Math.sin(angulo) * ALTURA
+    const solAltura = Math.sin(angulo) // 1 noon, 0 horizon, <0 night
+    const dia = Math.max(0, solAltura)
+
+    luzSolRef.current.position.set(sx, Math.max(sy, 2), PROFUNDIDAD)
+    luzSolRef.current.color.lerpColors(COLOR_ATARDECER, COLOR_DIA, Math.min(dia * 2, 1))
+    luzSolRef.current.intensity = dia * 1.8 // ZERO below the horizon
+    solRef.current.position.set(sx, sy, PROFUNDIDAD)
+    solRef.current.visible = solAltura > -0.12
+
+    // ---- Moon: opposite side of the orbit ----
+    const lx = -sx
+    const ly = -sy
+    const lunaAltura = -solAltura
+
+    luzLunaRef.current.position.set(lx, Math.max(ly, 2), PROFUNDIDAD)
+    luzLunaRef.current.intensity = Math.max(0, lunaAltura) * 0.55
+    lunaRef.current.position.set(lx, ly, PROFUNDIDAD)
+    lunaRef.current.visible = lunaAltura > -0.12
+
+    // Ambient floor keeps the night readable without "sunlight"
+    ambienteRef.current.intensity = 0.35 + dia * 0.4
+
+    // ---- Dawn/dusk filter: tint sky and fog ----
+    // crepusculo peaks when the sun crosses the horizon (|altura| small)
+    const crepusculo = Math.max(0, 1 - Math.abs(solAltura) / 0.28)
+    cielo.current.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
+    cielo.current.lerp(CIELO_CREPUSCULO, crepusculo * 0.65)
+    if (scene.background?.isColor) scene.background.copy(cielo.current)
+    if (scene.fog) scene.fog.color.copy(cielo.current)
+  })
+
+  return (
+    <>
+      <ambientLight ref={ambienteRef} intensity={0.6} />
+
+      {/* Sun: the only shadow caster */}
+      <directionalLight
+        ref={luzSolRef}
+        position={[RADIO, ALTURA, PROFUNDIDAD]}
+        intensity={1.6}
+        castShadow
+        shadow-mapSize={[2048, 2048]}
+        shadow-bias={-0.0002}
+        shadow-camera-left={-40}
+        shadow-camera-right={40}
+        shadow-camera-top={30}
+        shadow-camera-bottom={-30}
+      />
+      <mesh ref={solRef} position={[RADIO, ALTURA, PROFUNDIDAD]}>
+        <sphereGeometry args={[2.2, 16, 16]} />
+        <meshBasicMaterial color="#ffd75e" />
+      </mesh>
+
+      {/* Moon: dim blue fill, no shadows (cheap) */}
+      <directionalLight
+        ref={luzLunaRef}
+        position={[-RADIO, -ALTURA, PROFUNDIDAD]}
+        intensity={0}
+        color={COLOR_LUNA}
+      />
+      <mesh ref={lunaRef} position={[-RADIO, -ALTURA, PROFUNDIDAD]}>
+        <sphereGeometry args={[1.6, 16, 16]} />
+        <meshBasicMaterial color="#cfd9ee" />
+      </mesh>
+    </>
+  )
+}
