@@ -147,8 +147,9 @@ export function Escritorio() {
       {/* white office wall with THREE real window holes (x -350, 0, +350;
           all y 10..160): a full strip above, a strip below, and columns
           between the holes — every window shows the actual sky behind */}
-      <mesh position={[0, 266, -86]} receiveShadow>
-        <boxGeometry args={[1400, 212, 8]} />
+      {/* top strip rises to y 422 to meet the glass roof (no gap) */}
+      <mesh position={[0, 291, -86]} receiveShadow>
+        <boxGeometry args={[1400, 262, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
       <mesh position={[0, -35, -86]} receiveShadow>
@@ -220,9 +221,10 @@ export function Escritorio() {
           <planeGeometry args={[800, 12]} />
           <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
-        {/* front wall (behind the player's usual view) */}
-        <mesh position={[0, 146, 707]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[1400, 452]} />
+        {/* front wall (behind the player's usual view) — reaches the
+            glass roof at y 421 so there's no gap */}
+        <mesh position={[0, 170.5, 707]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1400, 501]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[0, -74, 706.5]} rotation={[0, Math.PI, 0]}>

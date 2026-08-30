@@ -105,19 +105,19 @@ function ColumnaRomana() {
         <boxGeometry args={[58, 12, 58]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 197, 0]} castShadow>
-        <cylinderGeometry args={[21, 25, 330, 10]} />
+      <mesh position={[0, 208, 0]} castShadow>
+        <cylinderGeometry args={[21, 25, 352, 10]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 369, 0]}>
+      <mesh position={[0, 391, 0]}>
         <boxGeometry args={[54, 14, 54]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 383, 0]}>
+      <mesh position={[0, 405, 0]}>
         <boxGeometry args={[70, 14, 70]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 394, 0]}>
+      <mesh position={[0, 416, 0]}>
         <boxGeometry args={[76, 8, 76]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
