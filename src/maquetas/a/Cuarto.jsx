@@ -210,6 +210,7 @@ export function Cuarto() {
   const hojaIzqRef = useRef()
   const hojaDerRef = useRef()
   const tapaCofreRef = useRef()
+  const cajonRef = useRef()
 
   // Door leaves ease toward open (±105°) or closed on their hinges;
   // the chest lid swings back the same way
@@ -225,6 +226,10 @@ export function Cuarto() {
     if (tapaCofreRef.current) {
       const abierto = useGameStore.getState().quest.cofreAbierto ? -1.9 : 0
       tapaCofreRef.current.rotation.x += (abierto - tapaCofreRef.current.rotation.x) * k
+    }
+    if (cajonRef.current) {
+      const fuera = useGameStore.getState().quest.cajonAbierto ? 26 : 0
+      cajonRef.current.position.z += (fuera - cajonRef.current.position.z) * k
     }
   })
 
@@ -685,6 +690,62 @@ export function Cuarto() {
           <ColumnaRomana />
         </group>
       ))}
+
+      {/* -- Corner console table with a KEY-LOCKED drawer (SE corner,
+             by the stairs). The bronze key opens it; the drawer slides
+             out to reveal an old telegram. -- */}
+      <group
+        position={[590, -80, 648]}
+        rotation={[0, Math.PI, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          useGameStore.getState().abrirCajon()
+        }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      >
+        {/* top */}
+        <mesh position={[0, 72, 0]} castShadow>
+          <boxGeometry args={[92, 7, 50]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        {/* legs */}
+        {[
+          [-40, -19],
+          [40, -19],
+          [-40, 19],
+          [40, 19],
+        ].map(([lx, lz]) => (
+          <mesh key={`${lx},${lz}`} position={[lx, 34, lz]} castShadow>
+            <boxGeometry args={[7, 68, 7]} />
+            <meshStandardMaterial color={MADERA} flatShading />
+          </mesh>
+        ))}
+        {/* drawer box + sliding drawer with golden pull and keyhole */}
+        <mesh position={[0, 58, 0]}>
+          <boxGeometry args={[84, 22, 44]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        <group ref={cajonRef}>
+          <mesh position={[0, 58, 23]}>
+            <boxGeometry args={[70, 16, 4]} />
+            <meshStandardMaterial color={MADERA} flatShading />
+          </mesh>
+          <mesh position={[0, 60, 25.5]}>
+            <boxGeometry args={[22, 3, 2]} />
+            <meshStandardMaterial color="#c9a227" flatShading />
+          </mesh>
+          <mesh position={[0, 54, 25.5]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[1.6, 1.6, 2, 8]} />
+            <meshStandardMaterial color="#8a8f96" flatShading />
+          </mesh>
+          {/* the telegram, visible when the drawer slides out */}
+          <mesh position={[0, 68, 8]} rotation={[-Math.PI / 2, 0, 0.15]}>
+            <planeGeometry args={[26, 16]} />
+            <meshStandardMaterial color="#e8e2d0" side={THREE.DoubleSide} />
+          </mesh>
+        </group>
+      </group>
 
       {/* -- Plants in two corners -- */}
       {[

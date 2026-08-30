@@ -57,6 +57,7 @@ const QUEST_DEFAULT = {
   cofreAbierto: false,
   tieneTarjeta: false,
   puertaDesbloqueada: false,
+  cajonAbierto: false, // locked drawer in the corner table (bronze key)
 }
 
 function cargarQuest() {
@@ -311,6 +312,22 @@ export const useGameStore = create((set, get) => ({
       guardarQuest(get)
     }
   },
+  abrirCajon() {
+    const { quest } = get()
+    if (quest.cajonAbierto) {
+      agregarToast(set, get, '📜 El telegrama sigue ahí: «El futuro se decide en la mesa del mapa.»')
+      return
+    }
+    if (!quest.tieneLlave) {
+      agregarToast(set, get, '🔒 El cajón está cerrado con llave.')
+      return
+    }
+    agregarToast(set, get, '🔓 La llave de bronce también abre este cajón.')
+    agregarToast(set, get, '📜 Adentro, un viejo telegrama: «El futuro se decide en la mesa del mapa.»')
+    set((s) => ({ quest: { ...s.quest, cajonAbierto: true } }))
+    guardarQuest(get)
+  },
+
   usarSensor() {
     const { quest } = get()
     if (quest.puertaDesbloqueada) return
