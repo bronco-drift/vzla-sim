@@ -506,21 +506,35 @@ body {
   left: max(238px, calc(env(safe-area-inset-left) + 224px));
 }
 
-/* cryptic quest hint: a whisper above the inventory, bottom-right */
+/* cryptic quest hint: golden whisper, bottom center — unmissable */
 .pista-quest {
   position: absolute;
-  bottom: calc(66px + env(safe-area-inset-bottom));
-  right: max(14px, env(safe-area-inset-right));
-  padding: 6px 12px;
-  background: rgba(12, 12, 16, 0.72);
-  border: 1px solid var(--borde);
-  border-radius: 10px;
-  font-size: 12px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 9px 18px;
+  background: rgba(12, 12, 16, 0.82);
+  border: 1px solid rgba(245, 197, 24, 0.45);
+  border-radius: 12px;
+  font-size: 14px;
   font-style: italic;
-  color: var(--texto-suave);
+  color: #e8d9a0;
   z-index: 15;
-  max-width: 300px;
+  max-width: min(520px, 86vw);
+  text-align: center;
   pointer-events: none;
+  animation: pista-entra 0.6s ease-out;
+}
+
+@keyframes pista-entra {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 /* quest inventory: little item chips, bottom-right */

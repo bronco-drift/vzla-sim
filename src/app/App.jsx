@@ -120,7 +120,7 @@ export function App() {
           {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta de acceso">💳</span>}
         </div>
       )}
-      {idMaqueta !== 'c' && pista && <div className="pista-quest">{pista}</div>}
+      {idMaqueta !== 'c' && pista && <div className="pista-quest">✨ {pista}</div>}
       <MenuPausa />
       <Victoria />
       <EventoModal />
