@@ -10,6 +10,35 @@ import { useGameStore } from '../../store/gameStore.js'
 import { cicloDia } from './Sol.jsx'
 
 const CLAVES_PIEDRAS = ['norte', 'sur', 'este', 'oeste']
+const TITULOS_CARTELES = {
+  norte: ['PER ASPERA', 'AD ASTRA'],
+  sur: ['ROMA NON UNO DIE', 'AEDIFICATA EST'],
+  este: ['SOL INVICTUS', 'ORIENS'],
+  oeste: ['ACTA', 'NON VERBA'],
+}
+
+/** Wooden sign texture with the carved Latin title. */
+function crearTexturaCartel(lineas) {
+  const c = document.createElement('canvas')
+  c.width = 512
+  c.height = 256
+  const ctx = c.getContext('2d')
+  ctx.fillStyle = '#9b7342'
+  ctx.fillRect(0, 0, 512, 256)
+  ctx.strokeStyle = '#5d4126'
+  ctx.lineWidth = 14
+  ctx.strokeRect(10, 10, 492, 236)
+  ctx.fillStyle = '#2b1d10'
+  ctx.font = 'bold 44px Georgia, serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  lineas.forEach((linea, i) => {
+    ctx.fillText(linea, 256, 128 + (i - (lineas.length - 1) / 2) * 58)
+  })
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
 
 const CENTRO_Z = 310 // the sky cylinder's center
 const RADIO_CESPED = 9520
@@ -33,6 +62,11 @@ function crearGradienteHorizonte() {
 
 export function Exterior() {
   const gradiente = useMemo(crearGradienteHorizonte, [])
+  const texturasCarteles = useMemo(() => {
+    const mapa = {}
+    for (const clave of CLAVES_PIEDRAS) mapa[clave] = crearTexturaCartel(TITULOS_CARTELES[clave])
+    return mapa
+  }, [])
 
   // Seeded scatter of trees on the grass ring (outside the room)
   const arboles = useMemo(() => {
@@ -128,25 +162,51 @@ export function Exterior() {
         </group>
       ))}
 
-      {/* big cardinal boulders: N, S, E, O landmarks inside the circle.
-          Click one to read its Roman-Venezuelan inscription. */}
+      {/* big cardinal boulders: N, S, E, O landmarks inside the circle */}
       {PIEDRAS.map((p, i) => (
         <mesh
           key={i}
           position={[p.x, -81 + 90, p.z]}
           scale={[1.35, 0.85, 1.05]}
           rotation={[0.1, i * 1.3, 0.08]}
-          onPointerDown={(e) => {
-            e.stopPropagation()
-            useGameStore.getState().verPiedra(CLAVES_PIEDRAS[i])
-          }}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
         >
           <dodecahedronGeometry args={[300, 0]} />
           <meshStandardMaterial color="#7d7f84" flatShading />
         </mesh>
       ))}
+
+      {/* wooden signs beside each boulder, facing the world's center —
+          the sign is the interactive part: click it to read the plaque */}
+      {PIEDRAS.map((p, i) => {
+        const clave = CLAVES_PIEDRAS[i]
+        const haciaCentro = Math.atan2(0 - p.x, CENTRO_Z - p.z)
+        const despX = Math.sin(haciaCentro)
+        const despZ = Math.cos(haciaCentro)
+        return (
+          <group
+            key={clave}
+            position={[p.x + despX * 480 + despZ * 260, -81, p.z + despZ * 480 - despX * 260]}
+            rotation={[0, haciaCentro, 0]}
+            onPointerDown={(e) => {
+              e.stopPropagation()
+              useGameStore.getState().verPiedra(clave)
+            }}
+            onPointerOver={() => (document.body.style.cursor = 'pointer')}
+            onPointerOut={() => (document.body.style.cursor = 'auto')}
+          >
+            {[-90, 90].map((dx) => (
+              <mesh key={dx} position={[dx, 80, -6]} castShadow>
+                <cylinderGeometry args={[9, 11, 160, 8]} />
+                <meshStandardMaterial color="#5d4126" flatShading />
+              </mesh>
+            ))}
+            <mesh position={[0, 130, 0]} castShadow>
+              <boxGeometry args={[230, 115, 8]} />
+              <meshStandardMaterial map={texturasCarteles[clave]} />
+            </mesh>
+          </group>
+        )
+      })}
 
       {/* tall lampposts (6m) beside each boulder, lit at night */}
       {POSTES.map((p, i) => (

@@ -43,7 +43,7 @@ export function colorCielo(dia, out) {
 // Day/night is a fixed visual cycle: one full day+night ≈ 60 REAL
 // seconds, regardless of sim speed (the scene panel can still pin it).
 // Every system that reacts to daylight shares this one function.
-export const SEGUNDOS_CICLO = 60
+export const SEGUNDOS_CICLO = 120
 export function cicloDia(escena, tiempo) {
   return escena.solFijo ?? (tiempo % SEGUNDOS_CICLO) / SEGUNDOS_CICLO
 }
