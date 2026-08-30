@@ -16,9 +16,12 @@ const TITULOS_CARTELES = {
   este: ['SOL INVICTUS', 'ORIENS'],
   oeste: ['ACTA', 'NON VERBA'],
 }
+// Combination digits for the stair padlock (1777, the Captaincy year):
+// north carries the 1, the rest carry 7s.
+const NUMEROS_CARTELES = { norte: '1', sur: '7', este: '7', oeste: '7' }
 
-/** Wooden sign texture with the carved Latin title. */
-function crearTexturaCartel(lineas) {
+/** Wooden sign texture: carved Latin title + its combination digit. */
+function crearTexturaCartel(lineas, numero) {
   const c = document.createElement('canvas')
   c.width = 512
   c.height = 256
@@ -33,8 +36,12 @@ function crearTexturaCartel(lineas) {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   lineas.forEach((linea, i) => {
-    ctx.fillText(linea, 256, 128 + (i - (lineas.length - 1) / 2) * 58)
+    ctx.fillText(linea, 256, 118 + (i - (lineas.length - 1) / 2) * 56)
   })
+  // the carved digit, bottom-right corner
+  ctx.fillStyle = '#4a3018'
+  ctx.font = 'bold 58px Georgia, serif'
+  ctx.fillText(numero, 448, 208)
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   return tex
@@ -64,7 +71,8 @@ export function Exterior() {
   const gradiente = useMemo(crearGradienteHorizonte, [])
   const texturasCarteles = useMemo(() => {
     const mapa = {}
-    for (const clave of CLAVES_PIEDRAS) mapa[clave] = crearTexturaCartel(TITULOS_CARTELES[clave])
+    for (const clave of CLAVES_PIEDRAS)
+      mapa[clave] = crearTexturaCartel(TITULOS_CARTELES[clave], NUMEROS_CARTELES[clave])
     return mapa
   }, [])
 

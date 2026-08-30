@@ -581,6 +581,57 @@ body {
   }
 }
 
+/* combination padlock dials */
+.candado-diales {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin: 18px 0;
+}
+
+.candado-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.candado-dial span {
+  font-size: 34px;
+  font-weight: 700;
+  min-width: 46px;
+  text-align: center;
+  padding: 6px 0;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+}
+
+.candado-dial button {
+  width: 46px;
+  padding: 4px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+  color: var(--texto);
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.candado-dial button:hover {
+  border-color: var(--acento);
+}
+
+.btn-secundario {
+  margin-top: 8px;
+  padding: 8px 18px;
+  background: transparent;
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  color: var(--texto-suave);
+  cursor: pointer;
+}
+
 /* quest inventory: little item chips, bottom-right */
 .inventario {
   position: absolute;

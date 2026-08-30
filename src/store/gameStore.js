@@ -285,16 +285,25 @@ export const useGameStore = create((set, get) => ({
     set((s) => ({ quest: { ...s.quest, libroAbierto: false, tieneLlave: true } }))
     guardarQuest(get)
   },
+  // The stair padlock opens with a 4-digit combination (1777), whose
+  // digits are carved into the four cardinal signs outside.
+  candadoModal: false,
   abrirCandado() {
     const { quest } = get()
     if (quest.candadoAbierto) return
-    if (!quest.tieneLlave) {
-      agregarToast(set, get, '🔒 Un candado cierra el paso. La llave debe estar en algún libro…')
-      return
+    set({ candadoModal: true })
+  },
+  cerrarCandadoModal() {
+    set({ candadoModal: false })
+  },
+  probarCombinacion(codigo) {
+    if (codigo === '1777') {
+      agregarToast(set, get, '🔓 ¡1777! El candado cede. La escalera es tuya.')
+      set((s) => ({ quest: { ...s.quest, candadoAbierto: true }, candadoModal: false }))
+      guardarQuest(get)
+    } else {
+      agregarToast(set, get, '🔒 El candado no cede. Los guardianes del mundo saben el año…')
     }
-    agregarToast(set, get, '🔓 El candado cede. La escalera es tuya.')
-    set((s) => ({ quest: { ...s.quest, candadoAbierto: true } }))
-    guardarQuest(get)
   },
   abrirCofre() {
     const { quest } = get()
@@ -315,15 +324,23 @@ export const useGameStore = create((set, get) => ({
   abrirCajon() {
     const { quest } = get()
     if (quest.cajonAbierto) {
-      agregarToast(set, get, '📜 El telegrama sigue ahí: «El futuro se decide en la mesa del mapa.»')
+      agregarToast(
+        set,
+        get,
+        '📜 El telegrama sigue ahí: «El año de la Capitanía custodia la escalera. El norte primero.»',
+      )
       return
     }
     if (!quest.tieneLlave) {
       agregarToast(set, get, '🔒 El cajón está cerrado con llave.')
       return
     }
-    agregarToast(set, get, '🔓 La llave de bronce también abre este cajón.')
-    agregarToast(set, get, '📜 Adentro, un viejo telegrama: «El futuro se decide en la mesa del mapa.»')
+    agregarToast(set, get, '🔓 La llave de bronce abre el cajón.')
+    agregarToast(
+      set,
+      get,
+      '📜 Un telegrama: «El año en que nació la Capitanía custodia la escalera. Los guardianes cardinales lo deletrean — el norte primero.»',
+    )
     set((s) => ({ quest: { ...s.quest, cajonAbierto: true } }))
     guardarQuest(get)
   },
