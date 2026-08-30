@@ -201,11 +201,7 @@ export function Ventana() {
         />
       </mesh>
 
-      {/* Grass outside the room, filling the sky cylinder's floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -81, 310]}>
-        <circleGeometry args={[9520, 48]} />
-        <meshStandardMaterial color="#4d8a54" />
-      </mesh>
+      {/* (grass, trees and cardinal boulders live in Exterior.jsx) */}
     </group>
   )
 }

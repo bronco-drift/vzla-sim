@@ -10,6 +10,7 @@ import { Ventana } from './Ventana.jsx'
 import { DecoEscritorio } from './DecoEscritorio.jsx'
 import { Cuarto } from './Cuarto.jsx'
 import { Humano } from './Humano.jsx'
+import { Exterior } from './Exterior.jsx'
 
 export function Escritorio() {
   const luzRef = useRef()
@@ -226,6 +227,9 @@ export function Escritorio() {
 
       {/* Scale-reference human (draggable) */}
       <Humano />
+
+      {/* Grass, horizon gradient, trees and cardinal boulders */}
+      <Exterior />
 
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group
