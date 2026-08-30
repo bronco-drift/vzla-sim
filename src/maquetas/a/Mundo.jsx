@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { bboxDeGeojson, crearProyeccion } from '../../mundo/proyeccion.js'
 import { Terreno } from './Terreno.jsx'
 import { Lugares } from './Lugares.jsx'
+import { Capitales } from './Capitales.jsx'
 import { Objetos } from './Objetos.jsx'
 import { MundoGlobal } from './MundoGlobal.jsx'
 import { Escritorio } from './Escritorio.jsx'
@@ -31,6 +32,7 @@ export function Mundo({ etiquetasFijas = false }) {
     <group>
       <Terreno geojson={geojson} proyeccion={proyeccion} />
       <Lugares proyeccion={proyeccion} etiquetasFijas={etiquetasFijas} />
+      <Capitales proyeccion={proyeccion} />
       <Objetos />
       {mundoGlobal ? <MundoGlobal proyeccion={proyeccion} /> : <Escritorio />}
     </group>
