@@ -681,7 +681,7 @@ export function Cuarto() {
         [-694, 701],
         [694, 701],
       ].map(([x, z]) => (
-        <group key={`${x},${z}`} position={[x, -80, z]}>
+        <group key={`${x},${z}`} position={[x, -80, z]} scale={[1, 1.1, 1]}>
           <ColumnaRomana />
         </group>
       ))}
