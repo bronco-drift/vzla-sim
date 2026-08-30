@@ -17,11 +17,16 @@ export function Capitales({ proyeccion }) {
           <group key={c.id} position={[x, GROSOR_TERRENO, z]}>
             {/* subtle dark ring + small light dot */}
             <mesh position={[0, -0.1, 0]}>
-              <cylinderGeometry args={[0.62, 0.62, 0.22, 12]} />
+              <cylinderGeometry args={[0.31, 0.31, 0.22, 12]} />
               <meshBasicMaterial color="#2c3038" transparent opacity={0.55} />
             </mesh>
+            <mesh scale={hover ? 1.6 : 1}>
+              <cylinderGeometry args={[0.21, 0.21, 0.3, 12]} />
+              <meshBasicMaterial color={hover ? '#ffffff' : '#efe8d2'} />
+            </mesh>
+            {/* invisible hitbox: the dot is tiny but hovering stays easy */}
             <mesh
-              scale={hover ? 1.6 : 1}
+              visible={false}
               onPointerOver={(e) => {
                 e.stopPropagation()
                 setActiva(c.id)
@@ -32,8 +37,7 @@ export function Capitales({ proyeccion }) {
                 document.body.style.cursor = 'auto'
               }}
             >
-              <cylinderGeometry args={[0.42, 0.42, 0.3, 12]} />
-              <meshBasicMaterial color={hover ? '#ffffff' : '#efe8d2'} />
+              <cylinderGeometry args={[1.3, 1.3, 1, 8]} />
             </mesh>
             {hover && (
               <Html
