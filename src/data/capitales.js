@@ -21,4 +21,6 @@ export const CAPITALES = [
   { id: 'cumana', nombre: 'Cumaná', lon: -64.1675, lat: 10.456 },
   { id: 'trujillo', nombre: 'Trujillo', lon: -70.4306, lat: 9.3667 },
   { id: 'san-felipe', nombre: 'San Felipe', lon: -68.7425, lat: 10.3399 },
+  // Capital of the Esequibo state — appears with its event, like the territory
+  { id: 'rupununi', nombre: 'Rupununi', lon: -59.79, lat: 3.38, requiereEvento: 'esequibo' },
 ]

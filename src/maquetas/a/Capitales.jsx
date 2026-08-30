@@ -4,13 +4,20 @@ import { useState } from 'react'
 import { Html } from '@react-three/drei'
 import { CAPITALES } from '../../data/capitales.js'
 import { GROSOR_TERRENO } from './Terreno.jsx'
+import { useGameStore } from '../../store/gameStore.js'
 
 export function Capitales({ proyeccion }) {
   const [activa, setActiva] = useState(null)
+  const game = useGameStore((s) => s.game)
+
+  // Event-gated capitals (Rupununi) hide until their event fires
+  const visibles = CAPITALES.filter(
+    (c) => !c.requiereEvento || !game || (game.eventosVistos ?? {})[c.requiereEvento],
+  )
 
   return (
     <group>
-      {CAPITALES.map((c) => {
+      {visibles.map((c) => {
         const { x, z } = proyeccion.aMundo(c.lon, c.lat)
         const hover = activa === c.id
         return (
