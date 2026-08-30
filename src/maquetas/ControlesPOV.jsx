@@ -28,13 +28,11 @@ function alturaSuelo(x, z, yPie) {
     return PISO + (i + 1) * 28.9
   }
   if (yPie > 200) {
-    // exact slab footprints (west strip, east strip, south piece west of
-    // the stair opening, and the narrow piece north of it)
+    // east walkway + landing deck. Footprints reach the REAL walls
+    // (x 700 / z -86..707) so hugging a wall up there never drops you.
     const enMezzanine =
-      (x > -694 && x < -500 && z > -86 && z < 701) ||
-      (x > 500 && x < 694 && z > -86 && z < 701) ||
-      (x > -500 && x < 220 && z > 507 && z < 701) ||
-      (x > 220 && x < 500 && z > 507 && z < 592)
+      (x > 500 && x < 705 && z > -90 && z < 705) ||
+      (x > 464 && x < 505 && z > 588 && z < 705)
     if (enMezzanine) return 267
   }
   return PISO
@@ -177,17 +175,22 @@ export function ControlesPOV() {
       prox.x = prev.x
     }
 
-    // Mezzanine railings are solid while you're up there. They mirror
-    // the visible rails exactly: west/east edges up to the south slab,
-    // the full south rail, and the west side of the stair opening. The
-    // opening's north side is the walkway — no rail, no block.
+    // Upstairs railings are solid: the walkway's west edge, the landing
+    // deck's north edge, and the stair's open north side (handrail) —
+    // that last one only while you're at stair height, so ground-floor
+    // walking underneath stays free.
     if (yPieActual > 200) {
-      if (prox.z > -86 && prox.z < 507 && cruza(prev.x, prox.x, -495)) prox.x = prev.x
-      if (prox.z > -86 && prox.z < 507 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
-      if (prox.x > -500 && prox.x < 500 && cruza(prev.z, prox.z, 510)) prox.z = prev.z
-      if (prox.z > 592 && prox.z < 707 && cruza(prev.x, prox.x, 215)) prox.x = prev.x
-      // stair-opening north rail: only the landing stretch stays open
-      if (prox.x > 220 && prox.x < 434 && cruza(prev.z, prox.z, 592)) prox.z = prev.z
+      if (prox.z > -86 && prox.z < 592 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
+      if (prox.x > 464 && prox.x < 505 && cruza(prev.z, prox.z, 592)) prox.z = prev.z
+    }
+    if (
+      yPieActual > -60 &&
+      yPieActual < 255 &&
+      prox.x > 58 &&
+      prox.x < 468 &&
+      cruza(prev.z, prox.z, 595)
+    ) {
+      prox.z = prev.z
     }
 
     // stay inside the sky cylinder

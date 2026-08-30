@@ -331,10 +331,9 @@ export function Cuarto() {
         </group>
       )}
 
-      {/* -- Chest at the FAR END of the upstairs walkway (NW corner of
-             the west strip — the longest walk from the stair landing):
-             lid swings open, the card inside is clickable until taken -- */}
-      <group position={[-597, 267, 0]}>
+      {/* -- Chest at the FAR (north) END of the east walkway: lid swings
+             open, the card inside is clickable until taken -- */}
+      <group position={[597, 267, -30]}>
         <mesh
           position={[0, 20, 0]}
           castShadow
@@ -452,60 +451,34 @@ export function Cuarto() {
         </mesh>
       </group>
 
-      {/* -- Upper floor: U-shaped mezzanine slab at the old ceiling line
-             (y 260), leaving the center open so the desk stays visible
-             from the map camera. Wood slab + inner-edge railings. -- */}
+      {/* -- Upper floor: ONE east balcony (Marcel's layout) — the stairs
+             climb the south wall and land on a single walkway running
+             north along the east wall to the chest at its far end. -- */}
       <group>
-        {/* west strip (inset 6u so the slab edge never pokes outside) */}
-        <mesh position={[-597, 260, 307.5]} castShadow>
-          <boxGeometry args={[194, 14, 787]} />
-          <meshStandardMaterial color={MADERA_CLARA} flatShading />
-        </mesh>
-        {/* east strip */}
+        {/* east walkway */}
         <mesh position={[597, 260, 307.5]} castShadow>
           <boxGeometry args={[194, 14, 787]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
         </mesh>
-        {/* south strip, in 2 pieces around the STAIR OPENING (x 220..500,
-            z 592..701): the hole you rise through when climbing up */}
-        <mesh position={[-140, 260, 604]} castShadow>
-          <boxGeometry args={[720, 14, 194]} />
-          <meshStandardMaterial color={MADERA_CLARA} flatShading />
-        </mesh>
-        <mesh position={[360, 260, 549.5]} castShadow>
-          <boxGeometry args={[280, 14, 85]} />
-          <meshStandardMaterial color={MADERA_CLARA} flatShading />
-        </mesh>
-        {/* railings: CONTINUOUS around the central void (west edge, full
-            south edge, east edge) plus one guarding the west side of the
-            stair opening. The opening's NORTH side stays open — it's the
-            walkway from the stair landing to the south corridor. */}
-        <mesh position={[-495, 302, 210.5]}>
-          <boxGeometry args={[10, 70, 593]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        <mesh position={[495, 302, 210.5]}>
-          <boxGeometry args={[10, 70, 593]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        <mesh position={[0, 302, 510]}>
-          <boxGeometry args={[1000, 70, 10]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        <mesh position={[215, 302, 649.5]}>
-          <boxGeometry args={[10, 70, 115]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        {/* north side of the stair opening: railed EXCEPT over the top
-            landing (x 434..500), where the last step meets the walkway */}
-        <mesh position={[327, 302, 594]}>
-          <boxGeometry args={[214, 70, 10]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        {/* landing deck: bridges the last step and the east slab */}
+        {/* landing deck: bridges the last step and the walkway */}
         <mesh position={[484, 260, 646.5]} castShadow>
           <boxGeometry args={[32, 14, 109]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        {/* railing along the walkway's full open (west) edge */}
+        <mesh position={[495, 302, 253]}>
+          <boxGeometry args={[10, 70, 678]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        {/* railing on the landing deck's north edge */}
+        <mesh position={[484, 302, 594]}>
+          <boxGeometry args={[32, 70, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        {/* stair handrail: slanted beam along the open north side */}
+        <mesh position={[264, 120, 592]} rotation={[0, 0, 0.705]}>
+          <boxGeometry args={[540, 9, 9]} />
+          <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
 
