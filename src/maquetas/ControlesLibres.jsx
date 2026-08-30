@@ -23,6 +23,7 @@ export function ControlesLibres() {
     rot.current.yaw = camera.rotation.y
     rot.current.pitch = camera.rotation.x
     window.__camaraLibreDebug = camera // dev aid: inspect from the console
+    window.__rotDebug = rot.current // dev aid: steer the look from console
 
     const lienzo = gl.domElement
     const abajo = (e) => {

@@ -84,6 +84,41 @@ const LIBROS = [
   '#b06030', '#365b8c', '#8c8060', '#5d3d22', '#a03838',
 ]
 
+const MARMOL = '#ece5d3'
+
+/** Roman column, floor to wall top (3.4m): plinth, fluted shaft
+    (low-segment cylinder + flatShading fakes the flutes), capital. */
+function ColumnaRomana() {
+  return (
+    <group>
+      <mesh position={[0, 10, 0]} castShadow>
+        <boxGeometry args={[70, 20, 70]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[0, 26, 0]}>
+        <boxGeometry args={[58, 12, 58]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[0, 167, 0]} castShadow>
+        <cylinderGeometry args={[21, 25, 270, 10]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[0, 309, 0]}>
+        <boxGeometry args={[54, 14, 54]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[0, 323, 0]}>
+        <boxGeometry args={[70, 14, 70]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[0, 334, 0]}>
+        <boxGeometry args={[76, 8, 76]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+    </group>
+  )
+}
+
 export function Cuarto() {
   const puertaAbierta = useGameStore((s) => s.puertaAbierta)
   const togglePuerta = useGameStore((s) => s.togglePuerta)
@@ -244,6 +279,18 @@ export function Cuarto() {
           <meshStandardMaterial color="#1d1a14" />
         </mesh>
       </group>
+
+      {/* -- Roman columns hugging the four corners of the house -- */}
+      {[
+        [-694, -80],
+        [694, -80],
+        [-694, 701],
+        [694, 701],
+      ].map(([x, z]) => (
+        <group key={`${x},${z}`} position={[x, -80, z]}>
+          <ColumnaRomana />
+        </group>
+      ))}
 
       {/* -- Plants in two corners -- */}
       {[

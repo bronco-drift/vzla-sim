@@ -47,6 +47,7 @@ export function ControlesPOV() {
     rot.current.yaw = 0
     rot.current.pitch = 0
     window.__camaraLibreDebug = camera
+    window.__rotDebug = rot.current // dev aid: steer the look from console
 
     const lienzo = gl.domElement
     const abajo = (e) => {

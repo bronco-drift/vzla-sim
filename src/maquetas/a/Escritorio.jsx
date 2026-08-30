@@ -18,6 +18,10 @@ export function Escritorio() {
   const luzCuartoRef = useRef()
   const bombilloCuartoRef = useRef()
   const lampara = useGameStore((s) => s.escena.lampara)
+  // Plane walls are inward-facing (dollhouse) for the map/fly cameras,
+  // but walking OUTSIDE in first person the house must look solid.
+  const camaraPov = useGameStore((s) => s.camaraPov)
+  const ladoPared = camaraPov ? THREE.DoubleSide : THREE.FrontSide
 
   // Checkerboard floor: procedural CanvasTexture, no image files
   const pisoAjedrez = useMemo(() => {
@@ -174,54 +178,54 @@ export function Escritorio() {
             (z 224..396, y -80..205) so the open door leads outside */}
         <mesh position={[-700, 90, 69]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[310, 340]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[-700, 90, 551.5]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[311, 340]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[-700, 232.5, 310]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[172, 55]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[-699.5, -74, 69]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[310, 12]} />
-          <meshStandardMaterial color="#3a332c" />
+          <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
         <mesh position={[-699.5, -74, 551.5]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[311, 12]} />
-          <meshStandardMaterial color="#3a332c" />
+          <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
         {/* right (east) wall, in 4 pieces around its real window hole
             (z 255..365, y 10..160) */}
         <mesh position={[700, 90, 84.5]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[341, 340]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[700, 90, 536]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[342, 340]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[700, 210, 310]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[110, 100]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[700, -35, 310]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[110, 90]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[699.5, -74, 307]} rotation={[0, -Math.PI / 2, 0]}>
           <planeGeometry args={[800, 12]} />
-          <meshStandardMaterial color="#3a332c" />
+          <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
         {/* front wall (behind the player's usual view) */}
         <mesh position={[0, 90, 707]} rotation={[0, Math.PI, 0]}>
           <planeGeometry args={[1400, 340]} />
-          <meshStandardMaterial color="#e2dccc" />
+          <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[0, -74, 706.5]} rotation={[0, Math.PI, 0]}>
           <planeGeometry args={[1400, 12]} />
-          <meshStandardMaterial color="#3a332c" />
+          <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
       </group>
       <mesh position={[0, -74, -81]}>
