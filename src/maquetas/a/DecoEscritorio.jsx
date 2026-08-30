@@ -107,6 +107,49 @@ export function DecoEscritorio() {
     [],
   )
 
+  // Antique parchment map of Venezuela for the south wall
+  const mapaAntiguo = useMemo(
+    () =>
+      texturaDesdeCanvas((ctx, w, h) => {
+        ctx.fillStyle = '#d9c9a3'
+        ctx.fillRect(0, 0, w, h)
+        // aged edges
+        ctx.strokeStyle = '#a8905e'
+        ctx.lineWidth = 10
+        ctx.strokeRect(8, 8, w - 16, h - 16)
+        ctx.strokeStyle = '#6b4a2f'
+        ctx.lineWidth = 3
+        ctx.strokeRect(18, 18, w - 36, h - 36)
+        // rough Venezuela silhouette (stylized, hand-drawn look)
+        const P = [
+          [0.14, 0.32], [0.2, 0.28], [0.24, 0.36], [0.28, 0.3], [0.33, 0.24],
+          [0.42, 0.26], [0.5, 0.22], [0.58, 0.26], [0.66, 0.24], [0.72, 0.3],
+          [0.8, 0.32], [0.86, 0.42], [0.82, 0.55], [0.86, 0.68], [0.78, 0.78],
+          [0.68, 0.74], [0.6, 0.8], [0.52, 0.72], [0.44, 0.76], [0.4, 0.62],
+          [0.3, 0.56], [0.22, 0.6], [0.16, 0.48],
+        ]
+        ctx.beginPath()
+        P.forEach(([px, py], i) => {
+          if (i === 0) ctx.moveTo(px * w, py * h)
+          else ctx.lineTo(px * w, py * h)
+        })
+        ctx.closePath()
+        ctx.fillStyle = '#aab87a'
+        ctx.fill()
+        ctx.strokeStyle = '#5d4126'
+        ctx.lineWidth = 4
+        ctx.stroke()
+        // title + tiny compass
+        ctx.fillStyle = '#4a3018'
+        ctx.font = 'bold 34px Georgia, serif'
+        ctx.textAlign = 'center'
+        ctx.fillText('V E N E Z U E L A', w / 2, h - 34)
+        ctx.font = '26px Georgia, serif'
+        ctx.fillText('✦', w - 56, 60)
+      }, 512, 352),
+    [],
+  )
+
   return (
     <group>
       {/* Compass rose on the sea tray, old-map easter egg (N = -z) */}
@@ -149,6 +192,19 @@ export function DecoEscritorio() {
             <meshStandardMaterial color="#3a2c26" />
           </mesh>
         )}
+      </group>
+
+      {/* Antique map of Venezuela on the SOUTH wall (the big bare
+          stretch west of the staircase), facing into the room */}
+      <group position={[-250, 150, 705.4]} rotation={[0, Math.PI, 0]}>
+        <mesh position={[0, 0, -0.3]}>
+          <boxGeometry args={[98, 70, 2.4]} />
+          <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        <mesh position={[0, 0, 1]}>
+          <planeGeometry args={[90, 62]} />
+          <meshBasicMaterial map={mapaAntiguo} />
+        </mesh>
       </group>
 
       {/* Brochure lying on the desk, slightly rotated */}
