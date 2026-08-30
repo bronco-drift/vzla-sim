@@ -361,6 +361,79 @@ export function Exterior() {
         </group>
       </group>
 
+      {/* -- The looted tomb: a dug-open grave beside the monument, with
+             a broken headstone, dirt piles and an abandoned shovel.
+             Click it to read the plundering notice (future quest hook) -- */}
+      <group
+        position={[680, -81, 2420]}
+        rotation={[0, 0.4, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          useGameStore.getState().verTumba()
+        }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      >
+        {/* dark pit (sunken floor) */}
+        <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -26, 0]}>
+          <planeGeometry args={[92, 52]} />
+          <meshStandardMaterial color="#12100c" />
+        </mesh>
+        {/* pit walls */}
+        {[
+          [0, -13, -26, 92, 26, 4],
+          [0, -13, 26, 92, 26, 4],
+          [-46, -13, 0, 4, 26, 52],
+          [46, -13, 0, 4, 26, 52],
+        ].map(([x, y, z, w, h, d], i) => (
+          <mesh key={i} position={[x, y, z]}>
+            <boxGeometry args={[w, h, d]} />
+            <meshStandardMaterial color="#3a2c1a" flatShading />
+          </mesh>
+        ))}
+        {/* raised dirt rim */}
+        {[
+          [0, 3, -30, 100, 8, 8],
+          [0, 3, 30, 100, 8, 8],
+          [-50, 3, 0, 8, 8, 60],
+          [50, 3, 0, 8, 8, 60],
+        ].map(([x, y, z, w, h, d], i) => (
+          <mesh key={`r${i}`} position={[x, y, z]}>
+            <boxGeometry args={[w, h, d]} />
+            <meshStandardMaterial color="#4a3a22" flatShading />
+          </mesh>
+        ))}
+        {/* dirt piles */}
+        <mesh position={[74, 8, -18]} scale={[1.4, 0.6, 1.1]}>
+          <icosahedronGeometry args={[18, 0]} />
+          <meshStandardMaterial color="#4a3a22" flatShading />
+        </mesh>
+        <mesh position={[66, 5, 22]} scale={[1, 0.5, 0.9]}>
+          <icosahedronGeometry args={[14, 0]} />
+          <meshStandardMaterial color="#54422a" flatShading />
+        </mesh>
+        {/* broken headstone: standing half + fallen half */}
+        <mesh position={[-58, 22, 0]} rotation={[0, Math.PI / 2, 0.12]} castShadow>
+          <boxGeometry args={[40, 44, 8]} />
+          <meshStandardMaterial color="#6f7278" flatShading />
+        </mesh>
+        <mesh position={[-40, 3, 30]} rotation={[0.3, 0.9, 1.45]} castShadow>
+          <boxGeometry args={[34, 26, 8]} />
+          <meshStandardMaterial color="#7d8085" flatShading />
+        </mesh>
+        {/* abandoned shovel leaning on the rim */}
+        <group position={[36, 0, 34]} rotation={[0.5, 0.3, -0.35]}>
+          <mesh position={[0, 30, 0]}>
+            <cylinderGeometry args={[1.8, 1.8, 60, 6]} />
+            <meshStandardMaterial color="#5d4126" flatShading />
+          </mesh>
+          <mesh position={[0, -2, 0]}>
+            <boxGeometry args={[12, 16, 2.5]} />
+            <meshStandardMaterial color="#8a8f96" flatShading />
+          </mesh>
+        </group>
+      </group>
+
       {/* tall lampposts (6m) beside each boulder, lit at night */}
       {POSTES.map((p, i) => (
         <group key={i} position={[p.x, -81, p.z]}>

@@ -374,6 +374,15 @@ export const useGameStore = create((set, get) => ({
     if (modo === 2) agregarToast(set, get, '📻 Emisora 2: Himno de 1810 — instrumental.')
   },
 
+  // The looted tomb by the monument (hook for a future recovery quest)
+  tumbaModal: false,
+  verTumba() {
+    set({ tumbaModal: true })
+  },
+  cerrarTumba() {
+    set({ tumbaModal: false })
+  },
+
   // The Cartographer NPC outside: her dialogue hints at the stones
   mujerModal: false,
   verMujer() {
