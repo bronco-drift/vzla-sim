@@ -481,17 +481,19 @@ export function Cuarto() {
           <boxGeometry args={[10, 70, 115]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        <mesh position={[360, 302, 597]}>
+        <mesh position={[360, 302, 594]}>
           <boxGeometry args={[280, 70, 10]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        {/* railings on the inner edges */}
-        <mesh position={[-495, 302, 296.5]}>
+        {/* railings on the inner edges, matching each slab's free edge:
+            west strip is free z -86..507 (it meets the south slab there),
+            east strip is free z -86..592 (the stair landing needs a gap) */}
+        <mesh position={[-495, 302, 210.5]}>
           <boxGeometry args={[10, 70, 593]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        <mesh position={[495, 302, 296.5]}>
-          <boxGeometry args={[10, 70, 593]} />
+        <mesh position={[495, 302, 253]}>
+          <boxGeometry args={[10, 70, 678]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
         <mesh position={[-140, 302, 512]}>
