@@ -71,6 +71,7 @@ export const useGameStore = create((set, get) => ({
   arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
   menuLuces: false,       // light-placing menu open?
   colocandoLuz: null,     // 'pie' | 'aplique' | 'antorcha' while placing
+  piedraActiva: null,     // cardinal stone being read (norte/sur/este/oeste)
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -150,6 +151,13 @@ export const useGameStore = create((set, get) => ({
 
   setArrastreHumano(v) {
     set({ arrastreHumano: v })
+  },
+
+  verPiedra(clave) {
+    set({ piedraActiva: clave })
+  },
+  cerrarPiedra() {
+    set({ piedraActiva: null })
   },
 
   // ---- Placeable lights ----

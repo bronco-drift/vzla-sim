@@ -590,6 +590,47 @@ body {
   z-index: 15;
 }
 
+/* touch walk-stick guide: dashed circle marking the left thumb zone */
+.joystick-guia {
+  position: absolute;
+  bottom: calc(150px + env(safe-area-inset-bottom));
+  left: 26px;
+  width: 104px;
+  height: 104px;
+  border: 2px dashed rgba(255, 255, 255, 0.28);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.35);
+  z-index: 14;
+  pointer-events: none;
+}
+
+/* On phones the floating buttons span most of the bottom edge: lift
+   every overlay message clear of them, stacked without collisions */
+@media (max-width: 640px) {
+  .pista-quest {
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    font-size: 11px;
+    max-width: 92vw;
+  }
+  .inventario {
+    bottom: calc(74px + env(safe-area-inset-bottom));
+    font-size: 18px;
+    padding: 6px 10px;
+  }
+  .hint-camara {
+    bottom: calc(122px + env(safe-area-inset-bottom));
+    font-size: 11px;
+    max-width: 92vw;
+  }
+  .menu-luces {
+    bottom: calc(122px + env(safe-area-inset-bottom));
+  }
+}
+
 /* fly-mode control hints, floating above the buttons */
 .hint-camara {
   position: absolute;

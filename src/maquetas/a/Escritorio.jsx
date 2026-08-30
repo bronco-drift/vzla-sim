@@ -254,6 +254,25 @@ export function Escritorio() {
       <Luces />
       <ColocadorLuces />
 
+      {/* In POV mode, clicking the map tray "sits you down to govern":
+          an invisible pad over the desk swaps back to the map camera.
+          Only mounted in POV so normal map clicks stay untouched. */}
+      {camaraPov && (
+        <mesh
+          visible={false}
+          position={[0, 1, 0]}
+          rotation={[-Math.PI / 2, 0, 0]}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().toggleCamaraPov()
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        >
+          <planeGeometry args={[340, 160]} />
+        </mesh>
+      )}
+
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group
         position={[lampara.x, 0, lampara.z]}

@@ -12,8 +12,10 @@ import { Victoria } from './Victoria.jsx'
 import { EventoModal } from './EventoModal.jsx'
 import { PanelEscena } from './PanelEscena.jsx'
 import { LibroModal } from './LibroModal.jsx'
+import { PiedraModal } from './PiedraModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
+const esTactil = 'ontouchstart' in window
 
 export function App() {
   const pantalla = useGameStore((s) => s.pantalla)
@@ -142,10 +144,12 @@ export function App() {
             )}
             {camaraPov && (
               <div className="hint-camara">
-                Arrastrá para mirar · WASD o flechas para caminar · SHIFT correr · E (cerca)
-                o click abre la puerta
+                {esTactil
+                  ? 'Pulgar izquierdo: caminar · derecho: mirar · tocá puertas, cofres y el mapa'
+                  : 'Arrastrá para mirar · WASD o flechas caminar · SHIFT correr · E abre la puerta (cerca) · E o click en el mapa: gobernar'}
               </div>
             )}
+            {camaraPov && esTactil && <div className="joystick-guia">✥</div>}
             <PanelEscena />
           </>
         )}
@@ -162,6 +166,7 @@ export function App() {
       <Victoria />
       <EventoModal />
       <LibroModal />
+      <PiedraModal />
     </div>
   )
 }

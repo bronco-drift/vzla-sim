@@ -60,7 +60,8 @@ export function ControlesPOV() {
   const { camera, gl } = useThree()
   const rot = useRef({ yaw: 0, pitch: 0 })
   const teclas = useRef({})
-  const drag = useRef(null)
+  const drag = useRef(null) // look drag: {id, x, y}
+  const mando = useRef(null) // touch walk-stick: {id, x0, y0, dx, dy}
 
   useEffect(() => {
     // spawn at the blue figure's position, looking north
@@ -75,7 +76,15 @@ export function ControlesPOV() {
     const lienzo = gl.domElement
     const abajo = (e) => {
       if (e.button !== 0) return
-      drag.current = { x: e.clientX, y: e.clientY }
+      // Touch on the LEFT half = virtual walk-stick; anything else
+      // (right-half touch, or any mouse press) = look drag. Each side
+      // tracks its own pointerId so both thumbs work at once.
+      const r = lienzo.getBoundingClientRect()
+      if (e.pointerType === 'touch' && e.clientX - r.left < r.width / 2) {
+        mando.current = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0 }
+        return
+      }
+      drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY }
       try {
         lienzo.setPointerCapture(e.pointerId)
       } catch {
@@ -83,27 +92,40 @@ export function ControlesPOV() {
       }
     }
     const mover = (e) => {
-      if (!drag.current) return
-      if (e.buttons === 0) {
+      if (mando.current && e.pointerId === mando.current.id) {
+        mando.current.dx = Math.max(-60, Math.min(60, e.clientX - mando.current.x0))
+        mando.current.dy = Math.max(-60, Math.min(60, e.clientY - mando.current.y0))
+        return
+      }
+      if (!drag.current || e.pointerId !== drag.current.id) return
+      if (e.pointerType === 'mouse' && e.buttons === 0) {
         drag.current = null
         return
       }
       rot.current.yaw -= (e.clientX - drag.current.x) * SENS
       rot.current.pitch -= (e.clientY - drag.current.y) * SENS
       rot.current.pitch = Math.max(-1.4, Math.min(1.4, rot.current.pitch))
-      drag.current = { x: e.clientX, y: e.clientY }
+      drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY }
     }
-    const arriba = () => (drag.current = null)
+    const arriba = (e) => {
+      if (mando.current && e.pointerId === mando.current.id) mando.current = null
+      if (drag.current && e.pointerId === drag.current.id) drag.current = null
+    }
     const menu = (e) => e.preventDefault()
     const tecla = (v) => (e) => {
       if (e.repeat) return
       const k = e.key.toLowerCase()
       if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault()
       teclas.current[k] = v
-      // E: open/close the door when standing near it (either side)
+      // E: door when near it; the DESK when near it (sit down to govern
+      // — swaps back to the map camera)
       if (v && k === 'e') {
-        const cerca = Math.hypot(camera.position.x + 700, camera.position.z - 310) < 420
-        if (cerca) useGameStore.getState().togglePuerta()
+        const st = useGameStore.getState()
+        const cercaPuerta = Math.hypot(camera.position.x + 700, camera.position.z - 310) < 420
+        const cercaMapa =
+          Math.abs(camera.position.x) < 260 && Math.abs(camera.position.z) < 180
+        if (cercaPuerta) st.togglePuerta()
+        else if (cercaMapa) st.toggleCamaraPov()
       }
     }
     const baja = tecla(true)
@@ -111,6 +133,7 @@ export function ControlesPOV() {
     const soltarTodo = () => {
       teclas.current = {}
       drag.current = null
+      mando.current = null
     }
 
     lienzo.addEventListener('pointerdown', abajo)
@@ -150,8 +173,21 @@ export function ControlesPOV() {
 
     const rapida = t['shift'] ? 2.4 : 1
     const paso = VEL_CAMINAR * rapida * Math.min(delta, 0.05)
-    const avance = (t['w'] || t['arrowup'] ? 1 : 0) - (t['s'] || t['arrowdown'] ? 1 : 0)
-    const lado = (t['d'] || t['arrowright'] ? 1 : 0) - (t['a'] || t['arrowleft'] ? 1 : 0)
+    const j = mando.current // touch stick adds analog movement
+    const avance = Math.max(
+      -1,
+      Math.min(
+        1,
+        (t['w'] || t['arrowup'] ? 1 : 0) - (t['s'] || t['arrowdown'] ? 1 : 0) + (j ? -j.dy / 50 : 0),
+      ),
+    )
+    const lado = Math.max(
+      -1,
+      Math.min(
+        1,
+        (t['d'] || t['arrowright'] ? 1 : 0) - (t['a'] || t['arrowleft'] ? 1 : 0) + (j ? j.dx / 50 : 0),
+      ),
+    )
 
     const prev = { x: camera.position.x, z: camera.position.z }
     const prox = {

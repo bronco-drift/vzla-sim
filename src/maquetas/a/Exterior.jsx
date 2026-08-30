@@ -8,6 +8,8 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
 
+const CLAVES_PIEDRAS = ['norte', 'sur', 'este', 'oeste']
+
 const CENTRO_Z = 310 // the sky cylinder's center
 const RADIO_CESPED = 9520
 
@@ -125,13 +127,20 @@ export function Exterior() {
         </group>
       ))}
 
-      {/* big cardinal boulders: N, S, E, O landmarks inside the circle */}
+      {/* big cardinal boulders: N, S, E, O landmarks inside the circle.
+          Click one to read its Roman-Venezuelan inscription. */}
       {PIEDRAS.map((p, i) => (
         <mesh
           key={i}
           position={[p.x, -81 + 90, p.z]}
           scale={[1.35, 0.85, 1.05]}
           rotation={[0.1, i * 1.3, 0.08]}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().verPiedra(CLAVES_PIEDRAS[i])
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
         >
           <dodecahedronGeometry args={[300, 0]} />
           <meshStandardMaterial color="#7d7f84" flatShading />
