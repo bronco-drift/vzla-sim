@@ -7,6 +7,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
+import { resaltar } from '../resaltar.js'
 import { cicloDia } from './Sol.jsx'
 
 const CLAVES_PIEDRAS = ['norte', 'sur', 'este', 'oeste']
@@ -229,8 +230,8 @@ export function Exterior() {
               e.stopPropagation()
               useGameStore.getState().verPiedra(clave)
             }}
-            onPointerOver={() => (document.body.style.cursor = 'pointer')}
-            onPointerOut={() => (document.body.style.cursor = 'auto')}
+            onPointerOver={(e) => resaltar(e, true)}
+            onPointerOut={(e) => resaltar(e, false)}
           >
             {[-90, 90].map((dx) => (
               <mesh key={dx} position={[dx, 80, -6]} castShadow>
@@ -256,8 +257,8 @@ export function Exterior() {
           e.stopPropagation()
           useGameStore.getState().devolverHueso()
         }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        onPointerOver={(e) => resaltar(e, true)}
+        onPointerOut={(e) => resaltar(e, false)}
       >
         {/* stepped pedestal */}
         <mesh position={[0, 20, 0]} castShadow>
@@ -380,8 +381,8 @@ export function Exterior() {
           e.stopPropagation()
           useGameStore.getState().verTumba()
         }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        onPointerOver={(e) => resaltar(e, true)}
+        onPointerOut={(e) => resaltar(e, false)}
       >
         {/* dark pit (sunken floor) */}
         <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -26, 0]}>

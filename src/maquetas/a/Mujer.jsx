@@ -2,6 +2,7 @@
 // her and she points the player toward the four cardinal stones (the
 // combination hint). Minecraft-style build with skirt and long hair.
 import { useGameStore } from '../../store/gameStore.js'
+import { resaltar } from '../resaltar.js'
 
 const PIEL = '#c9a077'
 const PELO = '#17110c'
@@ -19,8 +20,8 @@ export function Mujer() {
         e.stopPropagation()
         verMujer()
       }}
-      onPointerOver={() => (document.body.style.cursor = 'pointer')}
-      onPointerOut={() => (document.body.style.cursor = 'auto')}
+      onPointerOver={(e) => resaltar(e, true)}
+      onPointerOut={(e) => resaltar(e, false)}
     >
       {/* legs peeking under the skirt */}
       <mesh position={[-9, 8, 0]}>

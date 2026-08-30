@@ -5,7 +5,8 @@ import { createInitialState, pibPerCapita } from '../core/state.js'
 import { tick } from '../core/sim.js'
 import { HITOS } from '../core/hitos.js'
 import { medidaPorId } from '../data/medidas.js'
-import { estadoMedida, requisitosCumplidos } from '../core/medidas.js'
+import { estadoMedida, requisitosCumplidos, progresoObras } from '../core/medidas.js'
+import { LUGARES } from '../data/lugares.js'
 import { EVENTOS } from '../data/eventos.js'
 
 // Real-time loop: every TICK_MS we advance velocidad * DIAS_POR_TICK_X1
@@ -304,7 +305,21 @@ export const useGameStore = create((set, get) => ({
   },
 
   // ---- Adventure quest actions ----
+  // The golden book is STUCK until every visible public work is at full
+  // effect — the economy game is the key to the adventure.
   abrirLibro() {
+    const { game, quest } = get()
+    if (!quest.tieneLlave && game) {
+      const obras = progresoObras(game, LUGARES)
+      if (!obras.completas) {
+        agregarToast(
+          set,
+          get,
+          `📚 El libro no cede. El país aún tiene obras pendientes (${obras.hechas}/${obras.total}).`,
+        )
+        return
+      }
+    }
     set((s) => ({ quest: { ...s.quest, libroAbierto: true } }))
   },
   cerrarLibro() {
@@ -413,6 +428,15 @@ export const useGameStore = create((set, get) => ({
   },
   cerrarTumba() {
     set({ tumbaModal: false })
+  },
+
+  // The advisor NPC inside (vinotinto figure): progress-aware dialogue
+  consejeroModal: false,
+  verConsejero() {
+    set({ consejeroModal: true })
+  },
+  cerrarConsejero() {
+    set({ consejeroModal: false })
   },
 
   // The Cartographer NPC outside: her dialogue hints at the stones

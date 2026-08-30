@@ -8,6 +8,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
+import { resaltar } from '../resaltar.js'
 
 const BLANCO = '#f0ebe0'
 const MADERA = '#5d3d22'
@@ -249,8 +250,8 @@ export function Cuarto() {
           e.stopPropagation()
           togglePuerta()
         }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        onPointerOver={(e) => resaltar(e, true)}
+        onPointerOut={(e) => resaltar(e, false)}
       >
         {/* frame */}
         <mesh position={[0, 89, -1]}>
@@ -377,8 +378,8 @@ export function Cuarto() {
             e.stopPropagation()
             useGameStore.getState().abrirLibro()
           }}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
+          onPointerOver={(e) => resaltar(e, true)}
+          onPointerOut={(e) => resaltar(e, false)}
         >
           <boxGeometry args={[30, 50, 30]} />
         </mesh>
@@ -392,8 +393,8 @@ export function Cuarto() {
             e.stopPropagation()
             useGameStore.getState().abrirCandado()
           }}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
+          onPointerOver={(e) => resaltar(e, true)}
+          onPointerOut={(e) => resaltar(e, false)}
         >
           {[
             [0, 0, -52],
@@ -440,8 +441,8 @@ export function Cuarto() {
             e.stopPropagation()
             useGameStore.getState().abrirCofre()
           }}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
+          onPointerOver={(e) => resaltar(e, true)}
+          onPointerOut={(e) => resaltar(e, false)}
         >
           <boxGeometry args={[76, 40, 54]} />
           <meshStandardMaterial color={MADERA} flatShading />
@@ -464,8 +465,8 @@ export function Cuarto() {
               e.stopPropagation()
               useGameStore.getState().tomarTarjeta()
             }}
-            onPointerOver={() => (document.body.style.cursor = 'pointer')}
-            onPointerOut={() => (document.body.style.cursor = 'auto')}
+            onPointerOver={(e) => resaltar(e, true)}
+            onPointerOut={(e) => resaltar(e, false)}
           >
             <mesh>
               <boxGeometry args={[34, 22, 2]} />
@@ -487,8 +488,8 @@ export function Cuarto() {
           e.stopPropagation()
           useGameStore.getState().usarSensor()
         }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        onPointerOver={(e) => resaltar(e, true)}
+        onPointerOut={(e) => resaltar(e, false)}
       >
         <mesh>
           <boxGeometry args={[8, 34, 22]} />
@@ -733,8 +734,8 @@ export function Cuarto() {
             e.stopPropagation()
             useGameStore.getState().abrirCofrecito()
           }}
-          onPointerOver={() => (document.body.style.cursor = 'pointer')}
-          onPointerOut={() => (document.body.style.cursor = 'auto')}
+          onPointerOver={(e) => resaltar(e, true)}
+          onPointerOut={(e) => resaltar(e, false)}
         >
           <mesh position={[0, 9, 0]} castShadow>
             <boxGeometry args={[36, 18, 24]} />

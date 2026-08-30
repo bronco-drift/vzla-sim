@@ -31,6 +31,26 @@ export function requisitosCumplidos(medida, state) {
   return true
 }
 
+/** Progress over ALL measures visible to the player (event-gated places
+    only count once their event fired). Used to gate the adventure: the
+    golden book unlocks when every visible public work is at full effect. */
+export function progresoObras(state, lugares) {
+  const visibles = new Set(
+    lugares
+      .filter((l) => !l.requiereEvento || (state.eventosVistos ?? {})[l.requiereEvento])
+      .map((l) => l.id),
+  )
+  let hechas = 0
+  let total = 0
+  for (const medida of MEDIDAS) {
+    if (!visibles.has(medida.lugarId)) continue
+    total++
+    const { fase } = estadoMedida(medida, state.medidas[medida.id], state.dias)
+    if (fase === 'pleno') hechas++
+  }
+  return { hechas, total, completas: hechas >= total }
+}
+
 /** Aggregate the effects of every active measure, ramp-scaled. */
 export function efectosActivos(state) {
   const total = {

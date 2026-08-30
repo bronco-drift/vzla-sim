@@ -710,6 +710,57 @@ body {
   }
 }
 
+/* expandable inventory panel, above the backpack chip */
+.inventario {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.inventario-panel {
+  position: absolute;
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  right: max(14px, env(safe-area-inset-right));
+  width: 280px;
+  padding: 12px 14px;
+  background: rgba(12, 12, 16, 0.92);
+  border: 1px solid var(--acento);
+  border-radius: 14px;
+  z-index: 16;
+}
+
+.inventario-panel h3 {
+  font-size: 13px;
+  margin-bottom: 8px;
+  color: var(--acento);
+}
+
+.inventario-panel .item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  font-size: 13px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.inventario-panel .item.oculto {
+  opacity: 0.45;
+}
+
+.inventario-panel .item-nombre {
+  flex: 1;
+}
+
+.inventario-panel .item-estado {
+  font-size: 11px;
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+.inventario-panel .item-estado.activo {
+  color: #4ade80;
+}
+
 /* fly-mode control hints, floating above the buttons */
 .hint-camara {
   position: absolute;

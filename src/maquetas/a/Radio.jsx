@@ -5,6 +5,7 @@
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGameStore } from '../../store/gameStore.js'
+import { resaltar } from '../resaltar.js'
 
 const POSICION = [-673, -80, 560]
 const ROTACION = Math.PI / 2 // flat against the west wall, facing the room
@@ -122,8 +123,8 @@ export function Radio() {
           ctxRef.current?.resume()
           toggleRadio()
         }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
+        onPointerOver={(e) => resaltar(e, true)}
+        onPointerOut={(e) => resaltar(e, false)}
       >
         <mesh position={[0, 13, 0]} castShadow>
           <boxGeometry args={[44, 26, 18]} />

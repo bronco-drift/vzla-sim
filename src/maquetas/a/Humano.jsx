@@ -29,6 +29,7 @@ export function Humano({
   const [agarrado, setAgarrado] = useState(false)
   const pos = useRef({ ...humano })
   const grupoRef = useRef()
+  const inicioAgarre = useRef(null) // {t, x, z} to tell a tap from a drag
 
   useEffect(() => {
     if (!agarrado) return
@@ -51,6 +52,18 @@ export function Humano({
       if (controls) controls.enabled = true
       document.body.style.cursor = 'auto'
       setEscena({ [clave]: { ...pos.current } }) // persist the final spot
+      // a SHORT press with no real movement = talk to the advisor
+      // (only the vinotinto figure has dialogue)
+      if (
+        clave === 'humano' &&
+        Date.now() - (inicioAgarre.current?.t ?? 0) < 350 &&
+        Math.hypot(
+          pos.current.x - (inicioAgarre.current?.x ?? 0),
+          pos.current.z - (inicioAgarre.current?.z ?? 0),
+        ) < 10
+      ) {
+        useGameStore.getState().verConsejero()
+      }
     }
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
@@ -62,6 +75,7 @@ export function Humano({
 
   const agarrar = (e) => {
     e.stopPropagation()
+    inicioAgarre.current = { t: Date.now(), x: pos.current.x, z: pos.current.z }
     setAgarrado(true)
     setArrastreHumano(true)
     if (controls) controls.enabled = false

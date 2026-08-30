@@ -1,6 +1,6 @@
 // App shell: routes between welcome screen, the world editor (?editor)
 // and the running game. The active maqueta comes from the registry.
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useGameStore } from '../store/gameStore.js'
 import { Bienvenida } from './Bienvenida.jsx'
 import { Hud } from './Hud.jsx'
@@ -18,6 +18,7 @@ import { CandadoModal } from './CandadoModal.jsx'
 import { CartaModal } from './CartaModal.jsx'
 import { MujerModal } from './MujerModal.jsx'
 import { TumbaModal } from './TumbaModal.jsx'
+import { ConsejeroModal } from './ConsejeroModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
@@ -64,6 +65,7 @@ export function App() {
   const quitarLuces = useGameStore((s) => s.quitarLuces)
   const colocandoLuz = useGameStore((s) => s.colocandoLuz)
   const quest = useGameStore((s) => s.quest)
+  const [inventarioAbierto, setInventarioAbierto] = useState(false)
   const { tieneLlave, tieneTarjeta, puertaDesbloqueada } = quest
 
   if (esEditor) return <Editor />
@@ -181,11 +183,46 @@ export function App() {
         </div>
       )}
       {/* quest inventory chips */}
-      {(tieneLlave || tieneTarjeta || quest.tieneHueso) && (
-        <div className="inventario">
+      {idMaqueta !== 'c' && (
+        <div className="inventario" onClick={() => setInventarioAbierto((v) => !v)}>
+          <span title="Inventario">🎒</span>
           {tieneLlave && <span title="Llave de bronce">🔑</span>}
           {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta magnética">💳</span>}
           {quest.tieneHueso && <span title="El hueso del Libertador">🦴</span>}
+        </div>
+      )}
+      {idMaqueta !== 'c' && inventarioAbierto && (
+        <div className="inventario-panel">
+          <h3>Inventario</h3>
+          {[
+            {
+              icono: '🔑',
+              nombre: 'Llave de bronce',
+              estado: tieneLlave ? 'en mano' : null,
+            },
+            {
+              icono: '💳',
+              nombre: 'Tarjeta magnética',
+              estado: tieneTarjeta ? 'en mano' : puertaDesbloqueada ? 'usada en el sensor' : null,
+            },
+            {
+              icono: '🦴',
+              nombre: 'Hueso del Libertador',
+              estado: quest.tieneHueso
+                ? 'en mano'
+                : quest.finJuego
+                  ? 'devuelto a la estatua'
+                  : null,
+            },
+          ].map((item) => (
+            <div key={item.nombre} className={item.estado ? 'item' : 'item oculto'}>
+              <span className="item-icono">{item.estado ? item.icono : '❓'}</span>
+              <span className="item-nombre">{item.estado ? item.nombre : '???'}</span>
+              <span className={`item-estado ${item.estado === 'en mano' ? 'activo' : ''}`}>
+                {item.estado ?? 'sin descubrir'}
+              </span>
+            </div>
+          ))}
         </div>
       )}
       <MenuPausa />
@@ -197,6 +234,7 @@ export function App() {
       <CartaModal />
       <MujerModal />
       <TumbaModal />
+      <ConsejeroModal />
     </div>
   )
 }
