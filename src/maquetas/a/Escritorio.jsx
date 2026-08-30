@@ -17,8 +17,8 @@ import { Luces, ColocadorLuces } from './Luces.jsx'
 export function Escritorio() {
   const luzRef = useRef()
   const bombilloRef = useRef()
-  const luzCuartoRef = useRef()
-  const bombilloCuartoRef = useRef()
+  const lucesCuartoRef = useRef([])
+  const bombillosCuartoRef = useRef([])
   const lampara = useGameStore((s) => s.escena.lampara)
   // Plane walls are inward-facing (dollhouse) for the map/fly cameras,
   // but walking OUTSIDE in first person the house must look solid.
@@ -58,15 +58,15 @@ export function Escritorio() {
     const prendida = luzRef.current.intensity > objetivo * 0.15 && objetivo > 0
     bombilloRef.current.material.color.set(prendida ? '#ffe9a8' : '#3a3f4a')
 
-    // Room ceiling light: manual on/off from the scene panel
+    // Room lighting: three ridge pendants share the panel's intensity
     const cuarto = escena.luzCuarto ?? {}
-    const objetivoCuarto = cuarto.encendida ? (cuarto.intensidad ?? 1500) : 0
-    luzCuartoRef.current.intensity +=
-      (objetivoCuarto - luzCuartoRef.current.intensity) * Math.min(1, delta * 3)
-    if (bombilloCuartoRef.current) {
-      bombilloCuartoRef.current.material.color.set(
-        luzCuartoRef.current.intensity > 40 ? '#fff3c8' : '#3a3f4a',
-      )
+    const objetivoCuarto = (cuarto.encendida ? (cuarto.intensidad ?? 1500) : 0) / 3
+    for (let i = 0; i < 3; i++) {
+      const luz = lucesCuartoRef.current[i]
+      const bombillo = bombillosCuartoRef.current[i]
+      if (!luz) continue
+      luz.intensity += (objetivoCuarto - luz.intensity) * Math.min(1, delta * 3)
+      if (bombillo) bombillo.material.color.set(luz.intensity > 15 ? '#fff3c8' : '#3a3f4a')
     }
   })
 
@@ -119,31 +119,33 @@ export function Escritorio() {
         <planeGeometry args={[1404, 800]} />
         <meshStandardMaterial map={pisoAjedrez} />
       </mesh>
-      {/* room ceiling light: neutral white from above, no shadows (cheap).
-          Visible fixture: cord from above + bulb whose glow follows the
-          light's state (material updated in the useFrame below). */}
-      <pointLight
-        ref={luzCuartoRef}
-        position={[0, 186, 40]}
-        intensity={0}
-        distance={900}
-        decay={1.1}
-        color="#f2ede2"
-      />
-      <group position={[0, 0, 40]}>
-        <mesh position={[0, 234, 0]}>
-          <cylinderGeometry args={[0.9, 0.9, 96, 6]} />
-          <meshStandardMaterial color="#2c2620" flatShading />
-        </mesh>
-        <mesh position={[0, 192, 0]}>
-          <cylinderGeometry args={[3.4, 7, 9, 10, 1, true]} />
-          <meshStandardMaterial color="#3a332c" flatShading side={2} />
-        </mesh>
-        <mesh ref={bombilloCuartoRef} position={[0, 184, 0]}>
-          <sphereGeometry args={[5, 12, 12]} />
-          <meshBasicMaterial color="#3a3f4a" />
-        </mesh>
-      </group>
+      {/* room lighting: THREE pendant lamps hanging from the roof's
+          ridge beam (y 584, z 310), evenly spaced along it. Each carries
+          a third of the panel's intensity; bulbs glow when on. */}
+      {[-450, 0, 450].map((x, i) => (
+        <group key={x} position={[x, 0, 310]}>
+          <mesh position={[0, 462, 0]}>
+            <cylinderGeometry args={[0.9, 0.9, 244, 6]} />
+            <meshStandardMaterial color="#2c2620" flatShading />
+          </mesh>
+          <mesh position={[0, 344, 0]}>
+            <cylinderGeometry args={[4, 9, 12, 10, 1, true]} />
+            <meshStandardMaterial color="#3a332c" flatShading side={2} />
+          </mesh>
+          <mesh ref={(el) => (bombillosCuartoRef.current[i] = el)} position={[0, 333, 0]}>
+            <sphereGeometry args={[6, 12, 12]} />
+            <meshBasicMaterial color="#3a3f4a" />
+          </mesh>
+          <pointLight
+            ref={(el) => (lucesCuartoRef.current[i] = el)}
+            position={[0, 328, 0]}
+            intensity={0}
+            distance={900}
+            decay={1.1}
+            color="#f2ede2"
+          />
+        </group>
+      ))}
       {/* white office wall with THREE real window holes (x -350, 0, +350;
           all y 10..160): a full strip above, a strip below, and columns
           between the holes — every window shows the actual sky behind */}

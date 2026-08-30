@@ -35,6 +35,7 @@ function crearCanvasEstrellas() {
 
 export function Ventana() {
   const cieloRef = useRef()
+  const tapaCieloRef = useRef()
 
   // Star textures: one wrapped around the cylinder, one for the dome cap
   const [texEstrellasLado, texEstrellasTapa] = useMemo(() => {
@@ -57,6 +58,7 @@ export function Ventana() {
     const frac = cicloDia(escena, state.clock.elapsedTime)
     const dia = Math.max(0, Math.sin(frac * Math.PI * 2))
     colorVidrio(dia, cieloRef.current.material.color)
+    if (tapaCieloRef.current) colorVidrio(dia, tapaCieloRef.current.material.color)
     const noche = Math.max(0, 1 - dia * 3) // stars only in real darkness
     if (estrellasLadoRef.current) estrellasLadoRef.current.material.opacity = noche
     if (estrellasTapaRef.current) estrellasTapaRef.current.material.opacity = noche
@@ -105,7 +107,15 @@ export function Ventana() {
         <meshBasicMaterial color="#1d3a57" fog={false} side={THREE.BackSide} />
       </mesh>
 
-      {/* Stars: an inner cylinder + a dome cap, fading in at night */}
+      {/* Solid sky CAP closing the cylinder's top: same dynamic day color
+          as the walls, so looking up reads as sky (not the wood void) */}
+      <mesh ref={tapaCieloRef} position={[0, 11900, 310]} rotation={[Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[9620, 48]} />
+        <meshBasicMaterial color="#1d3a57" fog={false} side={THREE.DoubleSide} />
+      </mesh>
+
+      {/* Stars: an inner cylinder + a dome cap (below the solid cap so
+          they stay visible against it), fading in at night */}
       <mesh ref={estrellasLadoRef} position={[0, 5500, 310]}>
         <cylinderGeometry args={[9350, 9350, 13000, 64, 1, true]} />
         <meshBasicMaterial
@@ -117,7 +127,7 @@ export function Ventana() {
           side={THREE.BackSide}
         />
       </mesh>
-      <mesh ref={estrellasTapaRef} position={[0, 11800, 310]} rotation={[Math.PI / 2, 0, 0]}>
+      <mesh ref={estrellasTapaRef} position={[0, 11600, 310]} rotation={[Math.PI / 2, 0, 0]}>
         <circleGeometry args={[9600, 48]} />
         <meshBasicMaterial
           map={texEstrellasTapa}
