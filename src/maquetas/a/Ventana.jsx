@@ -126,10 +126,12 @@ export function Ventana() {
         </mesh>
       )}
 
-      {/* Sky, even farther back, colored by the day/night cycle */}
-      <mesh ref={cieloRef} position={[0, 130, -430]}>
-        <planeGeometry args={[920, 520]} />
-        <meshBasicMaterial color="#1d3a57" fog={false} />
+      {/* Sky: a giant cylinder wrapped around the whole room (radius 95m,
+          just inside the 100m flight bounds), seen from the inside and
+          colored by the day/night cycle. Replaces the old flat backdrop. */}
+      <mesh ref={cieloRef} position={[0, 5500, 310]}>
+        <cylinderGeometry args={[9500, 9500, 13000, 64, 1, true]} />
+        <meshBasicMaterial color="#1d3a57" fog={false} side={THREE.BackSide} />
       </mesh>
     </group>
   )
