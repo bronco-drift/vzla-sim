@@ -20,6 +20,32 @@ const TITULOS_CARTELES = {
 // north carries the 1, the rest carry 7s.
 const NUMEROS_CARTELES = { norte: '1', sur: '7', este: '7', oeste: '7' }
 
+/** Plaque texture for the equestrian monument. */
+function crearTexturaPlaca() {
+  const c = document.createElement('canvas')
+  c.width = 256
+  c.height = 128
+  const ctx = c.getContext('2d')
+  ctx.fillStyle = '#1d2024'
+  ctx.fillRect(0, 0, 256, 128)
+  ctx.strokeStyle = '#c9a227'
+  ctx.lineWidth = 4
+  ctx.strokeRect(6, 6, 244, 116)
+  ctx.fillStyle = '#e8c95c'
+  ctx.font = 'bold 19px Georgia, serif'
+  ctx.textAlign = 'center'
+  ctx.fillText('LA NACIÓN AGRADECIDA', 128, 44)
+  ctx.fillText('A SU LIBERTADOR', 128, 70)
+  ctx.font = '15px Georgia, serif'
+  ctx.fillText('ERIGE ESTE MONUMENTO', 128, 96)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  return tex
+}
+
+const BRONCE_ESTATUA = '#3d4238'
+const GRANITO = '#26292e'
+
 /** Wooden sign texture: carved Latin title + its combination digit. */
 function crearTexturaCartel(lineas, numero) {
   const c = document.createElement('canvas')
@@ -69,6 +95,7 @@ function crearGradienteHorizonte() {
 
 export function Exterior() {
   const gradiente = useMemo(crearGradienteHorizonte, [])
+  const texturaPlaca = useMemo(crearTexturaPlaca, [])
   const texturasCarteles = useMemo(() => {
     const mapa = {}
     for (const clave of CLAVES_PIEDRAS)
@@ -215,6 +242,101 @@ export function Exterior() {
           </group>
         )
       })}
+
+      {/* -- Equestrian statue of Bolívar (Plaza Bolívar style): rearing
+             bronze horse on a stepped granite pedestal with the plaque,
+             south of the house by the path torches, facing the house -- */}
+      <group position={[370, -81, 2220]} rotation={[0, Math.PI / 2, 0]}>
+        {/* stepped pedestal */}
+        <mesh position={[0, 20, 0]} castShadow>
+          <boxGeometry args={[320, 40, 220]} />
+          <meshStandardMaterial color={GRANITO} flatShading />
+        </mesh>
+        <mesh position={[0, 55, 0]} castShadow>
+          <boxGeometry args={[260, 30, 170]} />
+          <meshStandardMaterial color="#2e3238" flatShading />
+        </mesh>
+        <mesh position={[0, 155, 0]} castShadow>
+          <boxGeometry args={[200, 170, 120]} />
+          <meshStandardMaterial color={GRANITO} flatShading />
+        </mesh>
+        <mesh position={[0, 248, 0]} castShadow>
+          <boxGeometry args={[214, 16, 134]} />
+          <meshStandardMaterial color="#2e3238" flatShading />
+        </mesh>
+        {/* plaque (faces the house) */}
+        <mesh position={[101.5, 150, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[96, 48]} />
+          <meshBasicMaterial map={texturaPlaca} />
+        </mesh>
+
+        {/* rearing horse + rider, bronze (built facing +x) */}
+        <group position={[0, 256, 0]} scale={1.35}>
+          {/* body, tilted up at the chest */}
+          <mesh position={[0, 60, 0]} rotation={[0, 0, 0.35]} castShadow>
+            <boxGeometry args={[92, 42, 36]} />
+            <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+          </mesh>
+          {/* neck + head */}
+          <mesh position={[42, 96, 0]} rotation={[0, 0, 0.85]} castShadow>
+            <boxGeometry args={[26, 40, 22]} />
+            <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+          </mesh>
+          <mesh position={[58, 116, 0]} rotation={[0, 0, 0.35]}>
+            <boxGeometry args={[30, 15, 18]} />
+            <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+          </mesh>
+          {[-6, 6].map((dz) => (
+            <mesh key={dz} position={[50, 128, dz]}>
+              <boxGeometry args={[6, 10, 4]} />
+              <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+            </mesh>
+          ))}
+          {/* hind legs planted on the pedestal */}
+          {[-11, 11].map((dz) => (
+            <mesh key={dz} position={[-32, 22, dz]} rotation={[0, 0, -0.15]} castShadow>
+              <boxGeometry args={[12, 52, 11]} />
+              <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+            </mesh>
+          ))}
+          {/* forelegs curled in the air */}
+          {[-9, 9].map((dz) => (
+            <mesh key={dz} position={[38, 58, dz]} rotation={[0, 0, 1.15]} castShadow>
+              <boxGeometry args={[10, 38, 9]} />
+              <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+            </mesh>
+          ))}
+          {/* tail sweeping down */}
+          <mesh position={[-52, 42, 0]} rotation={[0, 0, -0.8]} castShadow>
+            <boxGeometry args={[12, 44, 10]} />
+            <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+          </mesh>
+          {/* Bolívar: torso, cape, head, pointing arm */}
+          <mesh position={[-4, 100, 0]} rotation={[0, 0, 0.15]} castShadow>
+            <boxGeometry args={[20, 34, 17]} />
+            <meshStandardMaterial color="#2f3430" flatShading />
+          </mesh>
+          <mesh position={[-15, 96, 0]} rotation={[0, 0, -0.25]}>
+            <boxGeometry args={[8, 36, 22]} />
+            <meshStandardMaterial color="#262b27" flatShading />
+          </mesh>
+          <mesh position={[0, 124, 0]}>
+            <boxGeometry args={[12, 14, 12]} />
+            <meshStandardMaterial color={BRONCE_ESTATUA} flatShading />
+          </mesh>
+          <mesh position={[16, 112, 5]} rotation={[0, 0, -0.5]}>
+            <boxGeometry args={[26, 7, 7]} />
+            <meshStandardMaterial color="#2f3430" flatShading />
+          </mesh>
+          {/* legs astride */}
+          {[-11.5, 11.5].map((dz) => (
+            <mesh key={dz} position={[2, 76, dz]} rotation={[0, 0, 0.4]}>
+              <boxGeometry args={[9, 26, 6]} />
+              <meshStandardMaterial color="#2f3430" flatShading />
+            </mesh>
+          ))}
+        </group>
+      </group>
 
       {/* tall lampposts (6m) beside each boulder, lit at night */}
       {POSTES.map((p, i) => (
