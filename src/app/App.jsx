@@ -181,10 +181,11 @@ export function App() {
         </div>
       )}
       {/* quest inventory chips */}
-      {(tieneLlave || tieneTarjeta) && (
+      {(tieneLlave || tieneTarjeta || quest.tieneHueso) && (
         <div className="inventario">
           {tieneLlave && <span title="Llave de bronce">🔑</span>}
-          {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta de acceso">💳</span>}
+          {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta magnética">💳</span>}
+          {quest.tieneHueso && <span title="El hueso del Libertador">🦴</span>}
         </div>
       )}
       <MenuPausa />

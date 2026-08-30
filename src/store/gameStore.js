@@ -79,7 +79,8 @@ const QUEST_DEFAULT = {
   cofreAbierto: false,      // upstairs chest
   tieneTarjeta: false,      // magnetic card from the chest
   puertaDesbloqueada: false, // card on the door sensor
-  finJuego: false,          // combination coffer opened: the founders' letter
+  tieneHueso: false,        // the Liberator's stolen bone, from the coffer
+  finJuego: false,          // bone returned to the statue: the ending
 }
 
 function cargarQuest() {
@@ -329,10 +330,15 @@ export const useGameStore = create((set, get) => ({
   // into the cardinal signs). Inside: the founders' letter — the ending.
   combinacionModal: false,
   cartaModal: false,
+  fuegosActivos: false,
   abrirCofrecito() {
     const { quest } = get()
     if (quest.finJuego) {
       set({ cartaModal: true }) // re-read the letter anytime
+      return
+    }
+    if (quest.tieneHueso) {
+      agregarToast(set, get, '🦴 Ya tenés el hueso. El Libertador espera en su estatua.')
       return
     }
     set({ combinacionModal: true })
@@ -342,22 +348,48 @@ export const useGameStore = create((set, get) => ({
   },
   probarCombinacion(codigo) {
     if (codigo === '1777') {
-      // freeze the completion stats into the quest (letter shows them)
-      const g = get().game
+      agregarToast(
+        set,
+        get,
+        '🦴 ¡1777! Adentro está el hueso robado del Libertador. Devolvélo a su estatua.',
+      )
       set((s) => ({
-        quest: {
-          ...s.quest,
-          finJuego: true,
-          finDias: g?.dias ?? 0,
-          finSegundos: g?.segundosJugados ?? 0,
-        },
+        quest: { ...s.quest, tieneHueso: true },
         combinacionModal: false,
-        cartaModal: true,
       }))
       guardarQuest(get)
     } else {
       agregarToast(set, get, '🔒 No cede. Los guardianes cardinales deletrean el año — el norte primero.')
     }
+  },
+  devolverHueso() {
+    const { quest } = get()
+    if (quest.finJuego) {
+      set({ cartaModal: true })
+      return
+    }
+    if (!quest.tieneHueso) {
+      agregarToast(set, get, '🐎 El Libertador cabalga en silencio.')
+      return
+    }
+    // the ending: stats frozen, the letter appears, fireworks fly
+    const g = get().game
+    agregarToast(set, get, '⚰️ El Libertador descansa completo otra vez.')
+    set((s) => ({
+      quest: {
+        ...s.quest,
+        tieneHueso: false,
+        finJuego: true,
+        finDias: g?.dias ?? 0,
+        finSegundos: g?.segundosJugados ?? 0,
+      },
+      cartaModal: true,
+      fuegosActivos: true,
+    }))
+    guardarQuest(get)
+  },
+  apagarFuegos() {
+    set({ fuegosActivos: false })
   },
   cerrarCarta() {
     set({ cartaModal: false })

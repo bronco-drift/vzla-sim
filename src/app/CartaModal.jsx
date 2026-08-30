@@ -26,8 +26,8 @@ export function CartaModal() {
         <span className="victoria-emoji">📜</span>
         <h2>Carta de los Próceres</h2>
         <p className="victoria-texto">
-          «Recorriste cada rincón de este despacho y del mundo que lo rodea, como
-          recorriste cada decisión que levantó a la república.
+          «Devolviste al Libertador lo que le habían robado, y con ello devolviste
+          a la patria su memoria completa.
           {'\n\n'}
           {anios > 0
             ? `Gobernaste ${anios} años (2026–${anioFinal}) y te tomó ${real} de tu propio tiempo llegar hasta esta carta.`

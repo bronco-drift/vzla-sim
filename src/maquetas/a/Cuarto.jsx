@@ -208,6 +208,7 @@ export function Cuarto() {
   const tieneTarjeta = useGameStore((s) => s.quest.tieneTarjeta)
   const puertaDesbloqueada = useGameStore((s) => s.quest.puertaDesbloqueada)
   const finJuego = useGameStore((s) => s.quest.finJuego)
+  const tieneHueso = useGameStore((s) => s.quest.tieneHueso)
   const hojaIzqRef = useRef()
   const hojaDerRef = useRef()
   const tapaCofreRef = useRef()
@@ -229,7 +230,8 @@ export function Cuarto() {
       tapaCofreRef.current.rotation.x += (abierto - tapaCofreRef.current.rotation.x) * k
     }
     if (tapaCofrecitoRef.current) {
-      const abierto = useGameStore.getState().quest.finJuego ? -1.9 : 0
+      const q = useGameStore.getState().quest
+      const abierto = q.finJuego || q.tieneHueso ? -1.9 : 0
       tapaCofrecitoRef.current.rotation.x +=
         (abierto - tapaCofrecitoRef.current.rotation.x) * k
     }
@@ -751,12 +753,20 @@ export function Cuarto() {
               <meshStandardMaterial color="#c9a227" flatShading />
             </mesh>
           ))}
-          {/* the letter inside, revealed when open */}
-          {finJuego && (
-            <mesh position={[0, 18.5, 0]} rotation={[-Math.PI / 2, 0, 0.1]}>
-              <planeGeometry args={[24, 15]} />
-              <meshStandardMaterial color="#e8e2d0" side={THREE.DoubleSide} />
-            </mesh>
+          {/* the Liberator's stolen bone, inside until it's returned */}
+          {tieneHueso && !finJuego && (
+            <group position={[0, 19.5, 0]} rotation={[0, 0.4, Math.PI / 2]}>
+              <mesh>
+                <cylinderGeometry args={[2.2, 2.2, 18, 6]} />
+                <meshStandardMaterial color="#e8e0cc" flatShading />
+              </mesh>
+              {[-10, 10].map((dy) => (
+                <mesh key={dy} position={[0, dy, 0]}>
+                  <sphereGeometry args={[3.6, 8, 8]} />
+                  <meshStandardMaterial color="#e8e0cc" flatShading />
+                </mesh>
+              ))}
+            </group>
           )}
         </group>
       </group>

@@ -13,6 +13,7 @@ import { Cuarto } from './Cuarto.jsx'
 import { Humano } from './Humano.jsx'
 import { Mujer } from './Mujer.jsx'
 import { Radio } from './Radio.jsx'
+import { Fuegos } from './Fuegos.jsx'
 import { Exterior } from './Exterior.jsx'
 import { Luces, ColocadorLuces } from './Luces.jsx'
 
@@ -25,6 +26,7 @@ export function Escritorio() {
   // Plane walls are inward-facing (dollhouse) for the map/fly cameras,
   // but walking OUTSIDE in first person the house must look solid.
   const camaraPov = useGameStore((s) => s.camaraPov)
+  const fuegosActivos = useGameStore((s) => s.fuegosActivos)
   const ladoPared = camaraPov ? THREE.DoubleSide : THREE.FrontSide
 
   // Checkerboard floor: procedural CanvasTexture, no image files
@@ -260,6 +262,9 @@ export function Escritorio() {
 
       {/* Retro radio on its table (SW corner, right of the door) */}
       <Radio />
+
+      {/* Fireworks celebrate returning the Liberator's bone */}
+      {fuegosActivos && <Fuegos />}
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />

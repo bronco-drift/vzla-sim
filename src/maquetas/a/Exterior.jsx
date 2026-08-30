@@ -249,7 +249,16 @@ export function Exterior() {
       {/* -- Equestrian statue of Bolívar (Plaza Bolívar style): rearing
              bronze horse on a stepped granite pedestal with the plaque,
              south of the house by the path torches, facing the house -- */}
-      <group position={[370, -81, 2220]} rotation={[0, Math.PI / 2, 0]}>
+      <group
+        position={[370, -81, 2220]}
+        rotation={[0, Math.PI / 2, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          useGameStore.getState().devolverHueso()
+        }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      >
         {/* stepped pedestal */}
         <mesh position={[0, 20, 0]} castShadow>
           <boxGeometry args={[320, 40, 220]} />
