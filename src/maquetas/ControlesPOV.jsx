@@ -67,7 +67,7 @@ export function ControlesPOV() {
   useEffect(() => {
     // spawn at the blue figure's position, looking north
     const { escena } = useGameStore.getState()
-    const inicio = escena.humano2 ?? { x: -500, z: 310 }
+    const inicio = escena.humano2 ?? { x: -200, z: 155 }
     camera.position.set(inicio.x, PISO + ALTURA_OJOS, inicio.z)
     rot.current.yaw = 0
     rot.current.pitch = 0

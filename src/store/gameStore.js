@@ -20,11 +20,33 @@ const CLAVE_QUEST = 'vzla-sim.quest'
 
 // Scene preferences (desk lamp position, pinned sun) — visual tuning,
 // persisted separately from the save so it survives new games.
+// Factory light layout = Marcel's hand-placed arrangement (2026-08-30):
+// torches flanking the west door and east wall, sconces over the north
+// windows and by the south stairs, a floor lamp in the west corner, and
+// two path torches out on the lawn.
+const LUCES_DEFAULT = [
+  { tipo: 'antorcha', superficie: 'pared', x: -700, y: 191, z: 73, nx: -1, nz: 0 },
+  { tipo: 'antorcha', superficie: 'pared', x: -700, y: 184, z: 561, nx: -1, nz: 0 },
+  { tipo: 'aplique', superficie: 'pared', x: 349, y: 258, z: -86, nx: 0, nz: -1 },
+  { tipo: 'aplique', superficie: 'pared', x: -1, y: 241, z: -86, nx: 0, nz: -1 },
+  { tipo: 'aplique', superficie: 'pared', x: -354, y: 251, z: -86, nx: 0, nz: -1 },
+  { tipo: 'antorcha', superficie: 'pared', x: 700, y: 186, z: 537, nx: 1, nz: 0 },
+  { tipo: 'antorcha', superficie: 'pared', x: 700, y: 177, z: 73, nx: 1, nz: 0 },
+  { tipo: 'antorcha', superficie: 'piso', x: -63, y: -80, z: 2203, nx: 0, nz: 0 },
+  { tipo: 'antorcha', superficie: 'piso', x: 799, y: -80, z: 2236, nx: 0, nz: 0 },
+  { tipo: 'pie', superficie: 'piso', x: -680, y: -80, z: -24, nx: 0, nz: 0 },
+  { tipo: 'antorcha', superficie: 'pared', x: -497, y: 124, z: 707, nx: 0, nz: -1 },
+  { tipo: 'aplique', superficie: 'pared', x: 579, y: 206, z: 707, nx: 0, nz: -1 },
+]
+
 const ESCENA_DEFAULT = {
   solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
-  lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1, modo: 'auto' }, // modo: auto | on | off
-  luzCuarto: { encendida: false, intensidad: 1500 }, // ridge pendants of the room
+  lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1, modo: 'off' }, // modo: auto | on | off
+  luzCuarto: { encendida: true, intensidad: 200 }, // ridge pendants of the room
   lucesColocadas: { encendidas: true, intensidad: 1 }, // player-placed lights (0..1.5 multiplier)
+  luces: LUCES_DEFAULT,
+  humano: { x: -603, z: -75 },
+  humano2: { x: -200, z: 155 },
 }
 
 function cargarEscena() {

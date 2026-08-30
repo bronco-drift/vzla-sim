@@ -248,9 +248,10 @@ export function Escritorio() {
       {/* Rest of the office: door, windows, furniture */}
       <Cuarto />
 
-      {/* Scale-reference humans: vinotinto + the blue POV avatar */}
-      <Humano />
-      <Humano clave="humano2" camisa="#2b4faa" defaultPos={{ x: -500, z: 310 }} />
+      {/* Scale-reference humans: vinotinto + the blue POV avatar
+          (defaults = Marcel's placement, from ESCENA_DEFAULT) */}
+      <Humano defaultPos={{ x: -603, z: -75 }} />
+      <Humano clave="humano2" camisa="#2b4faa" defaultPos={{ x: -200, z: 155 }} />
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />

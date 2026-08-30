@@ -8,13 +8,12 @@ import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
 import { golpear } from './Luces.jsx'
 
-// Default hanging spots (position + inward wall normal)
+// Default hanging spots = Marcel's arrangement (position + wall normal)
 const CUADROS_DEFAULT = {
   sucre: { x: -175, y: 150, z: -81.4, nx: 0, nz: 1 },
   bolivar: { x: 175, y: 150, z: -81.4, nx: 0, nz: 1 },
-  miranda: { x: -150, y: 150, z: 705.4, nx: 0, nz: -1 },
-  mapa: { x: -380, y: 150, z: 705.4, nx: 0, nz: -1 },
-  extra: { x: 698.4, y: 150, z: 500, nx: -1, nz: 0 },
+  miranda: { x: 577, y: 134, z: 701, nx: 0, nz: -1 },
+  extra: { x: -543, y: 152, z: -80, nx: 0, nz: 1 },
 }
 
 /** A framed painting that can be dragged along/between walls. */
