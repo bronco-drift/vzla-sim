@@ -52,12 +52,12 @@ let proximoToastId = 1
 // libroAbierto is UI-only and always rehydrates closed.
 const QUEST_DEFAULT = {
   libroAbierto: false,
-  tieneLlave: false,
-  candadoAbierto: false,
-  cofreAbierto: false,
-  tieneTarjeta: false,
-  puertaDesbloqueada: false,
-  cajonAbierto: false, // locked drawer in the corner table (bronze key)
+  tieneLlave: false,        // from the golden book
+  candadoAbierto: false,    // stair rope: opens with the bronze key
+  cofreAbierto: false,      // upstairs chest
+  tieneTarjeta: false,      // magnetic card from the chest
+  puertaDesbloqueada: false, // card on the door sensor
+  finJuego: false,          // combination coffer opened: the founders' letter
 }
 
 function cargarQuest() {
@@ -285,25 +285,48 @@ export const useGameStore = create((set, get) => ({
     set((s) => ({ quest: { ...s.quest, libroAbierto: false, tieneLlave: true } }))
     guardarQuest(get)
   },
-  // The stair padlock opens with a 4-digit combination (1777), whose
-  // digits are carved into the four cardinal signs outside.
-  candadoModal: false,
+  // Stair padlock: opens with the bronze key from the book.
   abrirCandado() {
     const { quest } = get()
     if (quest.candadoAbierto) return
-    set({ candadoModal: true })
+    if (!quest.tieneLlave) {
+      agregarToast(set, get, '🔒 Un candado custodia la escalera. La llave debe estar en algún libro…')
+      return
+    }
+    agregarToast(set, get, '🔓 El candado cede. La escalera es tuya.')
+    set((s) => ({ quest: { ...s.quest, candadoAbierto: true } }))
+    guardarQuest(get)
   },
-  cerrarCandadoModal() {
-    set({ candadoModal: false })
+
+  // Final coffer on the corner table: 4-digit combination (1777, carved
+  // into the cardinal signs). Inside: the founders' letter — the ending.
+  combinacionModal: false,
+  cartaModal: false,
+  abrirCofrecito() {
+    const { quest } = get()
+    if (quest.finJuego) {
+      set({ cartaModal: true }) // re-read the letter anytime
+      return
+    }
+    set({ combinacionModal: true })
+  },
+  cerrarCombinacion() {
+    set({ combinacionModal: false })
   },
   probarCombinacion(codigo) {
     if (codigo === '1777') {
-      agregarToast(set, get, '🔓 ¡1777! El candado cede. La escalera es tuya.')
-      set((s) => ({ quest: { ...s.quest, candadoAbierto: true }, candadoModal: false }))
+      set((s) => ({
+        quest: { ...s.quest, finJuego: true },
+        combinacionModal: false,
+        cartaModal: true,
+      }))
       guardarQuest(get)
     } else {
-      agregarToast(set, get, '🔒 El candado no cede. Los guardianes del mundo saben el año…')
+      agregarToast(set, get, '🔒 No cede. Los guardianes cardinales deletrean el año — el norte primero.')
     }
+  },
+  cerrarCarta() {
+    set({ cartaModal: false })
   },
   abrirCofre() {
     const { quest } = get()
@@ -316,35 +339,11 @@ export const useGameStore = create((set, get) => ({
   tomarTarjeta() {
     const { quest } = get()
     if (quest.cofreAbierto && !quest.tieneTarjeta) {
-      agregarToast(set, get, '💳 Tarjeta de acceso en mano.')
+      agregarToast(set, get, '💳 Tarjeta magnética en mano.')
       set((s) => ({ quest: { ...s.quest, tieneTarjeta: true } }))
       guardarQuest(get)
     }
   },
-  abrirCajon() {
-    const { quest } = get()
-    if (quest.cajonAbierto) {
-      agregarToast(
-        set,
-        get,
-        '📜 El telegrama sigue ahí: «El año de la Capitanía custodia la escalera. El norte primero.»',
-      )
-      return
-    }
-    if (!quest.tieneLlave) {
-      agregarToast(set, get, '🔒 El cajón está cerrado con llave.')
-      return
-    }
-    agregarToast(set, get, '🔓 La llave de bronce abre el cajón.')
-    agregarToast(
-      set,
-      get,
-      '📜 Un telegrama: «El año en que nació la Capitanía custodia la escalera. Los guardianes cardinales lo deletrean — el norte primero.»',
-    )
-    set((s) => ({ quest: { ...s.quest, cajonAbierto: true } }))
-    guardarQuest(get)
-  },
-
   usarSensor() {
     const { quest } = get()
     if (quest.puertaDesbloqueada) return

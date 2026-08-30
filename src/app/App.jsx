@@ -15,6 +15,7 @@ import { PanelEscena } from './PanelEscena.jsx'
 import { LibroModal } from './LibroModal.jsx'
 import { PiedraModal } from './PiedraModal.jsx'
 import { CandadoModal } from './CandadoModal.jsx'
+import { CartaModal } from './CartaModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
@@ -183,6 +184,7 @@ export function App() {
       <LibroModal />
       <PiedraModal />
       <CandadoModal />
+      <CartaModal />
     </div>
   )
 }

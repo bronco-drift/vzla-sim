@@ -1,11 +1,12 @@
-// Combination padlock modal: four dials, spin each with the arrows and
-// try the code. The digits are carved into the cardinal signs (1777).
+// Combination coffer modal: four dials, spin each and try the code.
+// The digits are carved into the four cardinal signs outside (1777).
+// Opening it ends the quest with the founders' letter.
 import { useState } from 'react'
 import { useGameStore } from '../store/gameStore.js'
 
 export function CandadoModal() {
-  const abierto = useGameStore((s) => s.candadoModal)
-  const cerrar = useGameStore((s) => s.cerrarCandadoModal)
+  const abierto = useGameStore((s) => s.combinacionModal)
+  const cerrar = useGameStore((s) => s.cerrarCombinacion)
   const probar = useGameStore((s) => s.probarCombinacion)
   const [digitos, setDigitos] = useState([0, 0, 0, 0])
   if (!abierto) return null
@@ -17,8 +18,8 @@ export function CandadoModal() {
   return (
     <div className="modal-grafico">
       <div className="modal-caja victoria">
-        <span className="victoria-emoji">🔒</span>
-        <h2>Candado de combinación</h2>
+        <span className="victoria-emoji">🗝️</span>
+        <h2>Cofre de combinación</h2>
         <div className="candado-diales">
           {digitos.map((d, i) => (
             <div key={i} className="candado-dial">

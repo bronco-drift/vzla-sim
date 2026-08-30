@@ -207,10 +207,11 @@ export function Cuarto() {
   const cofreAbierto = useGameStore((s) => s.quest.cofreAbierto)
   const tieneTarjeta = useGameStore((s) => s.quest.tieneTarjeta)
   const puertaDesbloqueada = useGameStore((s) => s.quest.puertaDesbloqueada)
+  const finJuego = useGameStore((s) => s.quest.finJuego)
   const hojaIzqRef = useRef()
   const hojaDerRef = useRef()
   const tapaCofreRef = useRef()
-  const cajonRef = useRef()
+  const tapaCofrecitoRef = useRef()
 
   // Door leaves ease toward open (±105°) or closed on their hinges;
   // the chest lid swings back the same way
@@ -227,9 +228,10 @@ export function Cuarto() {
       const abierto = useGameStore.getState().quest.cofreAbierto ? -1.9 : 0
       tapaCofreRef.current.rotation.x += (abierto - tapaCofreRef.current.rotation.x) * k
     }
-    if (cajonRef.current) {
-      const fuera = useGameStore.getState().quest.cajonAbierto ? 26 : 0
-      cajonRef.current.position.z += (fuera - cajonRef.current.position.z) * k
+    if (tapaCofrecitoRef.current) {
+      const abierto = useGameStore.getState().quest.finJuego ? -1.9 : 0
+      tapaCofrecitoRef.current.rotation.x +=
+        (abierto - tapaCofrecitoRef.current.rotation.x) * k
     }
   })
 
@@ -453,7 +455,7 @@ export function Cuarto() {
           <meshStandardMaterial color="#c9a227" flatShading />
         </mesh>
         {cofreAbierto && !tieneTarjeta && (
-          <mesh
+          <group
             position={[0, 42, 0]}
             rotation={[-Math.PI / 2.4, 0, 0.2]}
             onPointerDown={(e) => {
@@ -463,9 +465,16 @@ export function Cuarto() {
             onPointerOver={() => (document.body.style.cursor = 'pointer')}
             onPointerOut={() => (document.body.style.cursor = 'auto')}
           >
-            <boxGeometry args={[34, 22, 2]} />
-            <meshStandardMaterial color="#e8e2d0" flatShading />
-          </mesh>
+            <mesh>
+              <boxGeometry args={[34, 22, 2]} />
+              <meshStandardMaterial color="#e8e2d0" flatShading />
+            </mesh>
+            {/* magnetic stripe */}
+            <mesh position={[0, 6, 1.2]}>
+              <boxGeometry args={[34, 5, 0.4]} />
+              <meshStandardMaterial color="#1d1a14" />
+            </mesh>
+          </group>
         )}
       </group>
 
@@ -691,25 +700,14 @@ export function Cuarto() {
         </group>
       ))}
 
-      {/* -- Corner console table with a KEY-LOCKED drawer (SE corner,
-             by the stairs). The bronze key opens it; the drawer slides
-             out to reveal an old telegram. -- */}
-      <group
-        position={[590, -80, 648]}
-        rotation={[0, Math.PI, 0]}
-        onPointerDown={(e) => {
-          e.stopPropagation()
-          useGameStore.getState().abrirCajon()
-        }}
-        onPointerOver={() => (document.body.style.cursor = 'pointer')}
-        onPointerOut={() => (document.body.style.cursor = 'auto')}
-      >
-        {/* top */}
+      {/* -- Corner console table (SE, by the stairs) with the FINAL
+             coffer on top: a small combination chest holding the
+             founders' letter — the quest's ending (code 1777). -- */}
+      <group position={[590, -80, 648]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, 72, 0]} castShadow>
           <boxGeometry args={[92, 7, 50]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        {/* legs */}
         {[
           [-40, -19],
           [40, -19],
@@ -721,29 +719,45 @@ export function Cuarto() {
             <meshStandardMaterial color={MADERA} flatShading />
           </mesh>
         ))}
-        {/* drawer box + sliding drawer with golden pull and keyhole */}
         <mesh position={[0, 58, 0]}>
           <boxGeometry args={[84, 22, 44]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
         </mesh>
-        <group ref={cajonRef}>
-          <mesh position={[0, 58, 23]}>
-            <boxGeometry args={[70, 16, 4]} />
+
+        {/* the combination coffer (clickable) */}
+        <group
+          position={[0, 75.5, 0]}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().abrirCofrecito()
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        >
+          <mesh position={[0, 9, 0]} castShadow>
+            <boxGeometry args={[36, 18, 24]} />
             <meshStandardMaterial color={MADERA} flatShading />
           </mesh>
-          <mesh position={[0, 60, 25.5]}>
-            <boxGeometry args={[22, 3, 2]} />
-            <meshStandardMaterial color="#c9a227" flatShading />
-          </mesh>
-          <mesh position={[0, 54, 25.5]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[1.6, 1.6, 2, 8]} />
-            <meshStandardMaterial color="#8a8f96" flatShading />
-          </mesh>
-          {/* the telegram, visible when the drawer slides out */}
-          <mesh position={[0, 68, 8]} rotation={[-Math.PI / 2, 0, 0.15]}>
-            <planeGeometry args={[26, 16]} />
-            <meshStandardMaterial color="#e8e2d0" side={THREE.DoubleSide} />
-          </mesh>
+          <group ref={tapaCofrecitoRef} position={[0, 18, -12]}>
+            <mesh position={[0, 3.5, 12]} castShadow>
+              <boxGeometry args={[36, 7, 24]} />
+              <meshStandardMaterial color={MADERA_CLARA} flatShading />
+            </mesh>
+          </group>
+          {/* combination dials hint on the front */}
+          {[-9, -3, 3, 9].map((dx) => (
+            <mesh key={dx} position={[dx, 8, 12.4]} rotation={[Math.PI / 2, 0, 0]}>
+              <cylinderGeometry args={[2, 2, 1.4, 8]} />
+              <meshStandardMaterial color="#c9a227" flatShading />
+            </mesh>
+          ))}
+          {/* the letter inside, revealed when open */}
+          {finJuego && (
+            <mesh position={[0, 18.5, 0]} rotation={[-Math.PI / 2, 0, 0.1]}>
+              <planeGeometry args={[24, 15]} />
+              <meshStandardMaterial color="#e8e2d0" side={THREE.DoubleSide} />
+            </mesh>
+          )}
         </group>
       </group>
 

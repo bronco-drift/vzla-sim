@@ -269,7 +269,6 @@ export function DecoEscritorio() {
       <CuadroMovible id="bolivar" ancho={50} alto={67} textura={retrato} />
       <CuadroMovible id="sucre" ancho={45} alto={71} textura={retratoSucre} />
       <CuadroMovible id="miranda" ancho={50} alto={67} textura={retratoMiranda} />
-      <CuadroMovible id="mapa" ancho={90} alto={62} textura={mapaAntiguo} />
       {/* empty frame awaiting the next image (east wall) */}
       <CuadroMovible id="extra" ancho={50} alto={67} textura={null} />
 
