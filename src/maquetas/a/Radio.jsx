@@ -6,8 +6,8 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGameStore } from '../../store/gameStore.js'
 
-const POSICION = [-632, -80, 648]
-const ROTACION = 2.36 // diagonal: the radio faces the room's interior
+const POSICION = [-673, -80, 560]
+const ROTACION = Math.PI / 2 // flat against the west wall, facing the room
 const ALCANCE = 900 // distance at which the music fades to silence
 
 export function Radio() {
