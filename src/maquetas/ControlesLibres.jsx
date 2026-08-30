@@ -26,6 +26,9 @@ export function ControlesLibres() {
 
     const lienzo = gl.domElement
     const abajo = (e) => {
+      // left button (or touch) only: right/middle clicks open menus or
+      // autoscroll and their pointerup can vanish — a classic stuck drag
+      if (e.button !== 0) return
       drag.current = { x: e.clientX, y: e.clientY }
       try {
         lienzo.setPointerCapture(e.pointerId)
@@ -47,35 +50,52 @@ export function ControlesLibres() {
       drag.current = { x: e.clientX, y: e.clientY }
     }
     const arriba = () => (drag.current = null)
+    const menu = (e) => e.preventDefault() // no context menu mid-flight
     const tecla = (v) => (e) => {
+      if (e.repeat) return
       const k = e.key.toLowerCase()
       if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault()
       teclas.current[k] = v
     }
     const baja = tecla(true)
     const sube = tecla(false)
+    // Focus loss eats keyup events → a key stays "pressed" forever and
+    // the camera drifts on its own. Clear everything whenever focus goes.
+    const soltarTodo = () => {
+      teclas.current = {}
+      drag.current = null
+    }
 
     lienzo.addEventListener('pointerdown', abajo)
     lienzo.addEventListener('pointermove', mover)
     lienzo.addEventListener('pointerup', arriba)
     lienzo.addEventListener('pointercancel', arriba)
     lienzo.addEventListener('pointerleave', arriba)
+    lienzo.addEventListener('contextmenu', menu)
     window.addEventListener('keydown', baja)
     window.addEventListener('keyup', sube)
+    window.addEventListener('blur', soltarTodo)
+    document.addEventListener('visibilitychange', soltarTodo)
     return () => {
       lienzo.removeEventListener('pointerdown', abajo)
       lienzo.removeEventListener('pointermove', mover)
       lienzo.removeEventListener('pointerup', arriba)
       lienzo.removeEventListener('pointercancel', arriba)
       lienzo.removeEventListener('pointerleave', arriba)
+      lienzo.removeEventListener('contextmenu', menu)
       window.removeEventListener('keydown', baja)
       window.removeEventListener('keyup', sube)
+      window.removeEventListener('blur', soltarTodo)
+      document.removeEventListener('visibilitychange', soltarTodo)
     }
   }, [camera, gl])
 
   useFrame((_, delta) => {
     // dragging the reference human must not also spin the camera
     if (useGameStore.getState().arrastreHumano) drag.current = null
+    // belt and suspenders: an unfocused page can't receive keyups, so
+    // don't let held keys keep flying the camera
+    if (!document.hasFocus()) teclas.current = {}
     const t = teclas.current
     const { yaw, pitch } = rot.current
     camera.rotation.set(pitch, yaw, 0, 'YXZ')
