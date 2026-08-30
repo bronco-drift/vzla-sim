@@ -1,8 +1,106 @@
-// Desk & wall decoration: Bolívar portrait on the wall (a real historic
-// oil painting, public domain, from /textures/bolivar.webp), the "Nuevo
-// Ideal Nacional" brochure lying on the desk, and a pen cup.
-import { useEffect, useMemo, useState } from 'react'
+// Desk & wall decoration: the founders' gallery (real public-domain
+// oils — Bolívar, Sucre, Miranda — plus the antique map and one empty
+// frame), all DRAGGABLE across the walls like the lights; the "Nuevo
+// Ideal Nacional" brochure on the desk, and a pen cup.
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useThree } from '@react-three/fiber'
 import * as THREE from 'three'
+import { useGameStore } from '../../store/gameStore.js'
+import { golpear } from './Luces.jsx'
+
+// Default hanging spots (position + inward wall normal)
+const CUADROS_DEFAULT = {
+  sucre: { x: -175, y: 150, z: -81.4, nx: 0, nz: 1 },
+  bolivar: { x: 175, y: 150, z: -81.4, nx: 0, nz: 1 },
+  miranda: { x: -150, y: 150, z: 705.4, nx: 0, nz: -1 },
+  mapa: { x: -380, y: 150, z: 705.4, nx: 0, nz: -1 },
+  extra: { x: 698.4, y: 150, z: 500, nx: -1, nz: 0 },
+}
+
+/** A framed painting that can be dragged along/between walls. */
+function CuadroMovible({ id, ancho, alto, textura, hijos }) {
+  const pos = useGameStore((s) => s.escena.cuadros?.[id]) ?? CUADROS_DEFAULT[id]
+  const setEscena = useGameStore((s) => s.setEscena)
+  const setArrastreHumano = useGameStore((s) => s.setArrastreHumano)
+  const { camera, gl, controls } = useThree()
+  const [agarrado, setAgarrado] = useState(false)
+
+  useEffect(() => {
+    if (!agarrado) return
+    const raycaster = new THREE.Raycaster()
+    const ndc = new THREE.Vector2()
+    const mover = (e) => {
+      const r = gl.domElement.getBoundingClientRect()
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1)
+      raycaster.setFromCamera(ndc, camera)
+      const hit = golpear(raycaster, 'aplique') // walls only
+      if (!hit) return
+      const { escena } = useGameStore.getState()
+      setEscena({
+        cuadros: {
+          ...(escena.cuadros ?? {}),
+          [id]: {
+            x: hit.x + (hit.nx ?? 0) * 1.6,
+            y: Math.max(70, Math.min(340, hit.y)),
+            z: hit.z + (hit.nz ?? 0) * 1.6,
+            nx: hit.nx ?? 0,
+            nz: hit.nz ?? 0,
+          },
+        },
+      })
+    }
+    const soltar = () => {
+      setAgarrado(false)
+      setArrastreHumano(false)
+      if (controls) controls.enabled = true
+      document.body.style.cursor = 'auto'
+    }
+    window.addEventListener('pointermove', mover)
+    window.addEventListener('pointerup', soltar)
+    return () => {
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerup', soltar)
+    }
+  }, [agarrado]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const agarrar = (e) => {
+    if (e.button !== 0) return
+    e.stopPropagation()
+    setAgarrado(true)
+    setArrastreHumano(true)
+    if (controls) controls.enabled = false
+    document.body.style.cursor = 'grabbing'
+  }
+
+  const giro = Math.atan2(pos.nx ?? 0, pos.nz ?? 1)
+  return (
+    <group
+      position={[pos.x, pos.y, pos.z]}
+      rotation={[0, giro, 0]}
+      onPointerDown={agarrar}
+      onPointerOver={() => !agarrado && (document.body.style.cursor = 'grab')}
+      onPointerOut={() => !agarrado && (document.body.style.cursor = 'auto')}
+    >
+      <mesh position={[0, 0, -0.3]}>
+        <boxGeometry args={[ancho + 8, alto + 8, 2.4]} />
+        <meshStandardMaterial color="#c9a227" flatShading />
+      </mesh>
+      {textura ? (
+        <mesh position={[0, 0, 1]}>
+          <planeGeometry args={[ancho, alto]} />
+          <meshBasicMaterial map={textura} />
+        </mesh>
+      ) : (
+        (hijos ?? (
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[ancho, alto]} />
+            <meshStandardMaterial color="#3a2c26" />
+          </mesh>
+        ))
+      )}
+    </group>
+  )
+}
 
 function texturaDesdeCanvas(dibujar, ancho, alto) {
   const c = document.createElement('canvas')
@@ -163,71 +261,14 @@ export function DecoEscritorio() {
         <meshBasicMaterial map={rosa} transparent />
       </mesh>
 
-      {/* Bolívar portrait, doubled in size, centered in the pier between
-          the central and right windows. Canvas keeps the 3:4 aspect. */}
-      <group position={[175, 150, -81.4]}>
-        {/* golden frame */}
-        <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[58, 75, 2.4]} />
-          <meshStandardMaterial color="#c9a227" flatShading />
-        </mesh>
-        {retrato && (
-          <mesh position={[0, 0, 1]}>
-            <planeGeometry args={[50, 67]} />
-            <meshBasicMaterial map={retrato} />
-          </mesh>
-        )}
-      </group>
-
-      {/* Sucre portrait (Grand Marshal of Ayacucho) in the LEFT pier.
-          Canvas 45x71 matches the painting's taller aspect. */}
-      <group position={[-175, 150, -81.4]}>
-        <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[53, 79, 2.4]} />
-          <meshStandardMaterial color="#c9a227" flatShading />
-        </mesh>
-        {retratoSucre ? (
-          <mesh position={[0, 0, 1]}>
-            <planeGeometry args={[45, 71]} />
-            <meshBasicMaterial map={retratoSucre} />
-          </mesh>
-        ) : (
-          <mesh position={[0, 0, 1]}>
-            <planeGeometry args={[45, 71]} />
-            <meshStandardMaterial color="#3a2c26" />
-          </mesh>
-        )}
-      </group>
-
-      {/* SOUTH wall gallery (big bare stretch west of the staircase):
-          Miranda's portrait + the antique map, both facing the room */}
-      <group position={[-150, 150, 705.4]} rotation={[0, Math.PI, 0]}>
-        <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[58, 75, 2.4]} />
-          <meshStandardMaterial color="#c9a227" flatShading />
-        </mesh>
-        {retratoMiranda ? (
-          <mesh position={[0, 0, 1]}>
-            <planeGeometry args={[50, 67]} />
-            <meshBasicMaterial map={retratoMiranda} />
-          </mesh>
-        ) : (
-          <mesh position={[0, 0, 1]}>
-            <planeGeometry args={[50, 67]} />
-            <meshStandardMaterial color="#3a2c26" />
-          </mesh>
-        )}
-      </group>
-      <group position={[-380, 150, 705.4]} rotation={[0, Math.PI, 0]}>
-        <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[98, 70, 2.4]} />
-          <meshStandardMaterial color="#c9a227" flatShading />
-        </mesh>
-        <mesh position={[0, 0, 1]}>
-          <planeGeometry args={[90, 62]} />
-          <meshBasicMaterial map={mapaAntiguo} />
-        </mesh>
-      </group>
+      {/* The founders' gallery — every frame is draggable across walls:
+          grab with left click/tap, release to hang. Position persists. */}
+      <CuadroMovible id="bolivar" ancho={50} alto={67} textura={retrato} />
+      <CuadroMovible id="sucre" ancho={45} alto={71} textura={retratoSucre} />
+      <CuadroMovible id="miranda" ancho={50} alto={67} textura={retratoMiranda} />
+      <CuadroMovible id="mapa" ancho={90} alto={62} textura={mapaAntiguo} />
+      {/* empty frame awaiting the next image (east wall) */}
+      <CuadroMovible id="extra" ancho={50} alto={67} textura={null} />
 
       {/* Brochure lying on the desk, slightly rotated */}
       <mesh position={[62, 0.08, 20]} rotation={[-Math.PI / 2, 0, -0.35]}>

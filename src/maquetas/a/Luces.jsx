@@ -17,8 +17,9 @@ const PAREDES = [
   { eje: 'z', valor: 707, xMin: -700, xMax: 700 },
 ]
 
-/** Intersect a ray with floor + walls; return the closest valid hit. */
-function golpear(raycaster, tipo) {
+/** Intersect a ray with floor + walls; return the closest valid hit.
+    Exported: the draggable wall paintings reuse it too. */
+export function golpear(raycaster, tipo) {
   const hits = []
   const punto = new THREE.Vector3()
 
