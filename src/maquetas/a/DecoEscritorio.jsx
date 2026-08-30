@@ -18,6 +18,7 @@ export function DecoEscritorio() {
   // Real portraits (public-domain oils), loaded async (show once ready)
   const [retrato, setRetrato] = useState(null)
   const [retratoSucre, setRetratoSucre] = useState(null)
+  const [retratoMiranda, setRetratoMiranda] = useState(null)
   useEffect(() => {
     const loader = new THREE.TextureLoader()
     loader.load('/textures/bolivar.webp', (tex) => {
@@ -27,6 +28,10 @@ export function DecoEscritorio() {
     loader.load('/textures/sucre.webp', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace
       setRetratoSucre(tex)
+    })
+    loader.load('/textures/miranda.webp', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      setRetratoMiranda(tex)
     })
   }, [])
 
@@ -194,9 +199,26 @@ export function DecoEscritorio() {
         )}
       </group>
 
-      {/* Antique map of Venezuela on the SOUTH wall (the big bare
-          stretch west of the staircase), facing into the room */}
-      <group position={[-250, 150, 705.4]} rotation={[0, Math.PI, 0]}>
+      {/* SOUTH wall gallery (big bare stretch west of the staircase):
+          Miranda's portrait + the antique map, both facing the room */}
+      <group position={[-150, 150, 705.4]} rotation={[0, Math.PI, 0]}>
+        <mesh position={[0, 0, -0.3]}>
+          <boxGeometry args={[58, 75, 2.4]} />
+          <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        {retratoMiranda ? (
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[50, 67]} />
+            <meshBasicMaterial map={retratoMiranda} />
+          </mesh>
+        ) : (
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[50, 67]} />
+            <meshStandardMaterial color="#3a2c26" />
+          </mesh>
+        )}
+      </group>
+      <group position={[-380, 150, 705.4]} rotation={[0, Math.PI, 0]}>
         <mesh position={[0, 0, -0.3]}>
           <boxGeometry args={[98, 70, 2.4]} />
           <meshStandardMaterial color="#c9a227" flatShading />
