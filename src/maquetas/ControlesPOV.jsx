@@ -62,6 +62,7 @@ export function ControlesPOV() {
   const teclas = useRef({})
   const drag = useRef(null) // look drag: {id, x, y}
   const mando = useRef(null) // touch walk-stick: {id, x0, y0, dx, dy}
+  const mandoMirar = useRef(null) // touch look-stick: {id, x0, y0, dx, dy}
 
   useEffect(() => {
     // spawn at the blue figure's position, looking north
@@ -84,6 +85,17 @@ export function ControlesPOV() {
         mando.current = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0 }
         return
       }
+      // Touch near the bottom-right corner = LOOK STICK: thumb tilt sets
+      // turn speed, so the finger never travels toward screen edges
+      // (edge swipes are iOS back/forward gestures that steal the drag).
+      if (
+        e.pointerType === 'touch' &&
+        e.clientX - r.left > r.width - 200 &&
+        e.clientY - r.top > r.height - 320
+      ) {
+        mandoMirar.current = { id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: 0, dy: 0 }
+        return
+      }
       drag.current = { id: e.pointerId, x: e.clientX, y: e.clientY }
       try {
         lienzo.setPointerCapture(e.pointerId)
@@ -95,6 +107,11 @@ export function ControlesPOV() {
       if (mando.current && e.pointerId === mando.current.id) {
         mando.current.dx = Math.max(-60, Math.min(60, e.clientX - mando.current.x0))
         mando.current.dy = Math.max(-60, Math.min(60, e.clientY - mando.current.y0))
+        return
+      }
+      if (mandoMirar.current && e.pointerId === mandoMirar.current.id) {
+        mandoMirar.current.dx = Math.max(-55, Math.min(55, e.clientX - mandoMirar.current.x0))
+        mandoMirar.current.dy = Math.max(-55, Math.min(55, e.clientY - mandoMirar.current.y0))
         return
       }
       if (!drag.current || e.pointerId !== drag.current.id) return
@@ -109,6 +126,7 @@ export function ControlesPOV() {
     }
     const arriba = (e) => {
       if (mando.current && e.pointerId === mando.current.id) mando.current = null
+      if (mandoMirar.current && e.pointerId === mandoMirar.current.id) mandoMirar.current = null
       if (drag.current && e.pointerId === drag.current.id) drag.current = null
     }
     const menu = (e) => e.preventDefault()
@@ -134,6 +152,7 @@ export function ControlesPOV() {
       teclas.current = {}
       drag.current = null
       mando.current = null
+      mandoMirar.current = null
     }
 
     lienzo.addEventListener('pointerdown', abajo)
@@ -168,6 +187,13 @@ export function ControlesPOV() {
     if (useGameStore.getState().arrastreHumano) drag.current = null
     if (!document.hasFocus()) teclas.current = {}
     const t = teclas.current
+    // look stick: thumb tilt = angular velocity (shooter-style)
+    const jm = mandoMirar.current
+    if (jm) {
+      rot.current.yaw -= (jm.dx / 55) * 2.4 * delta
+      rot.current.pitch -= (jm.dy / 55) * 1.8 * delta
+      rot.current.pitch = Math.max(-1.4, Math.min(1.4, rot.current.pitch))
+    }
     const { yaw, pitch } = rot.current
     camera.rotation.set(pitch, yaw, 0, 'YXZ')
 

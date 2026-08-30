@@ -614,6 +614,12 @@ body {
   pointer-events: none;
 }
 
+/* right look-stick guide, mirrored */
+.joystick-guia.derecha {
+  left: auto;
+  right: 26px;
+}
+
 /* On phones the floating buttons span most of the bottom edge: lift
    every overlay message clear of them, stacked without collisions */
 @media (max-width: 640px) {

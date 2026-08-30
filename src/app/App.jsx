@@ -145,11 +145,12 @@ export function App() {
             {camaraPov && (
               <div className="hint-camara">
                 {esTactil
-                  ? 'Pulgar izquierdo: caminar · derecho: mirar · tocá puertas, cofres y el mapa'
+                  ? 'Pad izquierdo ✥ camina · pad derecho ⟳ gira (mantené e incliná) · tocá puertas, cofres y el mapa'
                   : 'Arrastrá para mirar · WASD o flechas caminar · SHIFT correr · E abre la puerta (cerca) · E o click en el mapa: gobernar'}
               </div>
             )}
             {camaraPov && esTactil && <div className="joystick-guia">✥</div>}
+            {camaraPov && esTactil && <div className="joystick-guia derecha">⟳</div>}
             <PanelEscena />
           </>
         )}
