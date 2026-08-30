@@ -318,10 +318,24 @@ export function Cuarto() {
           <boxGeometry args={[194, 14, 787]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
         </mesh>
-        {/* south strip */}
-        <mesh position={[0, 260, 604]} castShadow>
-          <boxGeometry args={[1000, 14, 194]} />
+        {/* south strip, in 2 pieces around the STAIR OPENING (x 220..500,
+            z 592..701): the hole you rise through when climbing up */}
+        <mesh position={[-140, 260, 604]} castShadow>
+          <boxGeometry args={[720, 14, 194]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        <mesh position={[360, 260, 549.5]} castShadow>
+          <boxGeometry args={[280, 14, 85]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        {/* short railings guarding the stair opening */}
+        <mesh position={[215, 302, 649.5]}>
+          <boxGeometry args={[10, 70, 115]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[360, 302, 597]}>
+          <boxGeometry args={[280, 70, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
         {/* railings on the inner edges */}
         <mesh position={[-495, 302, 296.5]}>
