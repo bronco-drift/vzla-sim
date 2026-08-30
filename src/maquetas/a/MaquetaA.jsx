@@ -7,12 +7,14 @@ import { Mundo } from './Mundo.jsx'
 import { Sol } from './Sol.jsx'
 import { ResetVista } from '../ResetVista.jsx'
 import { ControlesLibres } from '../ControlesLibres.jsx'
+import { ControlesPOV } from '../ControlesPOV.jsx'
 import { useGameStore } from '../../store/gameStore.js'
 
 export function MaquetaA() {
   const seleccionarLugar = useGameStore((s) => s.seleccionarLugar)
   const mundoGlobal = useGameStore((s) => s.mundoGlobal)
   const camaraLibre = useGameStore((s) => s.camaraLibre)
+  const camaraPov = useGameStore((s) => s.camaraPov)
 
   // shadows="soft" = PCFSoftShadowMap: smooth shadow edges
   return (
@@ -32,8 +34,10 @@ export function MaquetaA() {
       <Mundo />
       <ResetVista posicion={[0, 34, 26]} target={[0, 0, -4]} />
 
-      {/* Map camera by default; fly-around camera when toggled */}
-      {camaraLibre ? (
+      {/* Map camera by default; fly or first-person walk when toggled */}
+      {camaraPov ? (
+        <ControlesPOV />
+      ) : camaraLibre ? (
         <ControlesLibres />
       ) : (
         <MapControls

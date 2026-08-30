@@ -11,11 +11,18 @@ const PISO_Y = -80
 const PLANO_PISO = new THREE.Plane(new THREE.Vector3(0, 1, 0), -PISO_Y)
 const PIEL = '#c9a077'
 const PELO = '#221812'
-const CAMISA = '#7e2a3a' // vinotinto
 const JEAN = '#31518c'
 
-export function Humano() {
-  const humano = useGameStore((s) => s.escena.humano) ?? { x: -320, z: 180 }
+// clave: which escena field stores this figure's position.
+// The blue one ('humano2') is the POV avatar and hides while possessed.
+export function Humano({
+  clave = 'humano',
+  camisa = '#7e2a3a', // vinotinto
+  defaultPos = { x: -320, z: 180 },
+}) {
+  const humano = useGameStore((s) => s.escena[clave]) ?? defaultPos
+  const esAvatarPov = clave === 'humano2'
+  const enPov = useGameStore((s) => s.camaraPov)
   const setEscena = useGameStore((s) => s.setEscena)
   const setArrastreHumano = useGameStore((s) => s.setArrastreHumano)
   const { camera, gl, controls } = useThree()
@@ -43,7 +50,7 @@ export function Humano() {
       setArrastreHumano(false)
       if (controls) controls.enabled = true
       document.body.style.cursor = 'auto'
-      setEscena({ humano: { ...pos.current } }) // persist the final spot
+      setEscena({ [clave]: { ...pos.current } }) // persist the final spot
     }
     window.addEventListener('pointermove', mover)
     window.addEventListener('pointerup', soltar)
@@ -60,6 +67,9 @@ export function Humano() {
     if (controls) controls.enabled = false
     document.body.style.cursor = 'grabbing'
   }
+
+  // The blue avatar disappears while you're inside its eyes (classic FPS)
+  if (esAvatarPov && enPov) return null
 
   return (
     <group
@@ -81,16 +91,16 @@ export function Humano() {
       {/* torso */}
       <mesh position={[0, 99, 0]} castShadow>
         <boxGeometry args={[44, 66, 24]} />
-        <meshStandardMaterial color={CAMISA} flatShading />
+        <meshStandardMaterial color={camisa} flatShading />
       </mesh>
       {/* arms */}
       <mesh position={[-31, 99, 0]} castShadow>
         <boxGeometry args={[16, 62, 22]} />
-        <meshStandardMaterial color={CAMISA} flatShading />
+        <meshStandardMaterial color={camisa} flatShading />
       </mesh>
       <mesh position={[31, 99, 0]} castShadow>
         <boxGeometry args={[16, 62, 22]} />
-        <meshStandardMaterial color={CAMISA} flatShading />
+        <meshStandardMaterial color={camisa} flatShading />
       </mesh>
       <mesh position={[-31, 62, 0]}>
         <boxGeometry args={[16, 14, 22]} />

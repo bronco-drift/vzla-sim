@@ -24,6 +24,8 @@ export function App() {
   const pedirResetCamara = useGameStore((s) => s.pedirResetCamara)
   const camaraLibre = useGameStore((s) => s.camaraLibre)
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
+  const camaraPov = useGameStore((s) => s.camaraPov)
+  const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
@@ -62,18 +64,33 @@ export function App() {
               🧭
             </button>
             {idMaqueta === 'a' && (
-              <button
-                className={camaraLibre ? 'btn-flotante cuarto activo' : 'btn-flotante cuarto'}
-                onClick={toggleCamaraLibre}
-                title="Cámara libre: volar por la habitación"
-              >
-                🎥
-              </button>
+              <>
+                <button
+                  className={camaraLibre ? 'btn-flotante cuarto activo' : 'btn-flotante cuarto'}
+                  onClick={toggleCamaraLibre}
+                  title="Cámara libre: volar por la habitación"
+                >
+                  🎥
+                </button>
+                <button
+                  className={camaraPov ? 'btn-flotante quinto activo' : 'btn-flotante quinto'}
+                  onClick={toggleCamaraPov}
+                  title="Caminar en primera persona (muñeco azul)"
+                >
+                  🚶
+                </button>
+              </>
             )}
             {camaraLibre && (
               <div className="hint-camara">
                 Arrastrá para mirar · WASD o flechas para volar · ESPACIO sube · C baja ·
                 SHIFT rápido
+              </div>
+            )}
+            {camaraPov && (
+              <div className="hint-camara">
+                Arrastrá para mirar · WASD o flechas para caminar · SHIFT correr · click en
+                la puerta para abrir
               </div>
             )}
             <PanelEscena />

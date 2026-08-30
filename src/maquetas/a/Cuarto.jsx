@@ -1,8 +1,13 @@
-// The rest of the presidential office: double door, extra windows,
+// The rest of the presidential office: double door (click to open, leaves
+// swing on hinges over a REAL opening in the west wall), extra windows,
 // bookshelf, sofa, rug, plants and a wall clock. Everything is low-poly
 // boxes in the scene's palette. The extra windows are REAL wall holes
 // (cut in Escritorio.jsx) — this component is just frame + faint glass;
 // the sky cylinder behind provides the actual day/night view.
+import { useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
+import { useGameStore } from '../../store/gameStore.js'
+
 const BLANCO = '#f0ebe0'
 const MADERA = '#5d3d22'
 const MADERA_CLARA = '#7a5230'
@@ -80,10 +85,38 @@ const LIBROS = [
 ]
 
 export function Cuarto() {
+  const puertaAbierta = useGameStore((s) => s.puertaAbierta)
+  const togglePuerta = useGameStore((s) => s.togglePuerta)
+  const hojaIzqRef = useRef()
+  const hojaDerRef = useRef()
+
+  // Door leaves ease toward open (±105°) or closed on their hinges
+  useFrame((_, delta) => {
+    const objetivo = puertaAbierta ? 1.83 : 0
+    const k = Math.min(1, delta * 4)
+    if (hojaIzqRef.current) {
+      hojaIzqRef.current.rotation.y += (-objetivo - hojaIzqRef.current.rotation.y) * k
+    }
+    if (hojaDerRef.current) {
+      hojaDerRef.current.rotation.y += (objetivo - hojaDerRef.current.rotation.y) * k
+    }
+  })
+
   return (
     <group>
-      {/* -- Double door, centered on the left wall (60% larger: 2.85m tall) -- */}
-      <group position={[-696, 62, 310]} rotation={[0, Math.PI / 2, 0]} scale={1.6}>
+      {/* -- Double door over the REAL opening, centered on the west wall.
+             Click toggles it; each leaf swings on its outer-edge hinge -- */}
+      <group
+        position={[-696, 62, 310]}
+        rotation={[0, Math.PI / 2, 0]}
+        scale={1.6}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          togglePuerta()
+        }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      >
         {/* frame */}
         <mesh position={[0, 89, -1]}>
           <boxGeometry args={[122, 8, 8]} />
@@ -97,11 +130,16 @@ export function Cuarto() {
           <boxGeometry args={[8, 178, 8]} />
           <meshStandardMaterial color={BLANCO} flatShading />
         </mesh>
-        <group position={[-27, 0, 0]}>
-          <HojaPuerta />
+        {/* hinge groups at the outer edges; leaves offset inward */}
+        <group ref={hojaIzqRef} position={[-54, 0, 0]}>
+          <group position={[27, 0, 0]}>
+            <HojaPuerta />
+          </group>
         </group>
-        <group position={[27, 0, 0]}>
-          <HojaPuerta espejo />
+        <group ref={hojaDerRef} position={[54, 0, 0]}>
+          <group position={[-27, 0, 0]}>
+            <HojaPuerta espejo />
+          </group>
         </group>
       </group>
 

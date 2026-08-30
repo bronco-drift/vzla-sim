@@ -170,13 +170,26 @@ export function Escritorio() {
           orbiting camera never gets blocked (dollhouse effect: invisible
           from outside thanks to backface culling). */}
       <group>
-        {/* left wall */}
-        <mesh position={[-700, 90, 307]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[800, 340]} />
+        {/* left (west) wall, in 3 pieces around the REAL door opening
+            (z 224..396, y -80..205) so the open door leads outside */}
+        <mesh position={[-700, 90, 69]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[310, 340]} />
           <meshStandardMaterial color="#e2dccc" />
         </mesh>
-        <mesh position={[-699.5, -74, 307]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[800, 12]} />
+        <mesh position={[-700, 90, 551.5]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[311, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[-700, 232.5, 310]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[172, 55]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[-699.5, -74, 69]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[310, 12]} />
+          <meshStandardMaterial color="#3a332c" />
+        </mesh>
+        <mesh position={[-699.5, -74, 551.5]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[311, 12]} />
           <meshStandardMaterial color="#3a332c" />
         </mesh>
         {/* right (east) wall, in 4 pieces around its real window hole
@@ -225,8 +238,9 @@ export function Escritorio() {
       {/* Rest of the office: door, windows, furniture */}
       <Cuarto />
 
-      {/* Scale-reference human (draggable) */}
+      {/* Scale-reference humans: vinotinto + the blue POV avatar */}
       <Humano />
+      <Humano clave="humano2" camisa="#2b4faa" defaultPos={{ x: -500, z: 310 }} />
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />

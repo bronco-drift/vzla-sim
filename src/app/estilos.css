@@ -502,6 +502,10 @@ body {
   left: max(182px, calc(env(safe-area-inset-left) + 168px));
 }
 
+.btn-flotante.quinto {
+  left: max(238px, calc(env(safe-area-inset-left) + 224px));
+}
+
 /* fly-mode control hints, floating above the buttons */
 .hint-camara {
   position: absolute;

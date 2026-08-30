@@ -57,6 +57,8 @@ export const useGameStore = create((set, get) => ({
   panelEscena: false,     // scene-editing panel open?
   resetCamara: 0,         // bump to ask the active maqueta to re-center its camera
   camaraLibre: false,     // fly/levitate camera mode (maqueta A)
+  camaraPov: false,       // first-person mode: walk as the blue figure
+  puertaAbierta: false,   // office double door open?
   arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
 
   nuevaPartida(nivel) {
@@ -145,8 +147,22 @@ export const useGameStore = create((set, get) => ({
     // doesn't resume orbiting around a stale target from mid-air
     set((s) => ({
       camaraLibre: activar,
+      camaraPov: false,
       resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
     }))
+  },
+
+  toggleCamaraPov() {
+    const activar = !get().camaraPov
+    set((s) => ({
+      camaraPov: activar,
+      camaraLibre: false,
+      resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
+    }))
+  },
+
+  togglePuerta() {
+    set((s) => ({ puertaAbierta: !s.puertaAbierta }))
   },
 
   /** Merge scene tuning (lamp/sun/room light) and persist it. */
