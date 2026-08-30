@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useGameStore, hayPartidaGuardada } from '../store/gameStore.js'
 import { NIVELES } from '../core/state.js'
-
+import { MAQUETAS, maquetaActiva } from '../maquetas/index.js'
 
 export function Bienvenida() {
   const nuevaPartida = useGameStore((s) => s.nuevaPartida)
@@ -42,6 +42,18 @@ export function Bienvenida() {
           ))}
         </div>
       )}
+
+      <div className="selector-maqueta">
+        {Object.entries(MAQUETAS).map(([id, m]) => (
+          <a
+            key={id}
+            className={maquetaActiva() === id ? 'chip-maqueta activo' : 'chip-maqueta'}
+            href={`/?maqueta=${id}`}
+          >
+            {m.nombre}
+          </a>
+        ))}
+      </div>
 
       <a className="enlace-editor" href="/?editor">
         Editor de mundo

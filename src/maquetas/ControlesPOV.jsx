@@ -5,7 +5,7 @@
 // where you walked to.
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { useGameStore } from '../store/gameStore.js'
+import { useGameStore, POV_INICIO } from '../store/gameStore.js'
 
 const ALTURA_OJOS = 158 // eyes above the feet
 const PISO = -80
@@ -65,11 +65,11 @@ export function ControlesPOV() {
   const mandoMirar = useRef(null) // touch look-stick: {id, x0, y0, dx, dy}
 
   useEffect(() => {
-    // spawn at the blue figure's position, looking north
+    // spawn at the blue figure's position, facing the opening-shot yaw
     const { escena } = useGameStore.getState()
-    const inicio = escena.humano2 ?? { x: -200, z: 155 }
+    const inicio = escena.humano2 ?? { x: POV_INICIO.x, z: POV_INICIO.z }
     camera.position.set(inicio.x, PISO + ALTURA_OJOS, inicio.z)
-    rot.current.yaw = 0
+    rot.current.yaw = POV_INICIO.yaw
     rot.current.pitch = 0
     window.__camaraLibreDebug = camera
     window.__rotDebug = rot.current // dev aid: steer the look from console

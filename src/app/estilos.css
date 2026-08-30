@@ -581,22 +581,6 @@ body {
   }
 }
 
-/* live zoom readout (map mode), top-right under the HUD */
-.info-zoom {
-  position: absolute;
-  top: 12px;
-  right: max(14px, env(safe-area-inset-right));
-  padding: 6px 12px;
-  background: rgba(12, 12, 16, 0.75);
-  border: 1px solid var(--borde);
-  border-radius: 10px;
-  font-size: 13px;
-  font-variant-numeric: tabular-nums;
-  color: var(--texto-suave);
-  z-index: 15;
-  pointer-events: none;
-}
-
 /* combination padlock dials */
 .candado-diales {
   display: flex;
@@ -710,66 +694,36 @@ body {
   }
 }
 
-/* public-works progress: chip with mini bar (top-left under HUD),
-   expanding to the full works list */
-.obras-chip {
-  position: absolute;
-  top: 12px;
-  left: max(14px, env(safe-area-inset-left));
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 8px 12px;
-  background: rgba(12, 12, 16, 0.8);
-  border: 1px solid var(--borde);
-  border-radius: 10px;
-  color: var(--texto);
-  font-size: 13px;
-  cursor: pointer;
-  z-index: 15;
-  text-align: left;
+/* "Obras" HUD indicator: mini progress bar under the value, and the
+   full works list opens as a modal (same language as the charts) */
+.indicador.obras .ind-valor {
+  color: var(--acento);
 }
 
-.obras-chip:hover {
-  border-color: var(--acento);
-}
-
-.obras-barra {
+.ind-barra {
   display: block;
-  width: 130px;
-  height: 5px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 3px;
+  width: 100%;
+  min-width: 54px;
+  height: 3px;
+  margin-top: 3px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 2px;
   overflow: hidden;
 }
 
-.obras-relleno {
+.ind-relleno {
   display: block;
   height: 100%;
   background: var(--acento);
-  border-radius: 3px;
+  border-radius: 2px;
   transition: width 0.4s ease;
 }
 
-.obras-panel {
-  position: absolute;
-  top: 66px;
-  left: max(14px, env(safe-area-inset-left));
-  width: min(400px, 92vw);
-  max-height: min(60vh, 480px);
+.caja-obras {
+  width: min(460px, 92vw);
   display: flex;
   flex-direction: column;
-  padding: 12px 14px;
-  background: rgba(12, 12, 16, 0.94);
-  border: 1px solid var(--acento);
-  border-radius: 14px;
-  z-index: 16;
-}
-
-.obras-panel h3 {
-  font-size: 13px;
-  color: var(--acento);
-  margin-bottom: 8px;
+  max-height: min(72vh, 560px);
 }
 
 .obras-lista {

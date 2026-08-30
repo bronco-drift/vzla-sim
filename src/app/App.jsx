@@ -19,7 +19,6 @@ import { CartaModal } from './CartaModal.jsx'
 import { MujerModal } from './MujerModal.jsx'
 import { TumbaModal } from './TumbaModal.jsx'
 import { ConsejeroModal } from './ConsejeroModal.jsx'
-import { PanelObras } from './PanelObras.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
@@ -59,7 +58,6 @@ export function App() {
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
   const camaraPov = useGameStore((s) => s.camaraPov)
   const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
-  const infoZoom = useGameStore((s) => s.infoZoom)
   const menuLuces = useGameStore((s) => s.menuLuces)
   const toggleMenuLuces = useGameStore((s) => s.toggleMenuLuces)
   const elegirLuz = useGameStore((s) => s.elegirLuz)
@@ -177,14 +175,6 @@ export function App() {
           </>
         )}
       </div>
-      {/* live zoom readout while in map mode (framing-tuning aid) */}
-      {idMaqueta === 'a' && !camaraPov && !camaraLibre && infoZoom && (
-        <div className="info-zoom">
-          🔍 dist {infoZoom.dist} · alt {infoZoom.y}
-        </div>
-      )}
-      {/* public-works progress bar + full list (map mode) */}
-      {idMaqueta === 'a' && !camaraPov && !camaraLibre && <PanelObras />}
       {/* quest inventory chips */}
       {idMaqueta !== 'c' && (
         <div className="inventario" onClick={() => setInventarioAbierto((v) => !v)}>

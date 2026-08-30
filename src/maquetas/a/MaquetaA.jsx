@@ -11,27 +11,6 @@ import { ControlesLibres } from '../ControlesLibres.jsx'
 import { ControlesPOV } from '../ControlesPOV.jsx'
 import { useGameStore } from '../../store/gameStore.js'
 
-/** Live camera readout for tuning the default map framing: distance to
-    the controls' target + camera height, published (throttled) so the
-    HUD can show it while in map mode. */
-function InfoZoom() {
-  const { camera, controls } = useThree()
-  const ultimo = { t: 0 }
-  useFrame(({ clock }) => {
-    if (clock.elapsedTime - ultimo.t < 0.25) return
-    ultimo.t = clock.elapsedTime
-    const target = controls?.target
-    if (!target) return
-    const dist = Math.round(camera.position.distanceTo(target))
-    const y = Math.round(camera.position.y)
-    const { infoZoom, setInfoZoom } = useGameStore.getState()
-    if (!infoZoom || infoZoom.dist !== dist || infoZoom.y !== y) {
-      setInfoZoom({ dist, y })
-    }
-  })
-  return null
-}
-
 // Default map framing chosen by Marcel: dist 66 / alt 49 to the target.
 // The short intro dolly starts a bit farther (dist 89 / alt 67).
 const OBJETIVO_MAPA = [0, 0, -4]
@@ -122,7 +101,6 @@ export function MaquetaA() {
             minDistance={8}
             maxDistance={mundoGlobal ? 500 : 320}
           />
-          <InfoZoom />
           <IntroMapa />
         </>
       )}

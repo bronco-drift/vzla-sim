@@ -40,6 +40,10 @@ const LUCES_DEFAULT = [
   { tipo: 'aplique', superficie: 'pared', x: 579, y: 206, z: 707, nx: 0, nz: -1 },
 ]
 
+// Where a NEW game drops you: first-person, facing the advisor by the
+// north windows (the opening shot of the adventure).
+export const POV_INICIO = { x: -480, z: 285, yaw: -0.14 }
+
 const ESCENA_DEFAULT = {
   solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
   lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1, modo: 'off' }, // modo: auto | on | off
@@ -47,7 +51,7 @@ const ESCENA_DEFAULT = {
   lucesColocadas: { encendidas: true, intensidad: 1 }, // player-placed lights (0..1.5 multiplier)
   luces: LUCES_DEFAULT,
   humano: { x: -603, z: -75 },
-  humano2: { x: -200, z: 155 },
+  humano2: { x: POV_INICIO.x, z: POV_INICIO.z },
 }
 
 function cargarEscena() {
@@ -126,11 +130,12 @@ export const useGameStore = create((set, get) => ({
   menuLuces: false,       // light-placing menu open?
   colocandoLuz: null,     // 'pie' | 'aplique' | 'antorcha' while placing
   piedraActiva: null,     // cardinal stone being read (norte/sur/este/oeste)
-  infoZoom: null,         // live map-camera readout {dist, y} for tuning
 
   nuevaPartida(nivel) {
-    // fresh game -> fresh quest
+    // fresh game -> fresh quest, opening in first person in front of the
+    // advisor, who greets you with the goal (the tutorial IS the NPC)
     localStorage.removeItem(CLAVE_QUEST)
+    get().setEscena({ humano2: { x: POV_INICIO.x, z: POV_INICIO.z } })
     set({
       pantalla: 'partida',
       game: createInitialState(nivel),
@@ -138,9 +143,11 @@ export const useGameStore = create((set, get) => ({
       menuPausa: false,
       quest: QUEST_DEFAULT,
       puertaAbierta: false,
-      camaraPov: false,
+      camaraPov: true,
       camaraLibre: false,
+      consejeroModal: true,
     })
+    guardarQuest(get)
     iniciarLoop(set, get)
   },
 
@@ -217,10 +224,6 @@ export const useGameStore = create((set, get) => ({
 
   setArrastreHumano(v) {
     set({ arrastreHumano: v })
-  },
-
-  setInfoZoom(v) {
-    set({ infoZoom: v })
   },
 
   verPiedra(clave) {
@@ -305,17 +308,18 @@ export const useGameStore = create((set, get) => ({
   },
 
   // ---- Adventure quest actions ----
-  // The golden book is STUCK until every visible public work is at full
-  // effect — the economy game is the key to the adventure.
+  // The golden book is STUCK until HALF the visible public works are at
+  // full effect — the economy game is the key to the adventure.
   abrirLibro() {
     const { game, quest } = get()
     if (!quest.tieneLlave && game) {
       const obras = progresoObras(game, LUGARES)
-      if (!obras.completas) {
+      const meta = Math.ceil(obras.total / 2)
+      if (obras.hechas < meta) {
         agregarToast(
           set,
           get,
-          `📚 El libro no cede. El país aún tiene obras pendientes (${obras.hechas}/${obras.total}).`,
+          `📚 El libro no cede. La Biblioteca Pública abre con la mitad de las obras (${obras.hechas}/${meta}).`,
         )
         return
       }
@@ -554,6 +558,18 @@ function notificarCambios(set, get, previo, nuevo) {
     } else if (antes === 'obra' && ahora !== 'obra') {
       agregarToast(set, get, `🔔 Obra terminada: ${medida.nombre}`)
     }
+  }
+
+  // Crossing HALF the visible works unlocks the adventure's front door
+  const obrasAntes = progresoObras(previo, LUGARES).hechas
+  const obrasAhora = progresoObras(nuevo, LUGARES)
+  const metaLibro = Math.ceil(obrasAhora.total / 2)
+  if (obrasAntes < metaLibro && obrasAhora.hechas >= metaLibro) {
+    agregarToast(
+      set,
+      get,
+      '📚 ¡Desbloqueaste el acceso a la Biblioteca Pública! Buscá el lomo dorado.',
+    )
   }
 }
 

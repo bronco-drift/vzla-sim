@@ -6,6 +6,18 @@ import { useGameStore } from '../store/gameStore.js'
 import { pibPerCapita, salarioReal, fechaTexto } from '../core/state.js'
 import { proximoHito } from '../core/hitos.js'
 import { Grafico } from './Grafico.jsx'
+import { MEDIDAS } from '../data/medidas.js'
+import { LUGARES } from '../data/lugares.js'
+import { estadoMedida, progresoObras } from '../core/medidas.js'
+
+const NOMBRE_LUGAR = Object.fromEntries(LUGARES.map((l) => [l.id, l.nombre]))
+
+const ETIQUETA_FASE = {
+  disponible: ['pendiente', '#8a8f96'],
+  obra: ['en obra', '#e0a326'],
+  rampa: ['en marcha', '#6cc4d4'],
+  pleno: ['completa', '#4ade80'],
+}
 
 // x1 = one simulated month per real second (~12s per year)
 const VELOCIDADES = [
@@ -40,6 +52,12 @@ export function Hud() {
 
   const hito = proximoHito(game)
   const indicadorAbierto = INDICADORES.find((i) => i.campo === grafico)
+  const obras = progresoObras(game, LUGARES)
+  const lugaresVisibles = new Set(
+    LUGARES.filter(
+      (l) => !l.requiereEvento || (game.eventosVistos ?? {})[l.requiereEvento],
+    ).map((l) => l.id),
+  )
 
   return (
     <>
@@ -71,6 +89,22 @@ export function Hud() {
               <span className="ind-valor">{ind.valor(game)}</span>
             </button>
           ))}
+          {/* Works: one more indicator (rightmost), opens the full list */}
+          <button
+            className="indicador obras"
+            onClick={() => setGrafico(grafico === 'obras' ? null : 'obras')}
+          >
+            <span className="ind-nombre">Obras</span>
+            <span className="ind-valor">
+              {obras.hechas}/{obras.total}
+            </span>
+            <span className="ind-barra">
+              <span
+                className="ind-relleno"
+                style={{ width: `${(obras.hechas / Math.max(1, obras.total)) * 100}%` }}
+              />
+            </span>
+          </button>
         </div>
 
         {hito && (
@@ -93,6 +127,38 @@ export function Hud() {
               formato={indicadorAbierto.formato}
               color={indicadorAbierto.color}
             />
+          </div>
+        </div>
+      )}
+
+      {grafico === 'obras' && (
+        <div className="modal-grafico" onClick={() => setGrafico(null)}>
+          <div className="modal-caja caja-obras" onClick={(e) => e.stopPropagation()}>
+            <div className="panel-cabecera">
+              <h2>
+                Obras del país — {obras.hechas} de {obras.total}
+              </h2>
+              <button className="panel-cerrar" onClick={() => setGrafico(null)}>✕</button>
+            </div>
+            <div className="obras-lista">
+              {MEDIDAS.filter((m) => lugaresVisibles.has(m.lugarId)).map((m) => {
+                const { fase, progreso: p } = estadoMedida(m, game.medidas[m.id], game.dias)
+                const [texto, color] = ETIQUETA_FASE[fase]
+                return (
+                  <div key={m.id} className="obra-fila">
+                    <div className="obra-info">
+                      <span className="obra-nombre">{m.nombre}</span>
+                      <span className="obra-lugar">{NOMBRE_LUGAR[m.lugarId]}</span>
+                    </div>
+                    <span className="obra-estado" style={{ color }}>
+                      {fase === 'obra' || fase === 'rampa'
+                        ? `${texto} · ${Math.round(p * 100)}%`
+                        : texto}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         </div>
       )}
