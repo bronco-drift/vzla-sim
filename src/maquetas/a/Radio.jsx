@@ -6,7 +6,8 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGameStore } from '../../store/gameStore.js'
 
-const POSICION = [-640, -80, 655]
+const POSICION = [-632, -80, 648]
+const ROTACION = 2.36 // diagonal: the radio faces the room's interior
 const ALCANCE = 900 // distance at which the music fades to silence
 
 export function Radio() {
@@ -57,7 +58,7 @@ export function Radio() {
   })
 
   return (
-    <group position={POSICION}>
+    <group position={POSICION} rotation={[0, ROTACION, 0]}>
       {/* side table */}
       <mesh position={[0, 62, 0]} castShadow>
         <boxGeometry args={[70, 6, 46]} />
@@ -78,7 +79,7 @@ export function Radio() {
       {/* the radio (clickable) */}
       <group
         position={[0, 65, 0]}
-        rotation={[0, 0.5, 0]}
+        rotation={[0, 0.15, 0]}
         onPointerDown={(e) => {
           e.stopPropagation()
           toggleRadio()
