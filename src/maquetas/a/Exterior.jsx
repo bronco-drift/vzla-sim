@@ -20,24 +20,27 @@ const TITULOS_CARTELES = {
 // north carries the 1, the rest carry 7s.
 const NUMEROS_CARTELES = { norte: '1', sur: '7', este: '7', oeste: '7' }
 
-/** Plaque texture for the equestrian monument. */
+/** Plaque texture for the equestrian monument: short centered lines
+    with generous margins so nothing touches the frame. */
 function crearTexturaPlaca() {
   const c = document.createElement('canvas')
-  c.width = 256
-  c.height = 128
+  c.width = 512
+  c.height = 256
   const ctx = c.getContext('2d')
   ctx.fillStyle = '#1d2024'
-  ctx.fillRect(0, 0, 256, 128)
+  ctx.fillRect(0, 0, 512, 256)
   ctx.strokeStyle = '#c9a227'
-  ctx.lineWidth = 4
-  ctx.strokeRect(6, 6, 244, 116)
+  ctx.lineWidth = 6
+  ctx.strokeRect(14, 14, 484, 228)
   ctx.fillStyle = '#e8c95c'
-  ctx.font = 'bold 19px Georgia, serif'
   ctx.textAlign = 'center'
-  ctx.fillText('LA NACIÓN AGRADECIDA', 128, 44)
-  ctx.fillText('A SU LIBERTADOR', 128, 70)
-  ctx.font = '15px Georgia, serif'
-  ctx.fillText('ERIGE ESTE MONUMENTO', 128, 96)
+  ctx.textBaseline = 'middle'
+  ctx.font = 'bold 44px Georgia, serif'
+  ctx.fillText('LA NACIÓN', 256, 62)
+  ctx.fillText('AGRADECIDA A SU', 256, 116)
+  ctx.fillText('LIBERTADOR', 256, 170)
+  ctx.font = '28px Georgia, serif'
+  ctx.fillText('· 1874 ·', 256, 218)
   const tex = new THREE.CanvasTexture(c)
   tex.colorSpace = THREE.SRGBColorSpace
   return tex
@@ -265,8 +268,8 @@ export function Exterior() {
           <meshStandardMaterial color="#2e3238" flatShading />
         </mesh>
         {/* plaque (faces the house) */}
-        <mesh position={[101.5, 150, 0]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[96, 48]} />
+        <mesh position={[101.5, 152, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[110, 55]} />
           <meshBasicMaterial map={texturaPlaca} />
         </mesh>
 
