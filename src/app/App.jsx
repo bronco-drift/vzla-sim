@@ -89,8 +89,8 @@ export function App() {
             )}
             {camaraPov && (
               <div className="hint-camara">
-                Arrastrá para mirar · WASD o flechas para caminar · SHIFT correr · click en
-                la puerta para abrir
+                Arrastrá para mirar · WASD o flechas para caminar · SHIFT correr · E (cerca)
+                o click abre la puerta
               </div>
             )}
             <PanelEscena />

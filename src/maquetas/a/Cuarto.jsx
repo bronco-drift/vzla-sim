@@ -54,7 +54,7 @@ function VentanaSimple() {
   )
 }
 
-/** One door leaf with inset panels and a golden knob. */
+/** One door leaf, same style on BOTH faces: inset panels + golden knob. */
 function HojaPuerta({ espejo = false }) {
   const lado = espejo ? -1 : 1
   return (
@@ -63,18 +63,22 @@ function HojaPuerta({ espejo = false }) {
         <boxGeometry args={[52, 168, 4]} />
         <meshStandardMaterial color={MADERA} flatShading />
       </mesh>
-      <mesh position={[0, 38, 2.2]}>
-        <boxGeometry args={[36, 60, 1.2]} />
-        <meshStandardMaterial color={MADERA_CLARA} flatShading />
-      </mesh>
-      <mesh position={[0, -38, 2.2]}>
-        <boxGeometry args={[36, 60, 1.2]} />
-        <meshStandardMaterial color={MADERA_CLARA} flatShading />
-      </mesh>
-      <mesh position={[lado * 20, 0, 3.4]}>
-        <sphereGeometry args={[2.6, 10, 10]} />
-        <meshStandardMaterial color="#c9a227" flatShading />
-      </mesh>
+      {[2.2, -2.2].map((z) => (
+        <group key={z}>
+          <mesh position={[0, 38, z]}>
+            <boxGeometry args={[36, 60, 1.2]} />
+            <meshStandardMaterial color={MADERA_CLARA} flatShading />
+          </mesh>
+          <mesh position={[0, -38, z]}>
+            <boxGeometry args={[36, 60, 1.2]} />
+            <meshStandardMaterial color={MADERA_CLARA} flatShading />
+          </mesh>
+          <mesh position={[lado * 20, 0, z > 0 ? 3.4 : -3.4]}>
+            <sphereGeometry args={[2.6, 10, 10]} />
+            <meshStandardMaterial color="#c9a227" flatShading />
+          </mesh>
+        </group>
+      ))}
     </group>
   )
 }

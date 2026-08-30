@@ -77,6 +77,11 @@ export function ControlesPOV() {
       const k = e.key.toLowerCase()
       if ([' ', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) e.preventDefault()
       teclas.current[k] = v
+      // E: open/close the door when standing near it (either side)
+      if (v && k === 'e') {
+        const cerca = Math.hypot(camera.position.x + 700, camera.position.z - 310) < 420
+        if (cerca) useGameStore.getState().togglePuerta()
+      }
     }
     const baja = tecla(true)
     const sube = tecla(false)
