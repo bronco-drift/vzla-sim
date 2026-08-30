@@ -11,6 +11,7 @@ import { DecoEscritorio } from './DecoEscritorio.jsx'
 import { Cuarto } from './Cuarto.jsx'
 import { Humano } from './Humano.jsx'
 import { Exterior } from './Exterior.jsx'
+import { Luces, ColocadorLuces } from './Luces.jsx'
 
 export function Escritorio() {
   const luzRef = useRef()
@@ -248,6 +249,10 @@ export function Escritorio() {
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />
+
+      {/* Player-placed light sources + click-to-place handler */}
+      <Luces />
+      <ColocadorLuces />
 
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group

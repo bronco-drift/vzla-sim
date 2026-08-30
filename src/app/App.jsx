@@ -27,6 +27,11 @@ export function App() {
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
   const camaraPov = useGameStore((s) => s.camaraPov)
   const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
+  const menuLuces = useGameStore((s) => s.menuLuces)
+  const toggleMenuLuces = useGameStore((s) => s.toggleMenuLuces)
+  const elegirLuz = useGameStore((s) => s.elegirLuz)
+  const quitarLuces = useGameStore((s) => s.quitarLuces)
+  const colocandoLuz = useGameStore((s) => s.colocandoLuz)
   const quest = useGameStore((s) => s.quest)
   const { tieneLlave, tieneTarjeta, puertaDesbloqueada } = quest
 
@@ -95,6 +100,38 @@ export function App() {
                 >
                   🚶
                 </button>
+                <button
+                  className={
+                    menuLuces || colocandoLuz
+                      ? 'btn-flotante sexto activo'
+                      : 'btn-flotante sexto'
+                  }
+                  onClick={toggleMenuLuces}
+                  title="Agregar fuentes de luz"
+                >
+                  🕯️
+                </button>
+                {menuLuces && (
+                  <div className="menu-luces">
+                    <button onClick={() => elegirLuz('pie')}>🪔 Lámpara de pie</button>
+                    <button onClick={() => elegirLuz('aplique')}>💡 Aplique de pared</button>
+                    <button onClick={() => elegirLuz('antorcha')}>🔥 Antorcha</button>
+                    <button className="menu-luces-borrar" onClick={quitarLuces}>
+                      🧹 Quitar todas
+                    </button>
+                  </div>
+                )}
+                {colocandoLuz && (
+                  <div className="hint-camara">
+                    Click donde quieras colocarla ·{' '}
+                    {colocandoLuz === 'pie'
+                      ? 'va en el piso'
+                      : colocandoLuz === 'aplique'
+                        ? 'va en paredes'
+                        : 'va en pared o piso'}{' '}
+                    · click derecho sobre una luz la quita
+                  </div>
+                )}
               </>
             )}
             {camaraLibre && (

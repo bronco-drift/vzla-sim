@@ -125,6 +125,62 @@ function ColumnaRomana() {
 }
 
 export function Cuarto() {
+  // Book population for the hollow library: deterministic mix of standing
+  // books (varied heights/widths/tilts, some with a label band), lying
+  // stacks, and gaps. The golden quest book keeps a reserved slot.
+  const librosEstantes = useMemo(() => {
+    let semilla = 31
+    const azar = () => {
+      semilla = (semilla * 16807) % 2147483647
+      return semilla / 2147483647
+    }
+    const estantes = []
+    const filasY = [10, 72, 134, 196, 258, 320]
+    filasY.forEach((yBase, fila) => {
+      const items = []
+      let x = -104
+      while (x < 100) {
+        // reserved gap for the golden book on row 2
+        if (fila === 2 && x > -44 && x < -8) {
+          x = -6
+          continue
+        }
+        const r = azar()
+        if (r < 0.12) {
+          x += 10 + azar() * 16 // gap
+        } else if (r < 0.3) {
+          // lying stack of 2-3 books
+          const n = 2 + Math.floor(azar() * 2)
+          for (let j = 0; j < n; j++) {
+            items.push({
+              tipo: 'acostado',
+              x: x + 14,
+              y: yBase + 4 + j * 7.5,
+              ancho: 26 + azar() * 6,
+              color: LIBROS[Math.floor(azar() * LIBROS.length)],
+            })
+          }
+          x += 34
+        } else {
+          const ancho = 6 + azar() * 6
+          items.push({
+            tipo: 'parado',
+            x: x + ancho / 2,
+            y: yBase,
+            ancho,
+            alto: 28 + azar() * 14,
+            tilt: azar() < 0.18 ? (azar() - 0.5) * 0.3 : 0,
+            etiqueta: azar() < 0.28,
+            color: LIBROS[Math.floor(azar() * LIBROS.length)],
+          })
+          x += ancho + 1.5
+        }
+      }
+      estantes.push({ yBase, items })
+    })
+    return estantes
+  }, [])
+
   // Triangular pediment shapes: big one for the west facade (base 830,
   // rise 170) and a small one over the door frame (base 250, rise 62)
   const formaFronton = useMemo(() => {
@@ -234,46 +290,79 @@ export function Cuarto() {
         <meshStandardMaterial color="#c9a227" />
       </mesh>
 
-      {/* -- LIBRARY against the back wall: floor-to-near-ceiling shelves.
-             One golden spine — "Cesarismo democrático" — is clickable and
-             starts the quest (its modal hands over the bronze key). -- */}
+      {/* -- LIBRARY against the back wall: a HOLLOW case (back panel,
+             sides, top/bottom, real shelves) filled with shaped books —
+             standing spines, tilted ones, lying stacks and gaps. The
+             golden "Cesarismo democrático" starts the quest. -- */}
       <group position={[535, -80, -70]}>
-        <mesh position={[0, 190, 0]} castShadow>
-          <boxGeometry args={[240, 380, 30]} />
+        {/* back panel against the wall */}
+        <mesh position={[0, 190, -12]}>
+          <boxGeometry args={[240, 380, 4]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        {[10, 72, 134, 196, 258, 320].map((y, fila) => (
-          <group key={y}>
-            <mesh position={[0, y + 52, 3]}>
-              <boxGeometry args={[224, 3, 27]} />
+        {/* sides, top, bottom plinth */}
+        <mesh position={[-117, 190, 2]} castShadow>
+          <boxGeometry args={[6, 380, 32]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[117, 190, 2]} castShadow>
+          <boxGeometry args={[6, 380, 32]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[0, 377, 2]} castShadow>
+          <boxGeometry args={[240, 8, 34]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[0, 5, 2]}>
+          <boxGeometry args={[240, 12, 34]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        {/* shelves + their book population */}
+        {librosEstantes.map(({ yBase, items }) => (
+          <group key={yBase}>
+            <mesh position={[0, yBase - 2, 1]}>
+              <boxGeometry args={[228, 4, 28]} />
               <meshStandardMaterial color={MADERA_CLARA} flatShading />
             </mesh>
-            {Array.from({ length: 15 }, (_, i) => i).map((i) =>
-              (i * 13 + fila * 7) % 5 === 4 ? null : (
-                <mesh
-                  key={i}
-                  position={[-98 + i * 14, y + 26, 5]}
-                  rotation={[0, 0, (i * 11 + fila) % 4 === 0 ? 0.07 : 0]}
-                  castShadow
-                >
-                  <boxGeometry args={[9, 40 - ((i + fila) % 4) * 4, 18]} />
-                  <meshStandardMaterial
-                    color={LIBROS[(i * 3 + fila) % LIBROS.length]}
-                    flatShading
-                  />
+            {items.map((l, i) =>
+              l.tipo === 'acostado' ? (
+                <mesh key={i} position={[l.x, l.y, 0]} rotation={[0, 0.06, 0]}>
+                  <boxGeometry args={[l.ancho, 7, 19]} />
+                  <meshStandardMaterial color={l.color} flatShading />
                 </mesh>
+              ) : (
+                <group
+                  key={i}
+                  position={[l.x, l.y + l.alto / 2, 0]}
+                  rotation={[0, 0, l.tilt]}
+                >
+                  <mesh>
+                    <boxGeometry args={[l.ancho, l.alto, 19]} />
+                    <meshStandardMaterial color={l.color} flatShading />
+                  </mesh>
+                  {l.etiqueta && (
+                    <mesh position={[0, l.alto * 0.22, 9.6]}>
+                      <boxGeometry args={[l.ancho * 0.7, 4, 0.6]} />
+                      <meshStandardMaterial color="#e8e2d0" />
+                    </mesh>
+                  )}
+                </group>
               ),
             )}
           </group>
         ))}
-        {/* the golden book (chest height, easy to spot) + fat hitbox */}
-        <mesh position={[-28, 160, 7]} castShadow>
-          <boxGeometry args={[11, 38, 22]} />
+        {/* the golden quest book in its reserved slot (row 2) + hitbox */}
+        <mesh position={[-26, 153, 1]} castShadow>
+          <boxGeometry args={[11, 38, 21]} />
           <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        <mesh position={[-26, 141, 11]}>
+          <boxGeometry args={[9, 3, 1]} />
+          <meshStandardMaterial color="#f5c518" />
         </mesh>
         <mesh
           visible={false}
-          position={[-28, 160, 10]}
+          position={[-26, 153, 8]}
           onPointerDown={(e) => {
             e.stopPropagation()
             useGameStore.getState().abrirLibro()

@@ -69,6 +69,8 @@ export const useGameStore = create((set, get) => ({
     puertaDesbloqueada: false, // card used on the door sensor
   },
   arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
+  menuLuces: false,       // light-placing menu open?
+  colocandoLuz: null,     // 'pie' | 'aplique' | 'antorcha' while placing
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -148,6 +150,41 @@ export const useGameStore = create((set, get) => ({
 
   setArrastreHumano(v) {
     set({ arrastreHumano: v })
+  },
+
+  // ---- Placeable lights ----
+  toggleMenuLuces() {
+    set((s) => ({ menuLuces: !s.menuLuces, colocandoLuz: null }))
+  },
+  elegirLuz(tipo) {
+    set({ colocandoLuz: tipo, menuLuces: false })
+    agregarToast(
+      set,
+      get,
+      tipo === 'pie'
+        ? '🪔 Click en el piso para plantar la lámpara.'
+        : tipo === 'aplique'
+          ? '💡 Click en una pared para colgar el aplique.'
+          : '🔥 Click en pared o piso para clavar la antorcha.',
+    )
+  },
+  agregarLuz(luz) {
+    const luces = get().escena.luces ?? []
+    if (luces.length >= 12) {
+      agregarToast(set, get, '⚡ Máximo 12 luces — quitá alguna primero.')
+      set({ colocandoLuz: null })
+      return
+    }
+    get().setEscena({ luces: [...luces, luz] })
+    set({ colocandoLuz: null })
+  },
+  quitarLuz(indice) {
+    const luces = get().escena.luces ?? []
+    get().setEscena({ luces: luces.filter((_, i) => i !== indice) })
+  },
+  quitarLuces() {
+    get().setEscena({ luces: [] })
+    set({ menuLuces: false })
   },
 
   toggleCamaraLibre() {
