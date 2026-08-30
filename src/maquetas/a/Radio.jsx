@@ -68,7 +68,9 @@ export function Radio() {
     })
   }, [modo])
 
-  // distance-based volume (halved overall), updated a few times/second
+  // Volume (halved overall), updated a few times/second. In MAP mode the
+  // governing camera sits ~900u away, so distance would mute it: there
+  // it plays as fixed ambience instead. POV/fly use real proximity.
   useFrame((_, delta) => {
     acumulador.current += delta
     if (acumulador.current < 0.2) return
@@ -76,12 +78,18 @@ export function Radio() {
     if (modo === 0) return
     const pista = pistasRef.current[modo - 1]
     if (!pista) return
-    const dx = camera.position.x - POSICION[0]
-    const dy = camera.position.y - (POSICION[1] + 80)
-    const dz = camera.position.z - POSICION[2]
-    const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
-    const vol = Math.max(0, 1 - dist / ALCANCE)
-    pista.gain.gain.value = 0.5 * Math.pow(vol, 1.6)
+    const { camaraPov, camaraLibre } = useGameStore.getState()
+    let vol
+    if (!camaraPov && !camaraLibre) {
+      vol = 0.55 // map mode: steady background music
+    } else {
+      const dx = camera.position.x - POSICION[0]
+      const dy = camera.position.y - (POSICION[1] + 80)
+      const dz = camera.position.z - POSICION[2]
+      const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
+      vol = Math.pow(Math.max(0, 1 - dist / ALCANCE), 1.6)
+    }
+    pista.gain.gain.value = 0.5 * vol
   })
 
   return (
@@ -109,6 +117,9 @@ export function Radio() {
         rotation={[0, 0.15, 0]}
         onPointerDown={(e) => {
           e.stopPropagation()
+          // resume the AudioContext INSIDE the gesture handler — doing it
+          // in an effect after render can leave it suspended (silent)
+          ctxRef.current?.resume()
           toggleRadio()
         }}
         onPointerOver={() => (document.body.style.cursor = 'pointer')}
