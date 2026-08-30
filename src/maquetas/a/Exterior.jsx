@@ -1,9 +1,12 @@
 // The world outside the office: grass filling the sky cylinder's floor,
 // a low horizon gradient that blends the cylinder into the ground, trees
-// scattered for scale reference, and four big cardinal-point boulders.
+// scattered for scale reference, four big cardinal-point boulders, and a
+// tall lamppost beside each boulder that lights up at night.
 // All deterministic (seeded) — no Math.random at render time.
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
+import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { useGameStore } from '../../store/gameStore.js'
 
 const CENTRO_Z = 310 // the sky cylinder's center
 const RADIO_CESPED = 9520
@@ -53,6 +56,28 @@ export function Exterior() {
     { x: 8800, z: CENTRO_Z },     // east
     { x: -8800, z: CENTRO_Z },    // west
   ]
+  // Lampposts sit beside their boulder (offset sideways)
+  const POSTES = PIEDRAS.map((p, i) =>
+    i < 2 ? { x: p.x + 450, z: p.z } : { x: p.x, z: p.z + 450 },
+  )
+  const lucesRef = useRef([])
+  const focosRef = useRef([])
+
+  // Lamppost bulbs follow the day/night cycle (on at night, soft ramp)
+  useFrame((_, delta) => {
+    const { game, escena } = useGameStore.getState()
+    if (!game) return
+    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    const solAltura = Math.sin(frac * Math.PI * 2)
+    const objetivo = solAltura < 0.12 ? 2200 : 0
+    for (let i = 0; i < 4; i++) {
+      const luz = lucesRef.current[i]
+      const foco = focosRef.current[i]
+      if (!luz) continue
+      luz.intensity += (objetivo - luz.intensity) * Math.min(1, delta * 3)
+      if (foco) foco.material.color.set(luz.intensity > 100 ? '#ffe9a8' : '#3a3f4a')
+    }
+  })
 
   return (
     <group>
@@ -111,6 +136,37 @@ export function Exterior() {
           <dodecahedronGeometry args={[300, 0]} />
           <meshStandardMaterial color="#7d7f84" flatShading />
         </mesh>
+      ))}
+
+      {/* tall lampposts (6m) beside each boulder, lit at night */}
+      {POSTES.map((p, i) => (
+        <group key={i} position={[p.x, -81, p.z]}>
+          <mesh position={[0, 30, 0]}>
+            <cylinderGeometry args={[50, 65, 60, 8]} />
+            <meshStandardMaterial color="#2f333a" flatShading />
+          </mesh>
+          <mesh position={[0, 310, 0]}>
+            <cylinderGeometry args={[20, 26, 520, 8]} />
+            <meshStandardMaterial color="#3a3f47" flatShading />
+          </mesh>
+          {/* lamp head: cap + glowing globe */}
+          <mesh position={[0, 610, 0]}>
+            <coneGeometry args={[70, 60, 8]} />
+            <meshStandardMaterial color="#2f333a" flatShading />
+          </mesh>
+          <mesh ref={(el) => (focosRef.current[i] = el)} position={[0, 565, 0]}>
+            <sphereGeometry args={[42, 12, 12]} />
+            <meshBasicMaterial color="#3a3f4a" />
+          </mesh>
+          <pointLight
+            ref={(el) => (lucesRef.current[i] = el)}
+            position={[0, 555, 0]}
+            intensity={0}
+            distance={2600}
+            decay={1.2}
+            color="#ffd9a0"
+          />
+        </group>
       ))}
     </group>
   )

@@ -117,13 +117,13 @@ export function Cuarto() {
         <VentanaSimple />
       </group>
 
-      {/* -- Rug under the desk area -- */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -79.4, 60]}>
-        <circleGeometry args={[290, 40]} />
+      {/* -- Rug under the desk area (sized to stay INSIDE the back wall) -- */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -79.4, 100]}>
+        <circleGeometry args={[185, 40]} />
         <meshStandardMaterial color="#7e2a2a" />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -79.3, 60]}>
-        <ringGeometry args={[270, 284, 40]} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -79.3, 100]}>
+        <ringGeometry args={[168, 180, 40]} />
         <meshStandardMaterial color="#c9a227" />
       </mesh>
 
