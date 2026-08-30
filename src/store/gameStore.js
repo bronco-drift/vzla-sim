@@ -342,8 +342,15 @@ export const useGameStore = create((set, get) => ({
   },
   probarCombinacion(codigo) {
     if (codigo === '1777') {
+      // freeze the completion stats into the quest (letter shows them)
+      const g = get().game
       set((s) => ({
-        quest: { ...s.quest, finJuego: true },
+        quest: {
+          ...s.quest,
+          finJuego: true,
+          finDias: g?.dias ?? 0,
+          finSegundos: g?.segundosJugados ?? 0,
+        },
         combinacionModal: false,
         cartaModal: true,
       }))
@@ -426,6 +433,8 @@ function iniciarLoop(set, get) {
 
     const previo = game
     const nuevo = tick(game, game.velocidad * DIAS_POR_TICK_X1)
+    // real playtime accumulator (only while the sim is actually running)
+    nuevo.segundosJugados = (game.segundosJugados ?? 0) + TICK_MS / 1000
     set({ game: nuevo })
 
     notificarCambios(set, get, previo, nuevo)
