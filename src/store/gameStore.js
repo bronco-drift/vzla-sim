@@ -16,6 +16,7 @@ const TICKS_POR_AUTOSAVE = 50 // every ~5 real seconds
 
 const CLAVE_PARTIDA = 'vzla-sim.partida'
 const CLAVE_ESCENA = 'vzla-sim.escena'
+const CLAVE_QUEST = 'vzla-sim.quest'
 
 // Scene preferences (desk lamp position, pinned sun) — visual tuning,
 // persisted separately from the save so it survives new games.
@@ -45,6 +46,39 @@ let intervalo = null
 let contadorAutosave = 0
 let proximoToastId = 1
 
+// Quest + door state persist across reloads (a new game resets them).
+// libroAbierto is UI-only and always rehydrates closed.
+const QUEST_DEFAULT = {
+  libroAbierto: false,
+  tieneLlave: false,
+  candadoAbierto: false,
+  cofreAbierto: false,
+  tieneTarjeta: false,
+  puertaDesbloqueada: false,
+}
+
+function cargarQuest() {
+  try {
+    const crudo = localStorage.getItem(CLAVE_QUEST)
+    if (!crudo) return { quest: QUEST_DEFAULT, puertaAbierta: false, camaraPov: false }
+    const { quest, puertaAbierta, camaraPov } = JSON.parse(crudo)
+    return {
+      quest: { ...QUEST_DEFAULT, ...quest, libroAbierto: false },
+      puertaAbierta: !!puertaAbierta,
+      camaraPov: !!camaraPov, // resume in the mode you were in
+    }
+  } catch {
+    return { quest: QUEST_DEFAULT, puertaAbierta: false, camaraPov: false }
+  }
+}
+
+function guardarQuest(get) {
+  const { quest, puertaAbierta, camaraPov } = get()
+  localStorage.setItem(CLAVE_QUEST, JSON.stringify({ quest, puertaAbierta, camaraPov }))
+}
+
+const questInicial = cargarQuest()
+
 export const useGameStore = create((set, get) => ({
   pantalla: 'bienvenida', // 'bienvenida' | 'partida'
   game: null,             // GameState while playing
@@ -57,24 +91,28 @@ export const useGameStore = create((set, get) => ({
   panelEscena: false,     // scene-editing panel open?
   resetCamara: 0,         // bump to ask the active maqueta to re-center its camera
   camaraLibre: false,     // fly/levitate camera mode (maqueta A)
-  camaraPov: false,       // first-person mode: walk as the blue figure
-  puertaAbierta: false,   // office double door open?
-  // Adventure mini-quest: book -> key -> padlock -> chest -> card -> door
-  quest: {
-    libroAbierto: false,      // book modal currently open
-    tieneLlave: false,        // took the bronze key from the book
-    candadoAbierto: false,    // stair rope unlocked
-    cofreAbierto: false,      // chest lid open
-    tieneTarjeta: false,      // took the card from the chest
-    puertaDesbloqueada: false, // card used on the door sensor
-  },
+  camaraPov: questInicial.camaraPov, // first-person mode (persisted)
+  puertaAbierta: questInicial.puertaAbierta, // office double door open?
+  // Adventure mini-quest (persisted): book -> key -> padlock -> chest -> card -> door
+  quest: questInicial.quest,
   arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
   menuLuces: false,       // light-placing menu open?
   colocandoLuz: null,     // 'pie' | 'aplique' | 'antorcha' while placing
   piedraActiva: null,     // cardinal stone being read (norte/sur/este/oeste)
 
   nuevaPartida(nivel) {
-    set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
+    // fresh game -> fresh quest
+    localStorage.removeItem(CLAVE_QUEST)
+    set({
+      pantalla: 'partida',
+      game: createInitialState(nivel),
+      lugarSeleccionado: null,
+      menuPausa: false,
+      quest: QUEST_DEFAULT,
+      puertaAbierta: false,
+      camaraPov: false,
+      camaraLibre: false,
+    })
     iniciarLoop(set, get)
   },
 
@@ -218,6 +256,7 @@ export const useGameStore = create((set, get) => ({
       camaraLibre: false,
       resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
     }))
+    guardarQuest(get) // remember the camera mode across reloads
   },
 
   togglePuerta() {
@@ -227,6 +266,7 @@ export const useGameStore = create((set, get) => ({
       return
     }
     set((s) => ({ puertaAbierta: !s.puertaAbierta }))
+    guardarQuest(get)
   },
 
   // ---- Adventure quest actions ----
@@ -237,6 +277,7 @@ export const useGameStore = create((set, get) => ({
     const { quest } = get()
     if (!quest.tieneLlave) agregarToast(set, get, '🔑 Te llevás la llave de bronce.')
     set((s) => ({ quest: { ...s.quest, libroAbierto: false, tieneLlave: true } }))
+    guardarQuest(get)
   },
   abrirCandado() {
     const { quest } = get()
@@ -247,12 +288,14 @@ export const useGameStore = create((set, get) => ({
     }
     agregarToast(set, get, '🔓 El candado cede. La escalera es tuya.')
     set((s) => ({ quest: { ...s.quest, candadoAbierto: true } }))
+    guardarQuest(get)
   },
   abrirCofre() {
     const { quest } = get()
     if (!quest.cofreAbierto) {
       agregarToast(set, get, '🧰 El cofre se abre. Hay una tarjeta adentro.')
       set((s) => ({ quest: { ...s.quest, cofreAbierto: true } }))
+      guardarQuest(get)
     }
   },
   tomarTarjeta() {
@@ -260,6 +303,7 @@ export const useGameStore = create((set, get) => ({
     if (quest.cofreAbierto && !quest.tieneTarjeta) {
       agregarToast(set, get, '💳 Tarjeta de acceso en mano.')
       set((s) => ({ quest: { ...s.quest, tieneTarjeta: true } }))
+      guardarQuest(get)
     }
   },
   usarSensor() {
@@ -271,6 +315,7 @@ export const useGameStore = create((set, get) => ({
     }
     agregarToast(set, get, '🟩 ¡Acceso concedido! La puerta está desbloqueada.')
     set((s) => ({ quest: { ...s.quest, puertaDesbloqueada: true } }))
+    guardarQuest(get)
   },
 
   /** Merge scene tuning (lamp/sun/room light) and persist it. */
