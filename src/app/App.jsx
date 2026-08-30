@@ -27,9 +27,21 @@ export function App() {
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
   const camaraPov = useGameStore((s) => s.camaraPov)
   const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
-  const tieneLlave = useGameStore((s) => s.quest.tieneLlave)
-  const tieneTarjeta = useGameStore((s) => s.quest.tieneTarjeta)
-  const puertaDesbloqueada = useGameStore((s) => s.quest.puertaDesbloqueada)
+  const quest = useGameStore((s) => s.quest)
+  const { tieneLlave, tieneTarjeta, puertaDesbloqueada } = quest
+
+  // Cryptic one-liner pointing at the quest's next step
+  const pista = puertaDesbloqueada
+    ? null
+    : tieneTarjeta
+      ? '«El ojo rojo junto a la puerta sabrá leerla.»'
+      : quest.cofreAbierto
+        ? '«Llévate lo que brilla dentro del arca.»'
+        : quest.candadoAbierto
+          ? '«Arriba, donde termina el pasillo, algo espera.»'
+          : tieneLlave
+            ? '«El bronce abre lo que el terciopelo custodia.»'
+            : '«Las respuestas duermen entre páginas doradas.»'
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
@@ -101,13 +113,14 @@ export function App() {
           </>
         )}
       </div>
-      {/* quest inventory chips */}
+      {/* quest inventory chips + cryptic next-step hint */}
       {(tieneLlave || tieneTarjeta) && (
         <div className="inventario">
           {tieneLlave && <span title="Llave de bronce">🔑</span>}
           {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta de acceso">💳</span>}
         </div>
       )}
+      {idMaqueta !== 'c' && pista && <div className="pista-quest">{pista}</div>}
       <MenuPausa />
       <Victoria />
       <EventoModal />

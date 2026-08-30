@@ -28,10 +28,13 @@ function alturaSuelo(x, z, yPie) {
     return PISO + (i + 1) * 28.9
   }
   if (yPie > 200) {
+    // exact slab footprints (west strip, east strip, south piece west of
+    // the stair opening, and the narrow piece north of it)
     const enMezzanine =
-      (x > -700 && x < -495 && z > -86 && z < 707) ||
-      (x > 495 && x < 700 && z > -86 && z < 707) ||
-      (x > -500 && x < 500 && z > 498 && z < 707)
+      (x > -694 && x < -500 && z > -86 && z < 701) ||
+      (x > 500 && x < 694 && z > -86 && z < 701) ||
+      (x > -500 && x < 220 && z > 507 && z < 701) ||
+      (x > 220 && x < 500 && z > 507 && z < 592)
     if (enMezzanine) return 267
   }
   return PISO
@@ -159,11 +162,28 @@ export function ControlesPOV() {
     }
 
     const estado = useGameStore.getState()
+    const yPieActual = camera.position.y - ALTURA_OJOS
     chocarConCuarto(prev, prox, estado.puertaAbierta)
 
     // The VIP rope at the stair base is solid until its padlock is opened
-    if (!estado.quest.candadoAbierto && prox.z > 588 && prox.z < 707) {
-      if (cruza(prev.x, prox.x, 40)) prox.x = prev.x
+    // (ground level only — it must NOT ghost-block the mezzanine above)
+    if (
+      !estado.quest.candadoAbierto &&
+      yPieActual < 150 &&
+      prox.z > 588 &&
+      prox.z < 707 &&
+      cruza(prev.x, prox.x, 40)
+    ) {
+      prox.x = prev.x
+    }
+
+    // Mezzanine railings are solid while you're up there
+    if (yPieActual > 200) {
+      if (prox.z > -86 && prox.z < 593 && cruza(prev.x, prox.x, -495)) prox.x = prev.x
+      if (prox.z > -86 && prox.z < 592 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
+      if (prox.x > -500 && prox.x < 220 && cruza(prev.z, prox.z, 512)) prox.z = prev.z
+      if (prox.z > 592 && prox.z < 707 && cruza(prev.x, prox.x, 215)) prox.x = prev.x
+      if (prox.x > 220 && prox.x < 500 && cruza(prev.z, prox.z, 597)) prox.z = prev.z
     }
 
     // stay inside the sky cylinder
@@ -177,7 +197,7 @@ export function ControlesPOV() {
 
     // Vertical: climb steps (small rises), get blocked by tall ledges,
     // fall with simple gravity when stepping off an edge.
-    let yPie = camera.position.y - ALTURA_OJOS
+    let yPie = yPieActual
     const suelo = alturaSuelo(prox.x, prox.z, yPie)
     if (suelo > yPie + 55) {
       prox.x = prev.x

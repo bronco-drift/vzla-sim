@@ -506,6 +506,23 @@ body {
   left: max(238px, calc(env(safe-area-inset-left) + 224px));
 }
 
+/* cryptic quest hint: a whisper above the inventory, bottom-right */
+.pista-quest {
+  position: absolute;
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  right: max(14px, env(safe-area-inset-right));
+  padding: 6px 12px;
+  background: rgba(12, 12, 16, 0.72);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--texto-suave);
+  z-index: 15;
+  max-width: 300px;
+  pointer-events: none;
+}
+
 /* quest inventory: little item chips, bottom-right */
 .inventario {
   position: absolute;

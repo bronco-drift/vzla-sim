@@ -331,9 +331,10 @@ export function Cuarto() {
         </group>
       )}
 
-      {/* -- Chest on the mezzanine (SE corner): lid swings open, the card
-             inside is clickable until taken -- */}
-      <group position={[615, 267, 640]}>
+      {/* -- Chest at the FAR END of the upstairs walkway (NW corner of
+             the west strip — the longest walk from the stair landing):
+             lid swings open, the card inside is clickable until taken -- */}
+      <group position={[-597, 267, 0]}>
         <mesh
           position={[0, 20, 0]}
           castShadow
@@ -493,8 +494,8 @@ export function Cuarto() {
           <boxGeometry args={[10, 70, 593]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        <mesh position={[0, 302, 502]}>
-          <boxGeometry args={[1000, 70, 10]} />
+        <mesh position={[-140, 302, 512]}>
+          <boxGeometry args={[720, 70, 10]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
