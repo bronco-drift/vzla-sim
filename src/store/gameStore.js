@@ -124,6 +124,7 @@ export const useGameStore = create((set, get) => ({
   menuLuces: false,       // light-placing menu open?
   colocandoLuz: null,     // 'pie' | 'aplique' | 'antorcha' while placing
   piedraActiva: null,     // cardinal stone being read (norte/sur/este/oeste)
+  infoZoom: null,         // live map-camera readout {dist, y} for tuning
 
   nuevaPartida(nivel) {
     // fresh game -> fresh quest
@@ -214,6 +215,10 @@ export const useGameStore = create((set, get) => ({
 
   setArrastreHumano(v) {
     set({ arrastreHumano: v })
+  },
+
+  setInfoZoom(v) {
+    set({ infoZoom: v })
   },
 
   verPiedra(clave) {

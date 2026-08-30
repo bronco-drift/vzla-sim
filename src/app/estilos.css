@@ -581,6 +581,22 @@ body {
   }
 }
 
+/* live zoom readout (map mode), top-right under the HUD */
+.info-zoom {
+  position: absolute;
+  top: 12px;
+  right: max(14px, env(safe-area-inset-right));
+  padding: 6px 12px;
+  background: rgba(12, 12, 16, 0.75);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--texto-suave);
+  z-index: 15;
+  pointer-events: none;
+}
+
 /* combination padlock dials */
 .candado-diales {
   display: flex;

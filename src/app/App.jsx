@@ -56,6 +56,7 @@ export function App() {
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
   const camaraPov = useGameStore((s) => s.camaraPov)
   const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
+  const infoZoom = useGameStore((s) => s.infoZoom)
   const menuLuces = useGameStore((s) => s.menuLuces)
   const toggleMenuLuces = useGameStore((s) => s.toggleMenuLuces)
   const elegirLuz = useGameStore((s) => s.elegirLuz)
@@ -172,7 +173,13 @@ export function App() {
           </>
         )}
       </div>
-      {/* quest inventory chips + cryptic next-step hint */}
+      {/* live zoom readout while in map mode (framing-tuning aid) */}
+      {idMaqueta === 'a' && !camaraPov && !camaraLibre && infoZoom && (
+        <div className="info-zoom">
+          🔍 dist {infoZoom.dist} · alt {infoZoom.y}
+        </div>
+      )}
+      {/* quest inventory chips */}
       {(tieneLlave || tieneTarjeta) && (
         <div className="inventario">
           {tieneLlave && <span title="Llave de bronce">🔑</span>}

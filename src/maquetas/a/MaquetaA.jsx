@@ -1,7 +1,7 @@
 // Maqueta A: low-poly diorama with a free map camera.
 // Real Venezuela terrain from GeoJSON, clickable places, and a sun that
 // orbits once per simulated year (time speed made visible).
-import { Canvas } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { MapControls } from '@react-three/drei'
 import { Mundo } from './Mundo.jsx'
 import { Sol } from './Sol.jsx'
@@ -9,6 +9,27 @@ import { ResetVista } from '../ResetVista.jsx'
 import { ControlesLibres } from '../ControlesLibres.jsx'
 import { ControlesPOV } from '../ControlesPOV.jsx'
 import { useGameStore } from '../../store/gameStore.js'
+
+/** Live camera readout for tuning the default map framing: distance to
+    the controls' target + camera height, published (throttled) so the
+    HUD can show it while in map mode. */
+function InfoZoom() {
+  const { camera, controls } = useThree()
+  const ultimo = { t: 0 }
+  useFrame(({ clock }) => {
+    if (clock.elapsedTime - ultimo.t < 0.25) return
+    ultimo.t = clock.elapsedTime
+    const target = controls?.target
+    if (!target) return
+    const dist = Math.round(camera.position.distanceTo(target))
+    const y = Math.round(camera.position.y)
+    const { infoZoom, setInfoZoom } = useGameStore.getState()
+    if (!infoZoom || infoZoom.dist !== dist || infoZoom.y !== y) {
+      setInfoZoom({ dist, y })
+    }
+  })
+  return null
+}
 
 export function MaquetaA() {
   const seleccionarLugar = useGameStore((s) => s.seleccionarLugar)
@@ -40,14 +61,17 @@ export function MaquetaA() {
       ) : camaraLibre ? (
         <ControlesLibres />
       ) : (
-        <MapControls
-          makeDefault
-          target={[0, 0, -4]}
-          enableRotate={true}
-          maxPolarAngle={Math.PI / 2.4}
-          minDistance={8}
-          maxDistance={mundoGlobal ? 500 : 320}
-        />
+        <>
+          <MapControls
+            makeDefault
+            target={[0, 0, -4]}
+            enableRotate={true}
+            maxPolarAngle={Math.PI / 2.4}
+            minDistance={8}
+            maxDistance={mundoGlobal ? 500 : 320}
+          />
+          <InfoZoom />
+        </>
       )}
     </Canvas>
   )
