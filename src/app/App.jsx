@@ -1,5 +1,6 @@
 // App shell: routes between welcome screen, the world editor (?editor)
 // and the running game. The active maqueta comes from the registry.
+import { useEffect } from 'react'
 import { useGameStore } from '../store/gameStore.js'
 import { Bienvenida } from './Bienvenida.jsx'
 import { Hud } from './Hud.jsx'
@@ -18,6 +19,29 @@ const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
 
 export function App() {
+  // iOS ignores user-scalable=no since iOS 10: the ONLY reliable way to
+  // kill page pinch-zoom is preventDefault on Safari's proprietary
+  // gesture events + multi-touch touchmove. This does NOT break the map
+  // camera: MapControls still reads touches from the canvas — we only
+  // forbid Safari from zooming the PAGE. (In POV nobody consumed the
+  // pinch, so Safari grabbed it and broke the controls.)
+  useEffect(() => {
+    const antiGesto = (e) => e.preventDefault()
+    const antiPinch = (e) => {
+      if (e.touches.length > 1) e.preventDefault()
+    }
+    document.addEventListener('gesturestart', antiGesto)
+    document.addEventListener('gesturechange', antiGesto)
+    document.addEventListener('gestureend', antiGesto)
+    document.addEventListener('touchmove', antiPinch, { passive: false })
+    return () => {
+      document.removeEventListener('gesturestart', antiGesto)
+      document.removeEventListener('gesturechange', antiGesto)
+      document.removeEventListener('gestureend', antiGesto)
+      document.removeEventListener('touchmove', antiPinch)
+    }
+  }, [])
+
   const pantalla = useGameStore((s) => s.pantalla)
   const mundoGlobal = useGameStore((s) => s.mundoGlobal)
   const toggleMundoGlobal = useGameStore((s) => s.toggleMundoGlobal)
