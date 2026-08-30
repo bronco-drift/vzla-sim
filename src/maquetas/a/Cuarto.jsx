@@ -91,8 +91,9 @@ const LIBROS = [
 
 const MARMOL = '#ece5d3'
 
-/** Roman column, floor to wall top (4.5m): plinth, fluted shaft
-    (low-segment cylinder + flatShading fakes the flutes), capital. */
+/** Roman column: plinth, fluted shaft (low-segment cylinder +
+    flatShading fakes the flutes), capital. Tops out at ~4m so it tucks
+    UNDER the glass roof's eaves (y 414 at the corners). */
 function ColumnaRomana() {
   return (
     <group>
@@ -104,19 +105,19 @@ function ColumnaRomana() {
         <boxGeometry args={[58, 12, 58]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 223, 0]} castShadow>
-        <cylinderGeometry args={[21, 25, 382, 10]} />
+      <mesh position={[0, 197, 0]} castShadow>
+        <cylinderGeometry args={[21, 25, 330, 10]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 421, 0]}>
+      <mesh position={[0, 369, 0]}>
         <boxGeometry args={[54, 14, 54]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 435, 0]}>
+      <mesh position={[0, 383, 0]}>
         <boxGeometry args={[70, 14, 70]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 446, 0]}>
+      <mesh position={[0, 394, 0]}>
         <boxGeometry args={[76, 8, 76]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
@@ -571,46 +572,91 @@ export function Cuarto() {
         </mesh>
       </group>
 
-      {/* -- Temple-style top for the WEST (front) facade: entablature,
-             denticulated cornice and triangular pediment, like a Roman
-             courthouse. Sits above the wall top (y 372). -- */}
-      <group>
-        {/* entablature beam */}
-        <mesh position={[-710, 387, 310]} castShadow>
-          <boxGeometry args={[44, 30, 830]} />
-          <meshStandardMaterial color={MARMOL} flatShading />
-        </mesh>
-        {/* denticles: little teeth under the cornice */}
-        {Array.from({ length: 17 }, (_, i) => -50 + i * 45).map((z) => (
-          <mesh key={z} position={[-726, 396, z + 30]}>
-            <boxGeometry args={[12, 12, 16]} />
-            <meshStandardMaterial color="#ddd5c2" flatShading />
+      {/* -- Temple-style tops on BOTH gable ends (west front + east
+             back): entablature, denticulated cornice, triangular
+             pediment. The glass roof spans between their peaks. -- */}
+      {[-1, 1].map((lado) => (
+        <group key={lado}>
+          <mesh position={[710 * lado, 387, 310]} castShadow>
+            <boxGeometry args={[44, 30, 830]} />
+            <meshStandardMaterial color={MARMOL} flatShading />
           </mesh>
-        ))}
-        {/* cornice */}
-        <mesh position={[-710, 408, 310]} castShadow>
-          <boxGeometry args={[56, 12, 856]} />
-          <meshStandardMaterial color={MARMOL} flatShading />
-        </mesh>
-        {/* triangular pediment, extruded outward from the wall */}
-        <mesh position={[-700, 414, 310]} rotation={[0, -Math.PI / 2, 0]} castShadow>
-          <extrudeGeometry args={[formaFronton, { depth: 40, bevelEnabled: false }]} />
-          <meshStandardMaterial color={MARMOL} flatShading />
-        </mesh>
-        {/* tympanum medallion */}
-        <mesh position={[-742, 464, 310]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[34, 34, 6, 16]} />
-          <meshStandardMaterial color="#d8d0bc" flatShading />
-        </mesh>
+          {Array.from({ length: 17 }, (_, i) => -50 + i * 45).map((z) => (
+            <mesh key={z} position={[726 * lado, 396, z + 30]}>
+              <boxGeometry args={[12, 12, 16]} />
+              <meshStandardMaterial color="#ddd5c2" flatShading />
+            </mesh>
+          ))}
+          <mesh position={[710 * lado, 408, 310]} castShadow>
+            <boxGeometry args={[56, 12, 856]} />
+            <meshStandardMaterial color={MARMOL} flatShading />
+          </mesh>
+          <mesh
+            position={[700 * lado, 414, 310]}
+            rotation={[0, (-Math.PI / 2) * lado, 0]}
+            castShadow
+          >
+            <extrudeGeometry args={[formaFronton, { depth: 40, bevelEnabled: false }]} />
+            <meshStandardMaterial color={MARMOL} flatShading />
+          </mesh>
+          <mesh position={[742 * lado, 464, 310]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[34, 34, 6, 16]} />
+            <meshStandardMaterial color="#d8d0bc" flatShading />
+          </mesh>
+        </group>
+      ))}
 
-        {/* small matching pediment right above the door frame */}
-        <mesh position={[-708, 222, 310]} castShadow>
-          <boxGeometry args={[42, 18, 256]} />
-          <meshStandardMaterial color={MARMOL} flatShading />
+      {/* small matching pediment right above the door frame (west only) */}
+      <mesh position={[-708, 222, 310]} castShadow>
+        <boxGeometry args={[42, 18, 256]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+      <mesh position={[-700, 231, 310]} rotation={[0, -Math.PI / 2, 0]} castShadow>
+        <extrudeGeometry args={[formaFrontonPuerta, { depth: 38, bevelEnabled: false }]} />
+        <meshStandardMaterial color={MARMOL} flatShading />
+      </mesh>
+
+      {/* -- GLASS gable roof: two panes following the pediments' inverted
+             V (ridge y 584 at z 310, eaves y 414 at z -105/725). The map
+             camera keeps seeing the board through it, and meshes without
+             handlers never steal clicks. -- */}
+      <group>
+        <mesh position={[0, 499, 102.5]} rotation={[1.182, 0, 0]}>
+          <planeGeometry args={[1400, 449]} />
+          <meshStandardMaterial
+            color="#bfe0f0"
+            transparent
+            opacity={0.16}
+            roughness={0.15}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
         </mesh>
-        <mesh position={[-700, 231, 310]} rotation={[0, -Math.PI / 2, 0]} castShadow>
-          <extrudeGeometry args={[formaFrontonPuerta, { depth: 38, bevelEnabled: false }]} />
-          <meshStandardMaterial color={MARMOL} flatShading />
+        <mesh position={[0, 499, 517.5]} rotation={[-1.182, 0, 0]}>
+          <planeGeometry args={[1400, 449]} />
+          <meshStandardMaterial
+            color="#bfe0f0"
+            transparent
+            opacity={0.16}
+            roughness={0.15}
+            metalness={0.1}
+            side={THREE.DoubleSide}
+            depthWrite={false}
+          />
+        </mesh>
+        {/* ridge beam + eave trims */}
+        <mesh position={[0, 584, 310]} castShadow>
+          <boxGeometry args={[1400, 12, 16]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[0, 414, -105]}>
+          <boxGeometry args={[1400, 8, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[0, 414, 725]}>
+          <boxGeometry args={[1400, 8, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
 
