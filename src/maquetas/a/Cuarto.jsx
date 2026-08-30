@@ -90,7 +90,7 @@ const LIBROS = [
 
 const MARMOL = '#ece5d3'
 
-/** Roman column, floor to wall top (3.4m): plinth, fluted shaft
+/** Roman column, floor to wall top (4.5m): plinth, fluted shaft
     (low-segment cylinder + flatShading fakes the flutes), capital. */
 function ColumnaRomana() {
   return (
@@ -103,19 +103,19 @@ function ColumnaRomana() {
         <boxGeometry args={[58, 12, 58]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 167, 0]} castShadow>
-        <cylinderGeometry args={[21, 25, 270, 10]} />
+      <mesh position={[0, 223, 0]} castShadow>
+        <cylinderGeometry args={[21, 25, 382, 10]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 309, 0]}>
+      <mesh position={[0, 421, 0]}>
         <boxGeometry args={[54, 14, 54]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 323, 0]}>
+      <mesh position={[0, 435, 0]}>
         <boxGeometry args={[70, 14, 70]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 334, 0]}>
+      <mesh position={[0, 446, 0]}>
         <boxGeometry args={[76, 8, 76]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
@@ -281,6 +281,40 @@ export function Cuarto() {
         <mesh position={[3, 1, 1.4]} rotation={[0, 0, -1.1]}>
           <boxGeometry args={[1.2, 7, 0.6]} />
           <meshStandardMaterial color="#1d1a14" />
+        </mesh>
+      </group>
+
+      {/* -- Upper floor: U-shaped mezzanine slab at the old ceiling line
+             (y 260), leaving the center open so the desk stays visible
+             from the map camera. Wood slab + inner-edge railings. -- */}
+      <group>
+        {/* west strip (inset 6u so the slab edge never pokes outside) */}
+        <mesh position={[-597, 260, 307.5]} castShadow>
+          <boxGeometry args={[194, 14, 787]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        {/* east strip */}
+        <mesh position={[597, 260, 307.5]} castShadow>
+          <boxGeometry args={[194, 14, 787]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        {/* south strip */}
+        <mesh position={[0, 260, 604]} castShadow>
+          <boxGeometry args={[1000, 14, 194]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
+        {/* railings on the inner edges */}
+        <mesh position={[-495, 302, 296.5]}>
+          <boxGeometry args={[10, 70, 593]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[495, 302, 296.5]}>
+          <boxGeometry args={[10, 70, 593]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[0, 302, 502]}>
+          <boxGeometry args={[1000, 70, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
 

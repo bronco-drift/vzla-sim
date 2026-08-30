@@ -145,8 +145,8 @@ export function Escritorio() {
       {/* white office wall with THREE real window holes (x -350, 0, +350;
           all y 10..160): a full strip above, a strip below, and columns
           between the holes — every window shows the actual sky behind */}
-      <mesh position={[0, 210, -86]} receiveShadow>
-        <boxGeometry args={[1400, 100, 8]} />
+      <mesh position={[0, 266, -86]} receiveShadow>
+        <boxGeometry args={[1400, 212, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
       <mesh position={[0, -35, -86]} receiveShadow>
@@ -176,16 +176,16 @@ export function Escritorio() {
       <group>
         {/* left (west) wall, in 3 pieces around the REAL door opening
             (z 224..396, y -80..205) so the open door leads outside */}
-        <mesh position={[-700, 90, 69]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[310, 340]} />
+        <mesh position={[-700, 146, 69]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[310, 452]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
-        <mesh position={[-700, 90, 551.5]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[311, 340]} />
+        <mesh position={[-700, 146, 551.5]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[311, 452]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
-        <mesh position={[-700, 232.5, 310]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[172, 55]} />
+        <mesh position={[-700, 288.5, 310]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[172, 167]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[-699.5, -74, 69]} rotation={[0, Math.PI / 2, 0]}>
@@ -198,16 +198,16 @@ export function Escritorio() {
         </mesh>
         {/* right (east) wall, in 4 pieces around its real window hole
             (z 255..365, y 10..160) */}
-        <mesh position={[700, 90, 84.5]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[341, 340]} />
+        <mesh position={[700, 146, 84.5]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[341, 452]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
-        <mesh position={[700, 90, 536]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[342, 340]} />
+        <mesh position={[700, 146, 536]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[342, 452]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
-        <mesh position={[700, 210, 310]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[110, 100]} />
+        <mesh position={[700, 266, 310]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[110, 212]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[700, -35, 310]} rotation={[0, -Math.PI / 2, 0]}>
@@ -219,8 +219,8 @@ export function Escritorio() {
           <meshStandardMaterial color="#3a332c" side={ladoPared} />
         </mesh>
         {/* front wall (behind the player's usual view) */}
-        <mesh position={[0, 90, 707]} rotation={[0, Math.PI, 0]}>
-          <planeGeometry args={[1400, 340]} />
+        <mesh position={[0, 146, 707]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1400, 452]} />
           <meshStandardMaterial color="#e2dccc" side={ladoPared} />
         </mesh>
         <mesh position={[0, -74, 706.5]} rotation={[0, Math.PI, 0]}>
