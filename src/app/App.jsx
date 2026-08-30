@@ -19,6 +19,7 @@ import { CartaModal } from './CartaModal.jsx'
 import { MujerModal } from './MujerModal.jsx'
 import { TumbaModal } from './TumbaModal.jsx'
 import { ConsejeroModal } from './ConsejeroModal.jsx'
+import { PanelObras } from './PanelObras.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
@@ -182,6 +183,8 @@ export function App() {
           🔍 dist {infoZoom.dist} · alt {infoZoom.y}
         </div>
       )}
+      {/* public-works progress bar + full list (map mode) */}
+      {idMaqueta === 'a' && !camaraPov && !camaraLibre && <PanelObras />}
       {/* quest inventory chips */}
       {idMaqueta !== 'c' && (
         <div className="inventario" onClick={() => setInventarioAbierto((v) => !v)}>

@@ -1,13 +1,10 @@
-// Maqueta registry. Each maqueta is a full view+interaction variant
-// running on the same engine. Switch at runtime with ?maqueta=<id>.
+// Maqueta registry. The diorama (A) won: Tablero (B) and Datos (C) were
+// early experiments, retired 2026-08-30 — their code stays in b/ and c/
+// but they're no longer selectable.
 import { MaquetaA } from './a/MaquetaA.jsx'
-import { MaquetaB } from './b/MaquetaB.jsx'
-import { MaquetaC } from './c/MaquetaC.jsx'
 
 export const MAQUETAS = {
   a: { nombre: 'Diorama', Componente: MaquetaA },
-  b: { nombre: 'Tablero', Componente: MaquetaB },
-  c: { nombre: 'Datos', Componente: MaquetaC },
 }
 
 /** Active maqueta id from the URL (?maqueta=a), defaulting to 'a'. */
