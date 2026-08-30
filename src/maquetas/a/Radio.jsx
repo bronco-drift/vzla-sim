@@ -11,73 +11,77 @@ const ROTACION = Math.PI / 2 // flat against the west wall, facing the room
 const ALCANCE = 900 // distance at which the music fades to silence
 
 export function Radio() {
-  const encendido = useGameStore((s) => s.radioEncendido)
+  const modo = useGameStore((s) => s.radioModo) // 0 off · 1 choir · 2 instrumental
   const toggleRadio = useGameStore((s) => s.toggleRadio)
   const { camera } = useThree()
-  const audioRef = useRef(null)
+  const pistasRef = useRef([]) // [{audio, gain}] per station
   const ctxRef = useRef(null)
-  const gainRef = useRef(null)
   const acumulador = useRef(0)
 
   useEffect(() => {
-    const audio = new Audio('/audio/radio.mp3')
-    audio.loop = true
-    audioRef.current = audio
-    // Old-radio voicing: band-limit the signal like a vintage AM set
-    // (cut lows under 500Hz and highs over 2.4kHz), volume via gain.
+    // Two stations, one shared old-AM voicing chain each (band-limit
+    // 500-2400Hz like a vintage set), volumes driven via gain nodes.
     const ctx = new (window.AudioContext || window.webkitAudioContext)()
-    const fuente = ctx.createMediaElementSource(audio)
-    const graves = ctx.createBiquadFilter()
-    graves.type = 'highpass'
-    graves.frequency.value = 500
-    const agudos = ctx.createBiquadFilter()
-    agudos.type = 'lowpass'
-    agudos.frequency.value = 2400
-    const gain = ctx.createGain()
-    gain.gain.value = 0
-    fuente.connect(graves)
-    graves.connect(agudos)
-    agudos.connect(gain)
-    gain.connect(ctx.destination)
+    const pistas = ['/audio/radio.mp3', '/audio/radio-instrumental.mp3'].map((ruta) => {
+      const audio = new Audio(ruta)
+      audio.loop = true
+      const fuente = ctx.createMediaElementSource(audio)
+      const graves = ctx.createBiquadFilter()
+      graves.type = 'highpass'
+      graves.frequency.value = 500
+      const agudos = ctx.createBiquadFilter()
+      agudos.type = 'lowpass'
+      agudos.frequency.value = 2400
+      const gain = ctx.createGain()
+      gain.gain.value = 0
+      fuente.connect(graves)
+      graves.connect(agudos)
+      agudos.connect(gain)
+      gain.connect(ctx.destination)
+      return { audio, gain }
+    })
+    pistasRef.current = pistas
     ctxRef.current = ctx
-    gainRef.current = gain
     return () => {
-      audio.pause()
+      pistas.forEach((p) => p.audio.pause())
       ctx.close()
-      audioRef.current = null
+      pistasRef.current = []
       ctxRef.current = null
-      gainRef.current = null
     }
   }, [])
 
-  // play/pause follows the switch (the click IS the user gesture the
-  // browser needs to allow playback and to resume the AudioContext)
+  // the active station plays, the other pauses (the click IS the user
+  // gesture the browser needs to allow playback + resume the context)
   useEffect(() => {
-    const audio = audioRef.current
-    if (!audio) return
-    if (encendido) {
-      ctxRef.current?.resume()
-      audio.play().catch(() => {
-        /* file missing or blocked: stay silent */
-      })
-    } else {
-      audio.pause()
-    }
-  }, [encendido])
+    const pistas = pistasRef.current
+    if (!pistas.length) return
+    if (modo > 0) ctxRef.current?.resume()
+    pistas.forEach((p, i) => {
+      if (modo === i + 1) {
+        p.audio.play().catch(() => {
+          /* file missing or blocked: stay silent */
+        })
+      } else {
+        p.audio.pause()
+        p.gain.gain.value = 0
+      }
+    })
+  }, [modo])
 
   // distance-based volume (halved overall), updated a few times/second
   useFrame((_, delta) => {
     acumulador.current += delta
     if (acumulador.current < 0.2) return
     acumulador.current = 0
-    const gain = gainRef.current
-    if (!gain || !encendido) return
+    if (modo === 0) return
+    const pista = pistasRef.current[modo - 1]
+    if (!pista) return
     const dx = camera.position.x - POSICION[0]
     const dy = camera.position.y - (POSICION[1] + 80)
     const dz = camera.position.z - POSICION[2]
     const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
     const vol = Math.max(0, 1 - dist / ALCANCE)
-    gain.gain.value = 0.5 * Math.pow(vol, 1.6)
+    pista.gain.gain.value = 0.5 * Math.pow(vol, 1.6)
   })
 
   return (
@@ -135,10 +139,12 @@ export function Radio() {
           <cylinderGeometry args={[0.7, 0.7, 26, 6]} />
           <meshStandardMaterial color="#8a8f96" flatShading />
         </mesh>
-        {/* power LED */}
+        {/* power LED: green = station 1, amber = station 2, red = off */}
         <mesh position={[19, 17, 9.4]}>
           <sphereGeometry args={[1.6, 8, 8]} />
-          <meshBasicMaterial color={encendido ? '#4ade80' : '#5a2020'} />
+          <meshBasicMaterial
+            color={modo === 1 ? '#4ade80' : modo === 2 ? '#f5c518' : '#5a2020'}
+          />
         </mesh>
       </group>
     </group>

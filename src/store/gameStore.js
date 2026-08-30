@@ -363,11 +363,15 @@ export const useGameStore = create((set, get) => ({
     set({ cartaModal: false })
   },
 
-  // Retro radio (starts OFF each session: browsers require a gesture
-  // before audio can play, so persisting "on" would break)
-  radioEncendido: false,
+  // Retro radio: click cycles OFF -> station 1 (anthem with choir) ->
+  // station 2 (instrumental) -> OFF. Starts OFF each session (browsers
+  // require a gesture before audio can play).
+  radioModo: 0,
   toggleRadio() {
-    set((s) => ({ radioEncendido: !s.radioEncendido }))
+    const modo = (get().radioModo + 1) % 3
+    set({ radioModo: modo })
+    if (modo === 1) agregarToast(set, get, '📻 Emisora 1: Himno de 1810 — con coro.')
+    if (modo === 2) agregarToast(set, get, '📻 Emisora 2: Himno de 1810 — instrumental.')
   },
 
   // The Cartographer NPC outside: her dialogue hints at the stones
