@@ -40,9 +40,12 @@ function CuadroMovible({ id, ancho, alto, textura, hijos }) {
         cuadros: {
           ...(escena.cuadros ?? {}),
           [id]: {
-            x: hit.x + (hit.nx ?? 0) * 1.6,
+            // 6u off the LOGICAL wall plane: the north wall is a box
+            // whose inner face sits 4u inside it — less than this and
+            // the frame gets buried inside the wall's thickness
+            x: hit.x + (hit.nx ?? 0) * 6,
             y: Math.max(70, Math.min(340, hit.y)),
-            z: hit.z + (hit.nz ?? 0) * 1.6,
+            z: hit.z + (hit.nz ?? 0) * 6,
             nx: hit.nx ?? 0,
             nz: hit.nz ?? 0,
           },
