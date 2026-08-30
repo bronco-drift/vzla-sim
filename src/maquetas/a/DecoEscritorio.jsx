@@ -119,20 +119,18 @@ export function DecoEscritorio() {
   const [retrato, setRetrato] = useState(null)
   const [retratoSucre, setRetratoSucre] = useState(null)
   const [retratoMiranda, setRetratoMiranda] = useState(null)
+  const [retratoPaez, setRetratoPaez] = useState(null)
   useEffect(() => {
     const loader = new THREE.TextureLoader()
-    loader.load('/textures/bolivar.webp', (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace
-      setRetrato(tex)
-    })
-    loader.load('/textures/sucre.webp', (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace
-      setRetratoSucre(tex)
-    })
-    loader.load('/textures/miranda.webp', (tex) => {
-      tex.colorSpace = THREE.SRGBColorSpace
-      setRetratoMiranda(tex)
-    })
+    const cargar = (ruta, setter) =>
+      loader.load(ruta, (tex) => {
+        tex.colorSpace = THREE.SRGBColorSpace
+        setter(tex)
+      })
+    cargar('/textures/bolivar.webp', setRetrato)
+    cargar('/textures/sucre.webp', setRetratoSucre)
+    cargar('/textures/miranda.webp', setRetratoMiranda)
+    cargar('/textures/paez.webp', setRetratoPaez)
   }, [])
 
   // "Nuevo Ideal Nacional" brochure lying on the desk
@@ -268,8 +266,8 @@ export function DecoEscritorio() {
       <CuadroMovible id="bolivar" ancho={50} alto={67} textura={retrato} />
       <CuadroMovible id="sucre" ancho={45} alto={71} textura={retratoSucre} />
       <CuadroMovible id="miranda" ancho={50} alto={67} textura={retratoMiranda} />
-      {/* empty frame awaiting the next image (east wall) */}
-      <CuadroMovible id="extra" ancho={50} alto={67} textura={null} />
+      {/* Páez, full-length portrait (was the empty frame) */}
+      <CuadroMovible id="extra" ancho={50} alto={70} textura={retratoPaez} />
 
       {/* Brochure lying on the desk, slightly rotated */}
       <mesh position={[62, 0.08, 20]} rotation={[-Math.PI / 2, 0, -0.35]}>

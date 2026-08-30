@@ -11,6 +11,7 @@ import { Ventana } from './Ventana.jsx'
 import { DecoEscritorio } from './DecoEscritorio.jsx'
 import { Cuarto } from './Cuarto.jsx'
 import { Humano } from './Humano.jsx'
+import { Mujer } from './Mujer.jsx'
 import { Exterior } from './Exterior.jsx'
 import { Luces, ColocadorLuces } from './Luces.jsx'
 
@@ -252,6 +253,9 @@ export function Escritorio() {
           (defaults = Marcel's placement, from ESCENA_DEFAULT) */}
       <Humano defaultPos={{ x: -603, z: -75 }} />
       <Humano clave="humano2" camisa="#2b4faa" defaultPos={{ x: -200, z: 155 }} />
+
+      {/* The Cartographer NPC outside, near the west door */}
+      <Mujer />
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />

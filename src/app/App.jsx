@@ -16,6 +16,7 @@ import { LibroModal } from './LibroModal.jsx'
 import { PiedraModal } from './PiedraModal.jsx'
 import { CandadoModal } from './CandadoModal.jsx'
 import { CartaModal } from './CartaModal.jsx'
+import { MujerModal } from './MujerModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 const esTactil = 'ontouchstart' in window
@@ -185,6 +186,7 @@ export function App() {
       <PiedraModal />
       <CandadoModal />
       <CartaModal />
+      <MujerModal />
     </div>
   )
 }

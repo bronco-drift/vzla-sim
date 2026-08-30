@@ -350,6 +350,15 @@ export const useGameStore = create((set, get) => ({
   cerrarCarta() {
     set({ cartaModal: false })
   },
+
+  // The Cartographer NPC outside: her dialogue hints at the stones
+  mujerModal: false,
+  verMujer() {
+    set({ mujerModal: true })
+  },
+  cerrarMujer() {
+    set({ mujerModal: false })
+  },
   abrirCofre() {
     const { quest } = get()
     if (!quest.cofreAbierto) {
