@@ -211,7 +211,9 @@ export const useGameStore = create((set, get) => ({
         ? '🪔 Click en el piso para plantar la lámpara.'
         : tipo === 'aplique'
           ? '💡 Click en una pared para colgar el aplique.'
-          : '🔥 Click en pared o piso para clavar la antorcha.',
+          : tipo === 'antorcha'
+            ? '🔥 Click en pared o piso para clavar la antorcha.'
+            : '🗑️ Tocá la luz que querés quitar.',
     )
   },
   agregarLuz(luz) {
@@ -227,6 +229,7 @@ export const useGameStore = create((set, get) => ({
   quitarLuz(indice) {
     const luces = get().escena.luces ?? []
     get().setEscena({ luces: luces.filter((_, i) => i !== indice) })
+    if (get().colocandoLuz === 'borrar') set({ colocandoLuz: null })
   },
   moverLuz(indice, cambios) {
     const luces = get().escena.luces ?? []

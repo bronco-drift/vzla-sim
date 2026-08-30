@@ -129,6 +129,7 @@ export function App() {
                     <button onClick={() => elegirLuz('pie')}>🪔 Lámpara de pie</button>
                     <button onClick={() => elegirLuz('aplique')}>💡 Aplique de pared</button>
                     <button onClick={() => elegirLuz('antorcha')}>🔥 Antorcha</button>
+                    <button onClick={() => elegirLuz('borrar')}>🗑️ Quitar una</button>
                     <button className="menu-luces-borrar" onClick={quitarLuces}>
                       🧹 Quitar todas
                     </button>
@@ -136,13 +137,15 @@ export function App() {
                 )}
                 {colocandoLuz && (
                   <div className="hint-camara">
-                    Click donde quieras colocarla ·{' '}
-                    {colocandoLuz === 'pie'
-                      ? 'va en el piso'
-                      : colocandoLuz === 'aplique'
-                        ? 'va en paredes'
-                        : 'va en pared o piso'}{' '}
-                    · click derecho sobre una luz la quita
+                    {colocandoLuz === 'borrar'
+                      ? 'Tocá la luz que querés quitar'
+                      : `Click donde quieras colocarla · ${
+                          colocandoLuz === 'pie'
+                            ? 'va en el piso'
+                            : colocandoLuz === 'aplique'
+                              ? 'va en paredes'
+                              : 'va en pared o piso'
+                        } · click derecho sobre una luz la quita`}
                   </div>
                 )}
               </>

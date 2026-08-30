@@ -68,7 +68,7 @@ export function ColocadorLuces() {
     const lienzo = gl.domElement
     const alClick = (e) => {
       const { colocandoLuz, agregarLuz } = useGameStore.getState()
-      if (!colocandoLuz || e.button !== 0) return
+      if (!colocandoLuz || colocandoLuz === 'borrar' || e.button !== 0) return
       const r = lienzo.getBoundingClientRect()
       const ndc = new THREE.Vector2(
         ((e.clientX - r.left) / r.width) * 2 - 1,
@@ -257,7 +257,10 @@ export function Luces() {
     <group>
       {luces.map((luz, i) => {
         const quitar = (e) => {
-          if (e.button === 2) {
+          // right-click removes; so does a left tap while in delete mode
+          // (mobile has no right button)
+          const enModoBorrar = useGameStore.getState().colocandoLuz === 'borrar'
+          if (e.button === 2 || (e.button === 0 && enModoBorrar)) {
             e.stopPropagation()
             quitarLuz(i)
             return
