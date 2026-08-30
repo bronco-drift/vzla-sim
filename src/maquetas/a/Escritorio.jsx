@@ -12,6 +12,7 @@ import { DecoEscritorio } from './DecoEscritorio.jsx'
 import { Cuarto } from './Cuarto.jsx'
 import { Humano } from './Humano.jsx'
 import { Mujer } from './Mujer.jsx'
+import { Radio } from './Radio.jsx'
 import { Exterior } from './Exterior.jsx'
 import { Luces, ColocadorLuces } from './Luces.jsx'
 
@@ -256,6 +257,9 @@ export function Escritorio() {
 
       {/* The Cartographer NPC outside, near the west door */}
       <Mujer />
+
+      {/* Retro radio on its table (SW corner, right of the door) */}
+      <Radio />
 
       {/* Grass, horizon gradient, trees and cardinal boulders */}
       <Exterior />

@@ -363,6 +363,13 @@ export const useGameStore = create((set, get) => ({
     set({ cartaModal: false })
   },
 
+  // Retro radio (starts OFF each session: browsers require a gesture
+  // before audio can play, so persisting "on" would break)
+  radioEncendido: false,
+  toggleRadio() {
+    set((s) => ({ radioEncendido: !s.radioEncendido }))
+  },
+
   // The Cartographer NPC outside: her dialogue hints at the stones
   mujerModal: false,
   verMujer() {
