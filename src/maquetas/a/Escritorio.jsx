@@ -137,22 +137,31 @@ export function Escritorio() {
           <meshBasicMaterial color="#3a3f4a" />
         </mesh>
       </group>
-      {/* white office wall built in 4 segments AROUND the window hole
-          (hole: x -55..55, y 10..160) so the view behind has real depth */}
-      <mesh position={[-377.5, 90, -86]} receiveShadow>
-        <boxGeometry args={[645, 340, 8]} />
-        <meshStandardMaterial color="#e6e0d2" />
-      </mesh>
-      <mesh position={[377.5, 90, -86]} receiveShadow>
-        <boxGeometry args={[645, 340, 8]} />
-        <meshStandardMaterial color="#e6e0d2" />
-      </mesh>
+      {/* white office wall with THREE real window holes (x -350, 0, +350;
+          all y 10..160): a full strip above, a strip below, and columns
+          between the holes — every window shows the actual sky behind */}
       <mesh position={[0, 210, -86]} receiveShadow>
-        <boxGeometry args={[110, 100, 8]} />
+        <boxGeometry args={[1400, 100, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
       <mesh position={[0, -35, -86]} receiveShadow>
-        <boxGeometry args={[110, 90, 8]} />
+        <boxGeometry args={[1400, 90, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[-552.5, 85, -86]} receiveShadow>
+        <boxGeometry args={[295, 150, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[-175, 85, -86]} receiveShadow>
+        <boxGeometry args={[240, 150, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[175, 85, -86]} receiveShadow>
+        <boxGeometry args={[240, 150, 8]} />
+        <meshStandardMaterial color="#e6e0d2" />
+      </mesh>
+      <mesh position={[552.5, 85, -86]} receiveShadow>
+        <boxGeometry args={[295, 150, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
 
@@ -169,9 +178,22 @@ export function Escritorio() {
           <planeGeometry args={[800, 12]} />
           <meshStandardMaterial color="#3a332c" />
         </mesh>
-        {/* right wall */}
-        <mesh position={[700, 90, 307]} rotation={[0, -Math.PI / 2, 0]}>
-          <planeGeometry args={[800, 340]} />
+        {/* right (east) wall, in 4 pieces around its real window hole
+            (z 255..365, y 10..160) */}
+        <mesh position={[700, 90, 84.5]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[341, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[700, 90, 536]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[342, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[700, 210, 310]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[110, 100]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[700, -35, 310]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[110, 90]} />
           <meshStandardMaterial color="#e2dccc" />
         </mesh>
         <mesh position={[699.5, -74, 307]} rotation={[0, -Math.PI / 2, 0]}>

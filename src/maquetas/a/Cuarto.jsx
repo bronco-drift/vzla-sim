@@ -1,24 +1,20 @@
 // The rest of the presidential office: double door, extra windows,
-// bookshelf, sofa, flag, rug, plants and a wall clock. Everything is
-// low-poly boxes in the scene's palette. Extra windows share one
-// useFrame that tints all their glass panes with the day/night sky.
-import { useRef } from 'react'
-import { useFrame } from '@react-three/fiber'
-import { useGameStore } from '../../store/gameStore.js'
-import { colorVidrio } from './Sol.jsx'
-
+// bookshelf, sofa, rug, plants and a wall clock. Everything is low-poly
+// boxes in the scene's palette. The extra windows are REAL wall holes
+// (cut in Escritorio.jsx) — this component is just frame + faint glass;
+// the sky cylinder behind provides the actual day/night view.
 const BLANCO = '#f0ebe0'
 const MADERA = '#5d3d22'
 const MADERA_CLARA = '#7a5230'
 
-/** Simple window with real-world proportions (1.10 x 1.50 m at 1u=1cm):
-    white frame + dynamic glass (no photo view). */
-function VentanaSimple({ registrarVidrio }) {
+/** Window frame with real-world proportions (1.10 x 1.50 m at 1u=1cm)
+    over a wall hole: white frame + a faint glass sheen. */
+function VentanaSimple() {
   return (
     <group>
-      <mesh ref={registrarVidrio}>
+      <mesh>
         <planeGeometry args={[110, 150]} />
-        <meshBasicMaterial color="#1d3a57" />
+        <meshBasicMaterial color="#cfe4f0" transparent opacity={0.14} />
       </mesh>
       <mesh position={[0, 0, 0.5]}>
         <boxGeometry args={[3, 150, 1.4]} />
@@ -84,17 +80,6 @@ const LIBROS = [
 ]
 
 export function Cuarto() {
-  const vidrios = useRef([])
-  const registrar = (m) => m && !vidrios.current.includes(m) && vidrios.current.push(m)
-
-  useFrame(() => {
-    const { game, escena } = useGameStore.getState()
-    if (!game) return
-    const frac = escena.solFijo ?? (game.dias % 365) / 365
-    const dia = Math.max(0, Math.sin(frac * Math.PI * 2))
-    for (const v of vidrios.current) colorVidrio(dia, v.material.color)
-  })
-
   return (
     <group>
       {/* -- Double door, centered on the left wall (60% larger: 2.85m tall) -- */}
@@ -120,16 +105,16 @@ export function Cuarto() {
         </group>
       </group>
 
-      {/* -- Extra windows, symmetric with the central Ávila window:
-             back wall at ±350, plus one centered on the east wall -- */}
+      {/* -- Extra windows over their REAL wall holes: back wall at ±350
+             (symmetric with the central Ávila window), east wall center -- */}
       <group position={[-350, 85, -81.5]}>
-        <VentanaSimple registrarVidrio={registrar} />
+        <VentanaSimple />
       </group>
       <group position={[350, 85, -81.5]}>
-        <VentanaSimple registrarVidrio={registrar} />
+        <VentanaSimple />
       </group>
       <group position={[698, 85, 310]} rotation={[0, -Math.PI / 2, 0]}>
-        <VentanaSimple registrarVidrio={registrar} />
+        <VentanaSimple />
       </group>
 
       {/* -- Rug under the desk area -- */}

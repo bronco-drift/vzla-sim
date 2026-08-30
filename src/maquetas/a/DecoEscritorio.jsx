@@ -57,8 +57,58 @@ export function DecoEscritorio() {
     [],
   )
 
+  // Compass rose easter egg: old-map style, drawn procedurally
+  const rosa = useMemo(
+    () =>
+      texturaDesdeCanvas((ctx, w, h) => {
+        const cx = w / 2
+        const cy = h / 2
+        ctx.strokeStyle = '#f0ebe0'
+        ctx.fillStyle = '#f0ebe0'
+        ctx.lineWidth = 3
+        // outer ring
+        ctx.beginPath()
+        ctx.arc(cx, cy, w * 0.36, 0, Math.PI * 2)
+        ctx.stroke()
+        // 8-point star: long cardinal points, short diagonals
+        const punta = (ang, largo, ancho, color) => {
+          ctx.fillStyle = color
+          ctx.save()
+          ctx.translate(cx, cy)
+          ctx.rotate(ang)
+          ctx.beginPath()
+          ctx.moveTo(0, -largo)
+          ctx.lineTo(ancho, 0)
+          ctx.lineTo(0, largo * 0.18)
+          ctx.lineTo(-ancho, 0)
+          ctx.closePath()
+          ctx.fill()
+          ctx.restore()
+        }
+        for (let i = 0; i < 4; i++) punta((i * Math.PI) / 2 + Math.PI / 4, w * 0.22, w * 0.035, '#c9a227')
+        for (let i = 0; i < 4; i++) punta((i * Math.PI) / 2, w * 0.33, w * 0.05, '#f0ebe0')
+        // letters
+        ctx.fillStyle = '#f5c518'
+        ctx.font = `bold ${Math.round(w * 0.13)}px Georgia, serif`
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'middle'
+        ctx.fillText('N', cx, cy - w * 0.44)
+        ctx.fillStyle = '#f0ebe0'
+        ctx.fillText('S', cx, cy + w * 0.44)
+        ctx.fillText('E', cx + w * 0.44, cy)
+        ctx.fillText('O', cx - w * 0.44, cy)
+      }, 256, 256),
+    [],
+  )
+
   return (
     <group>
+      {/* Compass rose on the sea tray, old-map easter egg (N = -z) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[138, 0.45, 56]}>
+        <planeGeometry args={[26, 26]} />
+        <meshBasicMaterial map={rosa} transparent />
+      </mesh>
+
       {/* Bolívar portrait on the wall, right of the window.
           Canvas is 25x33.5 to match the painting's 3:4 aspect. */}
       <group position={[180, 95, -81.4]}>

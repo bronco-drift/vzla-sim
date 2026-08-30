@@ -27,7 +27,9 @@ const COLOR_LUNA = new THREE.Color('#8ea2d6')
 const CIELO_NOCHE = new THREE.Color('#0a0f1a')
 const CIELO_DIA = new THREE.Color('#1d3a57')
 const CIELO_CREPUSCULO = new THREE.Color('#7a3d2a')
-const MADERA_NOCHE = new THREE.Color('#191008')
+// Night background is near-black SPACE (stars live in Ventana.jsx);
+// day keeps the warm wood tone that reads as a ceiling above the walls.
+const MADERA_NOCHE = new THREE.Color('#04060d')
 const MADERA_DIA = new THREE.Color('#553a22')
 const MADERA_CREPUSCULO = new THREE.Color('#6e4322')
 const auxiliar = new THREE.Color() // scratch color, avoids per-frame allocation
