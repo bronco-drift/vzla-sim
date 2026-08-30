@@ -58,7 +58,6 @@ export const useGameStore = create((set, get) => ({
   resetCamara: 0,         // bump to ask the active maqueta to re-center its camera
   camaraLibre: false,     // fly/levitate camera mode (maqueta A)
   camaraPov: false,       // first-person mode: walk as the blue figure
-  transicion: null,       // camera flight {pos, target} while switching modes
   puertaAbierta: false,   // office double door open?
   // Adventure mini-quest: book -> key -> padlock -> chest -> card -> door
   quest: {
@@ -203,41 +202,22 @@ export const useGameStore = create((set, get) => ({
   },
 
   toggleCamaraLibre() {
-    if (get().transicion) return // ignore while a camera flight is running
     const activar = !get().camaraLibre
-    if (activar) {
-      set({ camaraLibre: true, camaraPov: false, transicion: null })
-    } else {
-      // leaving fly mode: smooth flight back to the map framing
-      set({
-        camaraLibre: false,
-        transicion: { pos: [0, 34, 26], target: [0, 0, -4] },
-      })
-    }
+    // leaving a camera mode: instant re-frame to the map view
+    set((s) => ({
+      camaraLibre: activar,
+      camaraPov: false,
+      resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
+    }))
   },
 
   toggleCamaraPov() {
-    if (get().transicion) return
     const activar = !get().camaraPov
-    if (activar) {
-      // fly INTO the blue figure's eyes (it hides as we approach)
-      const h = get().escena.humano2 ?? { x: -500, z: 310 }
-      set({
-        camaraPov: true,
-        camaraLibre: false,
-        transicion: { pos: [h.x, 78, h.z], target: [h.x, 78, h.z - 120] },
-      })
-    } else {
-      // fly back UP to the governing view over the desk
-      set({
-        camaraPov: false,
-        transicion: { pos: [0, 34, 26], target: [0, 0, -4] },
-      })
-    }
-  },
-
-  finTransicion() {
-    set({ transicion: null })
+    set((s) => ({
+      camaraPov: activar,
+      camaraLibre: false,
+      resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
+    }))
   },
 
   togglePuerta() {

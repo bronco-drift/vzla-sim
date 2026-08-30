@@ -1,6 +1,7 @@
 // Scene editor panel: pin the sun/moon anywhere on their orbit with a
 // slider, and move the desk lamp. Everything persists (localStorage).
 import { useGameStore } from '../store/gameStore.js'
+import { fracVisual } from '../maquetas/a/Sol.jsx'
 
 export function PanelEscena() {
   const abierto = useGameStore((s) => s.panelEscena)
@@ -12,7 +13,7 @@ export function PanelEscena() {
   if (!abierto || !game) return null
 
   const solFijo = escena.solFijo != null
-  const fracActual = escena.solFijo ?? (game.dias % 365) / 365
+  const fracActual = escena.solFijo ?? fracVisual.valor
 
   return (
     <aside className="panel-escena">

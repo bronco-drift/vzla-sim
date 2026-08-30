@@ -6,6 +6,7 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
+import { cicloDia } from './Sol.jsx'
 import { Ventana } from './Ventana.jsx'
 import { DecoEscritorio } from './DecoEscritorio.jsx'
 import { Cuarto } from './Cuarto.jsx'
@@ -43,10 +44,10 @@ export function Escritorio() {
 
   // Lamp switches on when the sun is low/below the horizon, with a
   // smooth ramp so it feels like a warm click-on.
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const { game, escena } = useGameStore.getState()
     if (!game || !luzRef.current) return
-    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    const frac = cicloDia(escena, state.clock.elapsedTime)
     const solAltura = Math.sin(frac * Math.PI * 2)
     const intensidad = escena.lampara.intensidad ?? 220
     const modo = escena.lampara.modo ?? 'auto'

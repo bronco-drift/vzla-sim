@@ -7,6 +7,7 @@ import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
+import { cicloDia } from './Sol.jsx'
 
 const CLAVES_PIEDRAS = ['norte', 'sur', 'este', 'oeste']
 
@@ -66,10 +67,10 @@ export function Exterior() {
   const focosRef = useRef([])
 
   // Lamppost bulbs follow the day/night cycle (on at night, soft ramp)
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const { game, escena } = useGameStore.getState()
     if (!game) return
-    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    const frac = cicloDia(escena, state.clock.elapsedTime)
     const solAltura = Math.sin(frac * Math.PI * 2)
     const objetivo = solAltura < 0.12 ? 2200 : 0
     for (let i = 0; i < 4; i++) {

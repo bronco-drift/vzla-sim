@@ -40,6 +40,18 @@ export function colorCielo(dia, out) {
   return out.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
 }
 
+// Day/night is a fixed visual cycle: one full day+night ≈ 60 REAL
+// seconds, regardless of sim speed (the scene panel can still pin it).
+// Every system that reacts to daylight shares this one function.
+export const SEGUNDOS_CICLO = 60
+export function cicloDia(escena, tiempo) {
+  return escena.solFijo ?? (tiempo % SEGUNDOS_CICLO) / SEGUNDOS_CICLO
+}
+
+// Live cycle fraction, written every frame by <Sol/> — lets plain React
+// UI (the scene panel's "pin sun" toggle) read the CURRENT sky position.
+export const fracVisual = { valor: 0.25 }
+
 // Window glass wants a real daytime sky (light blue), not the deep
 // world-backdrop blue above — otherwise noon looks like night indoors.
 const VIDRIO_NOCHE = new THREE.Color('#101c30')
@@ -60,7 +72,7 @@ export function Sol() {
   const fondoMundo = useRef(0) // eased 0=desk palette, 1=world palette
   const { scene } = useThree()
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     const { game, mundoGlobal, escena } = useGameStore.getState()
     if (!game || !luzSolRef.current) return
 
@@ -74,9 +86,10 @@ export function Sol() {
     const alturaOrbita = ALTURA * escalaVisual.current
     const tamano = 1 + (escalaVisual.current - 1) * 0.45
 
-    // One orbit per simulated year — unless the scene editor pinned the
-    // sun at a fixed point of its track (escena.solFijo, 0..1).
-    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    // One orbit per ~60 real seconds — unless the scene editor pinned
+    // the sun at a fixed point of its track (escena.solFijo, 0..1).
+    const frac = cicloDia(escena, state.clock.elapsedTime)
+    fracVisual.valor = frac
     const objetivo = frac * Math.PI * 2
 
     // Ease the visual angle toward the simulation's angle (wrap-aware)

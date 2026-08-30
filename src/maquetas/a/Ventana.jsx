@@ -10,7 +10,7 @@ import { useRef, useState, useEffect, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
-import { colorVidrio } from './Sol.jsx'
+import { colorVidrio, cicloDia } from './Sol.jsx'
 
 /** Canvas of scattered stars on transparency (shared by night layers). */
 function crearCanvasEstrellas() {
@@ -109,10 +109,10 @@ export function Ventana() {
   const estrellasTapaRef = useRef()
 
   // Sky follows the day/night cycle; stars fade in only at night
-  useFrame(() => {
+  useFrame((state) => {
     const { game, escena } = useGameStore.getState()
     if (!game || !cieloRef.current) return
-    const frac = escena.solFijo ?? (game.dias % 365) / 365
+    const frac = cicloDia(escena, state.clock.elapsedTime)
     const dia = Math.max(0, Math.sin(frac * Math.PI * 2))
     colorVidrio(dia, cieloRef.current.material.color)
     if (vistaRef.current) {
