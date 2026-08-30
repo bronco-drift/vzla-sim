@@ -11,6 +11,7 @@ import { MenuPausa } from './MenuPausa.jsx'
 import { Victoria } from './Victoria.jsx'
 import { EventoModal } from './EventoModal.jsx'
 import { PanelEscena } from './PanelEscena.jsx'
+import { LibroModal } from './LibroModal.jsx'
 
 const esEditor = new URLSearchParams(window.location.search).has('editor')
 
@@ -26,6 +27,9 @@ export function App() {
   const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
   const camaraPov = useGameStore((s) => s.camaraPov)
   const toggleCamaraPov = useGameStore((s) => s.toggleCamaraPov)
+  const tieneLlave = useGameStore((s) => s.quest.tieneLlave)
+  const tieneTarjeta = useGameStore((s) => s.quest.tieneTarjeta)
+  const puertaDesbloqueada = useGameStore((s) => s.quest.puertaDesbloqueada)
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
@@ -97,9 +101,17 @@ export function App() {
           </>
         )}
       </div>
+      {/* quest inventory chips */}
+      {(tieneLlave || tieneTarjeta) && (
+        <div className="inventario">
+          {tieneLlave && <span title="Llave de bronce">🔑</span>}
+          {tieneTarjeta && !puertaDesbloqueada && <span title="Tarjeta de acceso">💳</span>}
+        </div>
+      )}
       <MenuPausa />
       <Victoria />
       <EventoModal />
+      <LibroModal />
     </div>
   )
 }

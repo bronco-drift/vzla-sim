@@ -146,10 +146,16 @@ export function Cuarto() {
 
   const puertaAbierta = useGameStore((s) => s.puertaAbierta)
   const togglePuerta = useGameStore((s) => s.togglePuerta)
+  const candadoAbierto = useGameStore((s) => s.quest.candadoAbierto)
+  const cofreAbierto = useGameStore((s) => s.quest.cofreAbierto)
+  const tieneTarjeta = useGameStore((s) => s.quest.tieneTarjeta)
+  const puertaDesbloqueada = useGameStore((s) => s.quest.puertaDesbloqueada)
   const hojaIzqRef = useRef()
   const hojaDerRef = useRef()
+  const tapaCofreRef = useRef()
 
-  // Door leaves ease toward open (±105°) or closed on their hinges
+  // Door leaves ease toward open (±105°) or closed on their hinges;
+  // the chest lid swings back the same way
   useFrame((_, delta) => {
     const objetivo = puertaAbierta ? 1.83 : 0
     const k = Math.min(1, delta * 4)
@@ -158,6 +164,10 @@ export function Cuarto() {
     }
     if (hojaDerRef.current) {
       hojaDerRef.current.rotation.y += (objetivo - hojaDerRef.current.rotation.y) * k
+    }
+    if (tapaCofreRef.current) {
+      const abierto = useGameStore.getState().quest.cofreAbierto ? -1.9 : 0
+      tapaCofreRef.current.rotation.x += (abierto - tapaCofreRef.current.rotation.x) * k
     }
   })
 
@@ -224,31 +234,168 @@ export function Cuarto() {
         <meshStandardMaterial color="#c9a227" />
       </mesh>
 
-      {/* -- Bookshelf against the back wall -- */}
-      <group position={[550, -80, -75]}>
-        <mesh position={[0, 80, 0]} castShadow>
-          <boxGeometry args={[120, 160, 26]} />
+      {/* -- LIBRARY against the back wall: floor-to-near-ceiling shelves.
+             One golden spine — "Cesarismo democrático" — is clickable and
+             starts the quest (its modal hands over the bronze key). -- */}
+      <group position={[535, -80, -70]}>
+        <mesh position={[0, 190, 0]} castShadow>
+          <boxGeometry args={[240, 380, 30]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        {[36, 76, 116].map((y) => (
+        {[10, 72, 134, 196, 258, 320].map((y, fila) => (
           <group key={y}>
-            <mesh position={[0, y + 16, 2]}>
-              <boxGeometry args={[108, 2.5, 24]} />
+            <mesh position={[0, y + 52, 3]}>
+              <boxGeometry args={[224, 3, 27]} />
               <meshStandardMaterial color={MADERA_CLARA} flatShading />
             </mesh>
-            {LIBROS.slice(0, 8).map((color, i) => (
-              <mesh
-                key={i}
-                position={[-44 + i * 12.5, y + 30, 4]}
-                rotation={[0, 0, (i * 7 + y) % 3 === 0 ? 0.08 : 0]}
-                castShadow
-              >
-                <boxGeometry args={[8, 24 - ((i + y) % 3) * 3, 16]} />
-                <meshStandardMaterial color={LIBROS[(i + y) % LIBROS.length]} flatShading />
-              </mesh>
-            ))}
+            {Array.from({ length: 15 }, (_, i) => i).map((i) =>
+              (i * 13 + fila * 7) % 5 === 4 ? null : (
+                <mesh
+                  key={i}
+                  position={[-98 + i * 14, y + 26, 5]}
+                  rotation={[0, 0, (i * 11 + fila) % 4 === 0 ? 0.07 : 0]}
+                  castShadow
+                >
+                  <boxGeometry args={[9, 40 - ((i + fila) % 4) * 4, 18]} />
+                  <meshStandardMaterial
+                    color={LIBROS[(i * 3 + fila) % LIBROS.length]}
+                    flatShading
+                  />
+                </mesh>
+              ),
+            )}
           </group>
         ))}
+        {/* the golden book (chest height, easy to spot) + fat hitbox */}
+        <mesh position={[-28, 160, 7]} castShadow>
+          <boxGeometry args={[11, 38, 22]} />
+          <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        <mesh
+          visible={false}
+          position={[-28, 160, 10]}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().abrirLibro()
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        >
+          <boxGeometry args={[30, 50, 30]} />
+        </mesh>
+      </group>
+
+      {/* -- VIP rope + padlock guarding the stairs (click with the key) -- */}
+      {!candadoAbierto && (
+        <group
+          position={[40, -80, 650]}
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().abrirCandado()
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        >
+          {[
+            [0, 0, -52],
+            [0, 0, 52],
+          ].map(([x, , z]) => (
+            <group key={z} position={[x, 0, z]}>
+              <mesh position={[0, 4, 0]} castShadow>
+                <cylinderGeometry args={[10, 12, 8, 10]} />
+                <meshStandardMaterial color="#c9a227" flatShading />
+              </mesh>
+              <mesh position={[0, 55, 0]} castShadow>
+                <cylinderGeometry args={[2.5, 2.5, 100, 8]} />
+                <meshStandardMaterial color="#c9a227" flatShading />
+              </mesh>
+              <mesh position={[0, 106, 0]}>
+                <sphereGeometry args={[5, 10, 10]} />
+                <meshStandardMaterial color="#c9a227" flatShading />
+              </mesh>
+            </group>
+          ))}
+          {/* red rope (slight sag) + padlock at center */}
+          <mesh position={[0, 96, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[2.2, 2.2, 100, 8]} />
+            <meshStandardMaterial color="#8c2d2d" flatShading />
+          </mesh>
+          <mesh position={[0, 82, 0]} castShadow>
+            <boxGeometry args={[16, 18, 8]} />
+            <meshStandardMaterial color="#b8952d" flatShading />
+          </mesh>
+          <mesh position={[0, 94, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[7, 2, 8, 12, Math.PI]} />
+            <meshStandardMaterial color="#8a8f96" flatShading />
+          </mesh>
+        </group>
+      )}
+
+      {/* -- Chest on the mezzanine (SE corner): lid swings open, the card
+             inside is clickable until taken -- */}
+      <group position={[615, 267, 640]}>
+        <mesh
+          position={[0, 20, 0]}
+          castShadow
+          onPointerDown={(e) => {
+            e.stopPropagation()
+            useGameStore.getState().abrirCofre()
+          }}
+          onPointerOver={() => (document.body.style.cursor = 'pointer')}
+          onPointerOut={() => (document.body.style.cursor = 'auto')}
+        >
+          <boxGeometry args={[76, 40, 54]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <group ref={tapaCofreRef} position={[0, 40, -27]}>
+          <mesh position={[0, 8, 27]} castShadow>
+            <boxGeometry args={[76, 16, 54]} />
+            <meshStandardMaterial color={MADERA_CLARA} flatShading />
+          </mesh>
+        </group>
+        <mesh position={[0, 22, 28]}>
+          <boxGeometry args={[12, 14, 4]} />
+          <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        {cofreAbierto && !tieneTarjeta && (
+          <mesh
+            position={[0, 42, 0]}
+            rotation={[-Math.PI / 2.4, 0, 0.2]}
+            onPointerDown={(e) => {
+              e.stopPropagation()
+              useGameStore.getState().tomarTarjeta()
+            }}
+            onPointerOver={() => (document.body.style.cursor = 'pointer')}
+            onPointerOut={() => (document.body.style.cursor = 'auto')}
+          >
+            <boxGeometry args={[34, 22, 2]} />
+            <meshStandardMaterial color="#e8e2d0" flatShading />
+          </mesh>
+        )}
+      </group>
+
+      {/* -- Card sensor beside the door (west wall): red LED -> green -- */}
+      <group
+        position={[-694, 100, 430]}
+        onPointerDown={(e) => {
+          e.stopPropagation()
+          useGameStore.getState().usarSensor()
+        }}
+        onPointerOver={() => (document.body.style.cursor = 'pointer')}
+        onPointerOut={() => (document.body.style.cursor = 'auto')}
+      >
+        <mesh>
+          <boxGeometry args={[8, 34, 22]} />
+          <meshStandardMaterial color="#4a4f57" flatShading />
+        </mesh>
+        <mesh position={[5, 6, 0]}>
+          <sphereGeometry args={[3.2, 10, 10]} />
+          <meshBasicMaterial color={puertaDesbloqueada ? '#4ade80' : '#e04545'} />
+        </mesh>
+        <mesh position={[5, -6, 0]}>
+          <boxGeometry args={[1.5, 12, 14]} />
+          <meshStandardMaterial color="#23262c" flatShading />
+        </mesh>
       </group>
 
       {/* -- Sofa + low table against the right wall, under its window -- */}

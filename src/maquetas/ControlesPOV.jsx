@@ -158,7 +158,13 @@ export function ControlesPOV() {
       z: prev.z + (-Math.cos(yaw) * avance - Math.sin(yaw) * lado) * paso,
     }
 
-    chocarConCuarto(prev, prox, useGameStore.getState().puertaAbierta)
+    const estado = useGameStore.getState()
+    chocarConCuarto(prev, prox, estado.puertaAbierta)
+
+    // The VIP rope at the stair base is solid until its padlock is opened
+    if (!estado.quest.candadoAbierto && prox.z > 588 && prox.z < 707) {
+      if (cruza(prev.x, prox.x, 40)) prox.x = prev.x
+    }
 
     // stay inside the sky cylinder
     const dx = prox.x

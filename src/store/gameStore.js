@@ -59,6 +59,15 @@ export const useGameStore = create((set, get) => ({
   camaraLibre: false,     // fly/levitate camera mode (maqueta A)
   camaraPov: false,       // first-person mode: walk as the blue figure
   puertaAbierta: false,   // office double door open?
+  // Adventure mini-quest: book -> key -> padlock -> chest -> card -> door
+  quest: {
+    libroAbierto: false,      // book modal currently open
+    tieneLlave: false,        // took the bronze key from the book
+    candadoAbierto: false,    // stair rope unlocked
+    cofreAbierto: false,      // chest lid open
+    tieneTarjeta: false,      // took the card from the chest
+    puertaDesbloqueada: false, // card used on the door sensor
+  },
   arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
 
   nuevaPartida(nivel) {
@@ -162,7 +171,56 @@ export const useGameStore = create((set, get) => ({
   },
 
   togglePuerta() {
+    const { quest, puertaAbierta } = get()
+    if (!quest.puertaDesbloqueada && !puertaAbierta) {
+      agregarToast(set, get, '🔒 La puerta está bloqueada. El sensor pide una tarjeta.')
+      return
+    }
     set((s) => ({ puertaAbierta: !s.puertaAbierta }))
+  },
+
+  // ---- Adventure quest actions ----
+  abrirLibro() {
+    set((s) => ({ quest: { ...s.quest, libroAbierto: true } }))
+  },
+  cerrarLibro() {
+    const { quest } = get()
+    if (!quest.tieneLlave) agregarToast(set, get, '🔑 Te llevás la llave de bronce.')
+    set((s) => ({ quest: { ...s.quest, libroAbierto: false, tieneLlave: true } }))
+  },
+  abrirCandado() {
+    const { quest } = get()
+    if (quest.candadoAbierto) return
+    if (!quest.tieneLlave) {
+      agregarToast(set, get, '🔒 Un candado cierra el paso. La llave debe estar en algún libro…')
+      return
+    }
+    agregarToast(set, get, '🔓 El candado cede. La escalera es tuya.')
+    set((s) => ({ quest: { ...s.quest, candadoAbierto: true } }))
+  },
+  abrirCofre() {
+    const { quest } = get()
+    if (!quest.cofreAbierto) {
+      agregarToast(set, get, '🧰 El cofre se abre. Hay una tarjeta adentro.')
+      set((s) => ({ quest: { ...s.quest, cofreAbierto: true } }))
+    }
+  },
+  tomarTarjeta() {
+    const { quest } = get()
+    if (quest.cofreAbierto && !quest.tieneTarjeta) {
+      agregarToast(set, get, '💳 Tarjeta de acceso en mano.')
+      set((s) => ({ quest: { ...s.quest, tieneTarjeta: true } }))
+    }
+  },
+  usarSensor() {
+    const { quest } = get()
+    if (quest.puertaDesbloqueada) return
+    if (!quest.tieneTarjeta) {
+      agregarToast(set, get, '🟥 El sensor parpadea en rojo. Falta una tarjeta.')
+      return
+    }
+    agregarToast(set, get, '🟩 ¡Acceso concedido! La puerta está desbloqueada.')
+    set((s) => ({ quest: { ...s.quest, puertaDesbloqueada: true } }))
   },
 
   /** Merge scene tuning (lamp/sun/room light) and persist it. */

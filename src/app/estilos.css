@@ -506,6 +506,21 @@ body {
   left: max(238px, calc(env(safe-area-inset-left) + 224px));
 }
 
+/* quest inventory: little item chips, bottom-right */
+.inventario {
+  position: absolute;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  right: max(14px, env(safe-area-inset-right));
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--panel);
+  border: 1px solid var(--acento);
+  border-radius: 12px;
+  font-size: 22px;
+  z-index: 15;
+}
+
 /* fly-mode control hints, floating above the buttons */
 .hint-camara {
   position: absolute;
