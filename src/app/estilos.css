@@ -32,6 +32,12 @@ body {
   /* Game UI: dragging the map must never select text */
   user-select: none;
   -webkit-user-select: none;
+  /* Mobile: no double-tap zoom, no long-press callout, no pull-to-refresh
+     — iOS turns those gestures into page zoom/scroll and CANCELS the
+     pointer events mid-drag, breaking the POV look controls */
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  overscroll-behavior: none;
 }
 
 /* ---- Welcome ---- */
