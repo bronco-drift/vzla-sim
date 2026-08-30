@@ -23,7 +23,8 @@ const CLAVE_QUEST = 'vzla-sim.quest'
 const ESCENA_DEFAULT = {
   solFijo: null, // null = sun follows game time; 0..1 = pinned orbit position
   lampara: { x: 52, z: -28, rot: -0.8, intensidad: 220, escala: 1, modo: 'auto' }, // modo: auto | on | off
-  luzCuarto: { encendida: false, intensidad: 1500 }, // ceiling light of the "room"
+  luzCuarto: { encendida: false, intensidad: 1500 }, // ridge pendants of the room
+  lucesColocadas: { encendidas: true, intensidad: 1 }, // player-placed lights (0..1.5 multiplier)
 }
 
 function cargarEscena() {
@@ -36,6 +37,7 @@ function cargarEscena() {
       ...guardada,
       lampara: { ...ESCENA_DEFAULT.lampara, ...guardada.lampara },
       luzCuarto: { ...ESCENA_DEFAULT.luzCuarto, ...guardada.luzCuarto },
+      lucesColocadas: { ...ESCENA_DEFAULT.lucesColocadas, ...guardada.lucesColocadas },
     }
   } catch {
     return ESCENA_DEFAULT
@@ -328,6 +330,7 @@ export const useGameStore = create((set, get) => ({
       ...cambios,
       lampara: { ...get().escena.lampara, ...(cambios.lampara ?? {}) },
       luzCuarto: { ...get().escena.luzCuarto, ...(cambios.luzCuarto ?? {}) },
+      lucesColocadas: { ...get().escena.lucesColocadas, ...(cambios.lucesColocadas ?? {}) },
     }
     localStorage.setItem(CLAVE_ESCENA, JSON.stringify(escena))
     set({ escena })

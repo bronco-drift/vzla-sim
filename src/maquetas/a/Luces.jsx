@@ -99,7 +99,7 @@ export function ColocadorLuces() {
 const CREMA = '#efe6d0'
 const BRONCE = '#8a6a3a'
 
-function LamparaPie({ luz, quitar }) {
+function LamparaPie({ luz, quitar, factor }) {
   return (
     <group position={[luz.x, PISO_Y, luz.z]} onContextMenu={quitar} onPointerDown={quitar}>
       <mesh position={[0, 3, 0]} castShadow>
@@ -116,14 +116,20 @@ function LamparaPie({ luz, quitar }) {
       </mesh>
       <mesh position={[0, 160, 0]}>
         <sphereGeometry args={[6, 10, 10]} />
-        <meshBasicMaterial color="#ffe9a8" />
+        <meshBasicMaterial color={factor > 0 ? '#ffe9a8' : '#3a3f4a'} />
       </mesh>
-      <pointLight position={[0, 158, 0]} color="#ffd9a0" intensity={520} distance={800} decay={1.3} />
+      <pointLight
+        position={[0, 158, 0]}
+        color="#ffd9a0"
+        intensity={520 * factor}
+        distance={800}
+        decay={1.3}
+      />
     </group>
   )
 }
 
-function Aplique({ luz, quitar }) {
+function Aplique({ luz, quitar, factor }) {
   const giro = Math.atan2(luz.nx, luz.nz)
   return (
     <group position={[luz.x, luz.y, luz.z]} rotation={[0, giro, 0]} onContextMenu={quitar} onPointerDown={quitar}>
@@ -137,14 +143,20 @@ function Aplique({ luz, quitar }) {
       </mesh>
       <mesh position={[0, 10, 12]}>
         <sphereGeometry args={[4.5, 10, 10]} />
-        <meshBasicMaterial color="#ffe9a8" />
+        <meshBasicMaterial color={factor > 0 ? '#ffe9a8' : '#3a3f4a'} />
       </mesh>
-      <pointLight position={[0, 14, 22]} color="#ffd9a0" intensity={400} distance={620} decay={1.3} />
+      <pointLight
+        position={[0, 14, 22]}
+        color="#ffd9a0"
+        intensity={400 * factor}
+        distance={620}
+        decay={1.3}
+      />
     </group>
   )
 }
 
-function Antorcha({ luz, quitar, registrarLlama }) {
+function Antorcha({ luz, quitar, registrarLlama, factor }) {
   const enPared = luz.superficie === 'pared'
   const giro = enPared ? Math.atan2(luz.nx, luz.nz) : 0
   return (
@@ -166,7 +178,7 @@ function Antorcha({ luz, quitar, registrarLlama }) {
           </mesh>
           <mesh ref={registrarLlama} position={[0, 56, 4]}>
             <coneGeometry args={[7, 20, 7]} />
-            <meshBasicMaterial color="#ff9a3c" />
+            <meshBasicMaterial color={factor > 0 ? "#ff9a3c" : "#3a3f4a"} />
           </mesh>
           <pointLight position={[0, 58, 8]} color="#ff8c42" intensity={430} distance={640} decay={1.4} />
         </group>
@@ -186,7 +198,7 @@ function Antorcha({ luz, quitar, registrarLlama }) {
           </mesh>
           <mesh ref={registrarLlama} position={[0, 80, 0]}>
             <coneGeometry args={[7, 22, 7]} />
-            <meshBasicMaterial color="#ff9a3c" />
+            <meshBasicMaterial color={factor > 0 ? "#ff9a3c" : "#3a3f4a"} />
           </mesh>
           <pointLight position={[0, 82, 0]} color="#ff8c42" intensity={430} distance={640} decay={1.4} />
         </group>
@@ -197,6 +209,8 @@ function Antorcha({ luz, quitar, registrarLlama }) {
 
 export function Luces() {
   const luces = useGameStore((s) => s.escena.luces) ?? []
+  const ajuste = useGameStore((s) => s.escena.lucesColocadas) ?? { encendidas: true, intensidad: 1 }
+  const factor = ajuste.encendidas ? (ajuste.intensidad ?? 1) : 0
   const quitarLuz = useGameStore((s) => s.quitarLuz)
   const moverLuz = useGameStore((s) => s.moverLuz)
   const setArrastreHumano = useGameStore((s) => s.setArrastreHumano)
@@ -241,15 +255,18 @@ export function Luces() {
     }
   }, [camera, gl, controls, moverLuz, setArrastreHumano])
 
-  // torch flames flicker (scale + tint), each with its own phase
+  // torch flames flicker (scale + tint), each with its own phase —
+  // scaled by the panel's placed-lights factor (0 when switched off)
   useFrame(({ clock }) => {
+    const aj = useGameStore.getState().escena.lucesColocadas ?? {}
+    const f0 = (aj.encendidas ?? true) ? (aj.intensidad ?? 1) : 0
     const t = clock.elapsedTime
     llamas.current.forEach((m, i) => {
       if (!m) return
       const f = 0.9 + 0.18 * Math.sin(t * 9 + i * 2.1) + 0.08 * Math.sin(t * 23 + i)
       m.scale.set(f, 1.6 - f * 0.5, f)
       const luzPadre = m.parent?.children.find((c) => c.isPointLight)
-      if (luzPadre) luzPadre.intensity = 430 * (0.8 + 0.35 * (f - 0.85))
+      if (luzPadre) luzPadre.intensity = 430 * (0.8 + 0.35 * (f - 0.85)) * f0
     })
   })
 
@@ -275,9 +292,19 @@ export function Luces() {
           document.body.style.cursor = 'grabbing'
         }
         const registrarLlama = (m) => m && llamas.current.push(m)
-        if (luz.tipo === 'pie') return <LamparaPie key={i} luz={luz} quitar={quitar} />
-        if (luz.tipo === 'aplique') return <Aplique key={i} luz={luz} quitar={quitar} />
-        return <Antorcha key={i} luz={luz} quitar={quitar} registrarLlama={registrarLlama} />
+        if (luz.tipo === 'pie')
+          return <LamparaPie key={i} luz={luz} quitar={quitar} factor={factor} />
+        if (luz.tipo === 'aplique')
+          return <Aplique key={i} luz={luz} quitar={quitar} factor={factor} />
+        return (
+          <Antorcha
+            key={i}
+            luz={luz}
+            quitar={quitar}
+            registrarLlama={registrarLlama}
+            factor={factor}
+          />
+        )
       })}
     </group>
   )

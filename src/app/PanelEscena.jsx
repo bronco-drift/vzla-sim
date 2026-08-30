@@ -88,6 +88,34 @@ export function PanelEscena() {
       />
 
       <div className="escena-modo">
+        <span>🕯️ Luces colocadas</span>
+        <div className="escena-segmentos">
+          {[
+            [true, 'Encendidas'],
+            [false, 'Apagadas'],
+          ].map(([valor, texto]) => (
+            <button
+              key={texto}
+              className={
+                (escena.lucesColocadas?.encendidas ?? true) === valor ? 'seg activo' : 'seg'
+              }
+              onClick={() => setEscena({ lucesColocadas: { encendidas: valor } })}
+            >
+              {texto}
+            </button>
+          ))}
+        </div>
+      </div>
+      <Deslizador
+        etiqueta="🕯️ Colocadas — intensidad"
+        valor={escena.lucesColocadas?.intensidad ?? 1}
+        min={0.2}
+        max={1.5}
+        paso={0.05}
+        onCambio={(v) => setEscena({ lucesColocadas: { intensidad: v } })}
+      />
+
+      <div className="escena-modo">
         <span>💡 Luz de la lámpara</span>
         <div className="escena-segmentos">
           {[
