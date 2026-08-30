@@ -91,9 +91,9 @@ const LIBROS = [
 
 const MARMOL = '#ece5d3'
 
-/** Roman column: plinth, fluted shaft (low-segment cylinder +
-    flatShading fakes the flutes), capital. Tops out at ~4m so it tucks
-    UNDER the glass roof's eaves (y 414 at the corners). */
+/** Roman column, true temple order: plinth, fluted shaft, capital
+    topping out at y≈413 — right where the pediment's triangle begins
+    (the entablature/cornice band, 372..414), like real Roman fronts. */
 function ColumnaRomana() {
   return (
     <group>
@@ -105,20 +105,20 @@ function ColumnaRomana() {
         <boxGeometry args={[58, 12, 58]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 208, 0]} castShadow>
-        <cylinderGeometry args={[21, 25, 352, 10]} />
+      <mesh position={[0, 203, 0]} castShadow>
+        <cylinderGeometry args={[21, 25, 342, 10]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 391, 0]}>
+      <mesh position={[0, 381, 0]}>
         <boxGeometry args={[54, 14, 54]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 405, 0]}>
+      <mesh position={[0, 395, 0]}>
         <boxGeometry args={[70, 14, 70]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
-      <mesh position={[0, 416, 0]}>
-        <boxGeometry args={[76, 8, 76]} />
+      <mesh position={[0, 408, 0]}>
+        <boxGeometry args={[76, 9, 76]} />
         <meshStandardMaterial color={MARMOL} flatShading />
       </mesh>
     </group>
