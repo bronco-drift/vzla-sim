@@ -15,12 +15,18 @@ function texturaDesdeCanvas(dibujar, ancho, alto) {
 }
 
 export function DecoEscritorio() {
-  // Real Bolívar portrait, loaded async (shows once ready)
+  // Real portraits (public-domain oils), loaded async (show once ready)
   const [retrato, setRetrato] = useState(null)
+  const [retratoSucre, setRetratoSucre] = useState(null)
   useEffect(() => {
-    new THREE.TextureLoader().load('/textures/bolivar.webp', (tex) => {
+    const loader = new THREE.TextureLoader()
+    loader.load('/textures/bolivar.webp', (tex) => {
       tex.colorSpace = THREE.SRGBColorSpace
       setRetrato(tex)
+    })
+    loader.load('/textures/sucre.webp', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      setRetratoSucre(tex)
     })
   }, [])
 
@@ -125,17 +131,24 @@ export function DecoEscritorio() {
         )}
       </group>
 
-      {/* Matching frame in the LEFT pier, awaiting Marcel's image —
-          dark canvas placeholder for now */}
+      {/* Sucre portrait (Grand Marshal of Ayacucho) in the LEFT pier.
+          Canvas 45x71 matches the painting's taller aspect. */}
       <group position={[-175, 150, -81.4]}>
         <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[58, 75, 2.4]} />
+          <boxGeometry args={[53, 79, 2.4]} />
           <meshStandardMaterial color="#c9a227" flatShading />
         </mesh>
-        <mesh position={[0, 0, 1]}>
-          <planeGeometry args={[50, 67]} />
-          <meshStandardMaterial color="#3a2c26" />
-        </mesh>
+        {retratoSucre ? (
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[45, 71]} />
+            <meshBasicMaterial map={retratoSucre} />
+          </mesh>
+        ) : (
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[45, 71]} />
+            <meshStandardMaterial color="#3a2c26" />
+          </mesh>
+        )}
       </group>
 
       {/* Brochure lying on the desk, slightly rotated */}
