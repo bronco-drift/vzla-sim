@@ -4,8 +4,9 @@
 // boxes in the scene's palette. The extra windows are REAL wall holes
 // (cut in Escritorio.jsx) — this component is just frame + faint glass;
 // the sky cylinder behind provides the actual day/night view.
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
+import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
 
 const BLANCO = '#f0ebe0'
@@ -124,6 +125,25 @@ function ColumnaRomana() {
 }
 
 export function Cuarto() {
+  // Triangular pediment shapes: big one for the west facade (base 830,
+  // rise 170) and a small one over the door frame (base 250, rise 62)
+  const formaFronton = useMemo(() => {
+    const f = new THREE.Shape()
+    f.moveTo(-415, 0)
+    f.lineTo(415, 0)
+    f.lineTo(0, 170)
+    f.closePath()
+    return f
+  }, [])
+  const formaFrontonPuerta = useMemo(() => {
+    const f = new THREE.Shape()
+    f.moveTo(-125, 0)
+    f.lineTo(125, 0)
+    f.lineTo(0, 62)
+    f.closePath()
+    return f
+  }, [])
+
   const puertaAbierta = useGameStore((s) => s.puertaAbierta)
   const togglePuerta = useGameStore((s) => s.togglePuerta)
   const hojaIzqRef = useRef()
@@ -317,6 +337,63 @@ export function Cuarto() {
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
+
+      {/* -- Temple-style top for the WEST (front) facade: entablature,
+             denticulated cornice and triangular pediment, like a Roman
+             courthouse. Sits above the wall top (y 372). -- */}
+      <group>
+        {/* entablature beam */}
+        <mesh position={[-710, 387, 310]} castShadow>
+          <boxGeometry args={[44, 30, 830]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+        {/* denticles: little teeth under the cornice */}
+        {Array.from({ length: 17 }, (_, i) => -50 + i * 45).map((z) => (
+          <mesh key={z} position={[-726, 396, z + 30]}>
+            <boxGeometry args={[12, 12, 16]} />
+            <meshStandardMaterial color="#ddd5c2" flatShading />
+          </mesh>
+        ))}
+        {/* cornice */}
+        <mesh position={[-710, 408, 310]} castShadow>
+          <boxGeometry args={[56, 12, 856]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+        {/* triangular pediment, extruded outward from the wall */}
+        <mesh position={[-700, 414, 310]} rotation={[0, -Math.PI / 2, 0]} castShadow>
+          <extrudeGeometry args={[formaFronton, { depth: 40, bevelEnabled: false }]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+        {/* tympanum medallion */}
+        <mesh position={[-742, 464, 310]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[34, 34, 6, 16]} />
+          <meshStandardMaterial color="#d8d0bc" flatShading />
+        </mesh>
+
+        {/* small matching pediment right above the door frame */}
+        <mesh position={[-708, 222, 310]} castShadow>
+          <boxGeometry args={[42, 18, 256]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+        <mesh position={[-700, 231, 310]} rotation={[0, -Math.PI / 2, 0]} castShadow>
+          <extrudeGeometry args={[formaFrontonPuerta, { depth: 38, bevelEnabled: false }]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+      </group>
+
+      {/* -- Solid marble stairs to the mezzanine, along the south wall's
+             right (east) stretch: 12 steps from floor to slab (y 267).
+             ControlesPOV.alturaSuelo mirrors these numbers to walk them. -- */}
+      {Array.from({ length: 12 }, (_, i) => (
+        <mesh
+          key={i}
+          position={[60 + 17 + i * 34, -80 + ((i + 1) * 28.9) / 2, 650]}
+          castShadow
+        >
+          <boxGeometry args={[34, (i + 1) * 28.9, 110]} />
+          <meshStandardMaterial color={MARMOL} flatShading />
+        </mesh>
+      ))}
 
       {/* -- Roman columns hugging the four corners of the house -- */}
       {[

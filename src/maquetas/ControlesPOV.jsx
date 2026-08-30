@@ -7,13 +7,35 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGameStore } from '../store/gameStore.js'
 
-const OJOS = -80 + 158 // eye height over the floor
+const ALTURA_OJOS = 158 // eyes above the feet
+const PISO = -80
 const VEL_CAMINAR = 450 // 4.5 m/s
 const SENS = 0.0034
 const RADIO_MUNDO = 9300
 
 // Room box: x ±700, z -86..707. Door opening on the west wall.
 const PUERTA = { z1: 224, z2: 396 }
+
+/** Ground height under (x,z). Mirrors the stairs and mezzanine geometry
+    in Cuarto.jsx. The mezzanine only counts as ground if you're already
+    up high (otherwise you're walking UNDER it). */
+function alturaSuelo(x, z, yPie) {
+  // stairs on the south wall, east stretch (12 steps, 28.9 each).
+  // The top step extends to x<500 so it hands over to the mezzanine
+  // slab (x>495) with no gap to fall through.
+  if (z > 592 && z < 707 && x > 58 && x < 500) {
+    const i = Math.min(11, Math.floor((x - 60) / 34))
+    return PISO + (i + 1) * 28.9
+  }
+  if (yPie > 200) {
+    const enMezzanine =
+      (x > -700 && x < -495 && z > -86 && z < 707) ||
+      (x > 495 && x < 700 && z > -86 && z < 707) ||
+      (x > -500 && x < 500 && z > 498 && z < 707)
+    if (enMezzanine) return 267
+  }
+  return PISO
+}
 
 function cruza(a, b, limite) {
   return (a - limite) * (b - limite) < 0
@@ -43,7 +65,7 @@ export function ControlesPOV() {
     // spawn at the blue figure's position, looking north
     const { escena } = useGameStore.getState()
     const inicio = escena.humano2 ?? { x: -500, z: 310 }
-    camera.position.set(inicio.x, OJOS, inicio.z)
+    camera.position.set(inicio.x, PISO + ALTURA_OJOS, inicio.z)
     rot.current.yaw = 0
     rot.current.pitch = 0
     window.__camaraLibreDebug = camera
@@ -147,7 +169,20 @@ export function ControlesPOV() {
       prox.z = 310 + (dz / dist) * RADIO_MUNDO
     }
 
-    camera.position.set(prox.x, OJOS, prox.z)
+    // Vertical: climb steps (small rises), get blocked by tall ledges,
+    // fall with simple gravity when stepping off an edge.
+    let yPie = camera.position.y - ALTURA_OJOS
+    const suelo = alturaSuelo(prox.x, prox.z, yPie)
+    if (suelo > yPie + 55) {
+      prox.x = prev.x
+      prox.z = prev.z
+    } else if (suelo >= yPie - 6) {
+      yPie = suelo
+    } else {
+      yPie = Math.max(suelo, yPie - 1100 * Math.min(delta, 0.05))
+    }
+
+    camera.position.set(prox.x, yPie + ALTURA_OJOS, prox.z)
   })
 
   return null
