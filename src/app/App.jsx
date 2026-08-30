@@ -22,6 +22,8 @@ export function App() {
   const togglePanelEscena = useGameStore((s) => s.togglePanelEscena)
   const panelEscena = useGameStore((s) => s.panelEscena)
   const pedirResetCamara = useGameStore((s) => s.pedirResetCamara)
+  const camaraLibre = useGameStore((s) => s.camaraLibre)
+  const toggleCamaraLibre = useGameStore((s) => s.toggleCamaraLibre)
 
   if (esEditor) return <Editor />
   if (pantalla === 'bienvenida') return <Bienvenida />
@@ -59,6 +61,21 @@ export function App() {
             >
               🧭
             </button>
+            {idMaqueta === 'a' && (
+              <button
+                className={camaraLibre ? 'btn-flotante cuarto activo' : 'btn-flotante cuarto'}
+                onClick={toggleCamaraLibre}
+                title="Cámara libre: volar por la habitación"
+              >
+                🎥
+              </button>
+            )}
+            {camaraLibre && (
+              <div className="hint-camara">
+                Arrastrá para mirar · WASD o flechas para volar · ESPACIO sube · C baja ·
+                SHIFT rápido
+              </div>
+            )}
             <PanelEscena />
           </>
         )}

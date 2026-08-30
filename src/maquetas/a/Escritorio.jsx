@@ -8,11 +8,14 @@ import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
 import { Ventana } from './Ventana.jsx'
 import { DecoEscritorio } from './DecoEscritorio.jsx'
+import { Cuarto } from './Cuarto.jsx'
+import { Humano } from './Humano.jsx'
 
 export function Escritorio() {
   const luzRef = useRef()
   const bombilloRef = useRef()
   const luzCuartoRef = useRef()
+  const bombilloCuartoRef = useRef()
   const lampara = useGameStore((s) => s.escena.lampara)
 
   // Checkerboard floor: procedural CanvasTexture, no image files
@@ -27,7 +30,7 @@ export function Escritorio() {
     ctx.fillRect(64, 64, 64, 64)
     const tex = new THREE.CanvasTexture(c)
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping
-    tex.repeat.set(100, 100) // ~20 world units per tile
+    tex.repeat.set(35, 20) // ~20 world units per tile (floor is 1404x800)
     tex.colorSpace = THREE.SRGBColorSpace
     return tex
   }, [])
@@ -53,6 +56,11 @@ export function Escritorio() {
     const objetivoCuarto = cuarto.encendida ? (cuarto.intensidad ?? 1500) : 0
     luzCuartoRef.current.intensity +=
       (objetivoCuarto - luzCuartoRef.current.intensity) * Math.min(1, delta * 3)
+    if (bombilloCuartoRef.current) {
+      bombilloCuartoRef.current.material.color.set(
+        luzCuartoRef.current.intensity > 40 ? '#fff3c8' : '#3a3f4a',
+      )
+    }
   })
 
   return (
@@ -99,40 +107,89 @@ export function Escritorio() {
           <meshStandardMaterial color="#3f2715" flatShading />
         </mesh>
       ))}
-      {/* checkerboard office floor */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -80, 0]} receiveShadow>
-        <planeGeometry args={[4000, 4000]} />
+      {/* checkerboard office floor, sized to the room (walls at ±700/-86..707) */}
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -80, 310]} receiveShadow>
+        <planeGeometry args={[1404, 800]} />
         <meshStandardMaterial map={pisoAjedrez} />
       </mesh>
-      {/* room ceiling light: neutral white from above, no shadows (cheap) */}
+      {/* room ceiling light: neutral white from above, no shadows (cheap).
+          Visible fixture: cord from above + bulb whose glow follows the
+          light's state (material updated in the useFrame below). */}
       <pointLight
         ref={luzCuartoRef}
-        position={[0, 150, 40]}
+        position={[0, 186, 40]}
         intensity={0}
         distance={900}
         decay={1.1}
         color="#f2ede2"
       />
+      <group position={[0, 0, 40]}>
+        <mesh position={[0, 234, 0]}>
+          <cylinderGeometry args={[0.9, 0.9, 96, 6]} />
+          <meshStandardMaterial color="#2c2620" flatShading />
+        </mesh>
+        <mesh position={[0, 192, 0]}>
+          <cylinderGeometry args={[3.4, 7, 9, 10, 1, true]} />
+          <meshStandardMaterial color="#3a332c" flatShading side={2} />
+        </mesh>
+        <mesh ref={bombilloCuartoRef} position={[0, 184, 0]}>
+          <sphereGeometry args={[5, 12, 12]} />
+          <meshBasicMaterial color="#3a3f4a" />
+        </mesh>
+      </group>
       {/* white office wall built in 4 segments AROUND the window hole
-          (hole: x -76..-8, y 24..76) so the view behind has real depth */}
-      <mesh position={[-1038, 90, -86]} receiveShadow>
-        <boxGeometry args={[1924, 340, 8]} />
+          (hole: x -55..55, y 10..160) so the view behind has real depth */}
+      <mesh position={[-377.5, 90, -86]} receiveShadow>
+        <boxGeometry args={[645, 340, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
-      <mesh position={[996, 90, -86]} receiveShadow>
-        <boxGeometry args={[2008, 340, 8]} />
+      <mesh position={[377.5, 90, -86]} receiveShadow>
+        <boxGeometry args={[645, 340, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
-      <mesh position={[-42, 168, -86]} receiveShadow>
-        <boxGeometry args={[68, 184, 8]} />
+      <mesh position={[0, 210, -86]} receiveShadow>
+        <boxGeometry args={[110, 100, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
-      <mesh position={[-42, -28, -86]} receiveShadow>
-        <boxGeometry args={[68, 104, 8]} />
+      <mesh position={[0, -35, -86]} receiveShadow>
+        <boxGeometry args={[110, 90, 8]} />
         <meshStandardMaterial color="#e6e0d2" />
       </mesh>
+
+      {/* Side + front walls: single-sided planes facing INWARD, so the
+          orbiting camera never gets blocked (dollhouse effect: invisible
+          from outside thanks to backface culling). */}
+      <group>
+        {/* left wall */}
+        <mesh position={[-700, 90, 307]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[800, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[-699.5, -74, 307]} rotation={[0, Math.PI / 2, 0]}>
+          <planeGeometry args={[800, 12]} />
+          <meshStandardMaterial color="#3a332c" />
+        </mesh>
+        {/* right wall */}
+        <mesh position={[700, 90, 307]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[800, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[699.5, -74, 307]} rotation={[0, -Math.PI / 2, 0]}>
+          <planeGeometry args={[800, 12]} />
+          <meshStandardMaterial color="#3a332c" />
+        </mesh>
+        {/* front wall (behind the player's usual view) */}
+        <mesh position={[0, 90, 707]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1400, 340]} />
+          <meshStandardMaterial color="#e2dccc" />
+        </mesh>
+        <mesh position={[0, -74, 706.5]} rotation={[0, Math.PI, 0]}>
+          <planeGeometry args={[1400, 12]} />
+          <meshStandardMaterial color="#3a332c" />
+        </mesh>
+      </group>
       <mesh position={[0, -74, -81]}>
-        <boxGeometry args={[4000, 12, 4]} />
+        <boxGeometry args={[1400, 12, 4]} />
         <meshStandardMaterial color="#2c1f15" />
       </mesh>
 
@@ -141,6 +198,12 @@ export function Escritorio() {
 
       {/* Portrait, brochure and pen cup */}
       <DecoEscritorio />
+
+      {/* Rest of the office: door, windows, furniture */}
+      <Cuarto />
+
+      {/* Scale-reference human (draggable) */}
+      <Humano />
 
       {/* Giant desk lamp, position/size editable from the scene panel */}
       <group

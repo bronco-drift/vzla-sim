@@ -10,7 +10,7 @@ import { useRef, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { useGameStore } from '../../store/gameStore.js'
-import { colorCielo } from './Sol.jsx'
+import { colorVidrio } from './Sol.jsx'
 
 const NOCHE_VISTA = new THREE.Color('#39415a') // mountain tint at night
 const DIA_VISTA = new THREE.Color('#ffffff')
@@ -76,7 +76,7 @@ export function Ventana() {
     if (!game || !cieloRef.current) return
     const frac = escena.solFijo ?? (game.dias % 365) / 365
     const dia = Math.max(0, Math.sin(frac * Math.PI * 2))
-    colorCielo(dia, cieloRef.current.material.color)
+    colorVidrio(dia, cieloRef.current.material.color)
     if (vistaRef.current) {
       vistaRef.current.material.color.lerpColors(NOCHE_VISTA, DIA_VISTA, dia)
     }
@@ -84,34 +84,35 @@ export function Ventana() {
 
   return (
     <group>
-      {/* Frame + cross + sill, sitting on the wall around the hole */}
-      <group position={[-42, 50, -80.8]}>
+      {/* Frame + cross + sill around the wall hole. Same size as every
+          window (1.10 x 1.50 m), centered: hole x -55..55, y 10..160 */}
+      <group position={[0, 85, -80.8]}>
         <mesh position={[0, 0, 0.2]}>
-          <boxGeometry args={[2, 52, 1.2]} />
+          <boxGeometry args={[3, 150, 1.4]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
         <mesh position={[0, 0, 0.25]}>
-          <boxGeometry args={[68, 2, 1.2]} />
+          <boxGeometry args={[110, 3, 1.4]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[0, 27.5, 0.6]}>
-          <boxGeometry args={[74, 3.5, 2.4]} />
+        <mesh position={[0, 77, 0.9]}>
+          <boxGeometry args={[124, 7, 3]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[0, -27.5, 0.6]}>
-          <boxGeometry args={[74, 3.5, 2.4]} />
+        <mesh position={[0, -77, 0.9]}>
+          <boxGeometry args={[124, 7, 3]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[-35.2, 0, 0.6]}>
-          <boxGeometry args={[3.5, 58.5, 2.4]} />
+        <mesh position={[-58, 0, 0.9]}>
+          <boxGeometry args={[7, 161, 3]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[35.2, 0, 0.6]}>
-          <boxGeometry args={[3.5, 58.5, 2.4]} />
+        <mesh position={[58, 0, 0.9]}>
+          <boxGeometry args={[7, 161, 3]} />
           <meshStandardMaterial color="#f0ebe0" flatShading />
         </mesh>
-        <mesh position={[0, -30.5, 1.3]}>
-          <boxGeometry args={[78, 2.5, 6]} />
+        <mesh position={[0, -82, 2]}>
+          <boxGeometry args={[132, 5, 9]} />
           <meshStandardMaterial color="#e2dccc" flatShading />
         </mesh>
       </group>
@@ -119,15 +120,15 @@ export function Ventana() {
       {/* The distant view: Ávila far behind the hole (real parallax).
           fog={false}: distance fog would wash the photo out. */}
       {texturaVista && (
-        <mesh ref={vistaRef} position={[-42, 46, -170]}>
-          <planeGeometry args={[176, 136]} />
+        <mesh ref={vistaRef} position={[0, 72, -170]}>
+          <planeGeometry args={[390, 301]} />
           <meshBasicMaterial map={texturaVista} transparent fog={false} />
         </mesh>
       )}
 
       {/* Sky, even farther back, colored by the day/night cycle */}
-      <mesh ref={cieloRef} position={[-42, 90, -430]}>
-        <planeGeometry args={[600, 400]} />
+      <mesh ref={cieloRef} position={[0, 130, -430]}>
+        <planeGeometry args={[920, 520]} />
         <meshBasicMaterial color="#1d3a57" fog={false} />
       </mesh>
     </group>

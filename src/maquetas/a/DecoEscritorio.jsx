@@ -1,7 +1,7 @@
-// Desk & wall decoration: Bolívar portrait on the wall, the "Nuevo Ideal
-// Nacional" brochure lying on the desk, and a pen cup. All textures are
-// drawn procedurally in 2D canvases — no image files.
-import { useMemo } from 'react'
+// Desk & wall decoration: Bolívar portrait on the wall (a real historic
+// oil painting, public domain, from /textures/bolivar.webp), the "Nuevo
+// Ideal Nacional" brochure lying on the desk, and a pen cup.
+import { useEffect, useMemo, useState } from 'react'
 import * as THREE from 'three'
 
 function texturaDesdeCanvas(dibujar, ancho, alto) {
@@ -15,52 +15,14 @@ function texturaDesdeCanvas(dibujar, ancho, alto) {
 }
 
 export function DecoEscritorio() {
-  // Stylized Bolívar portrait: bust silhouette + tricolor sash
-  const retrato = useMemo(
-    () =>
-      texturaDesdeCanvas((ctx, w, h) => {
-        ctx.fillStyle = '#43322a' // dark canvas background
-        ctx.fillRect(0, 0, w, h)
-        // uniform (dark blue coat)
-        ctx.fillStyle = '#1d2c4e'
-        ctx.beginPath()
-        ctx.ellipse(w / 2, h * 0.95, w * 0.38, h * 0.42, 0, Math.PI, 0)
-        ctx.fill()
-        // golden epaulettes
-        ctx.fillStyle = '#c9a227'
-        ctx.fillRect(w * 0.13, h * 0.62, w * 0.16, h * 0.07)
-        ctx.fillRect(w * 0.71, h * 0.62, w * 0.16, h * 0.07)
-        // white collar
-        ctx.fillStyle = '#e8e2d0'
-        ctx.fillRect(w * 0.42, h * 0.52, w * 0.16, h * 0.1)
-        // face
-        ctx.fillStyle = '#c9a077'
-        ctx.beginPath()
-        ctx.ellipse(w / 2, h * 0.38, w * 0.16, h * 0.17, 0, 0, Math.PI * 2)
-        ctx.fill()
-        // hair
-        ctx.fillStyle = '#17120e'
-        ctx.beginPath()
-        ctx.ellipse(w / 2, h * 0.26, w * 0.18, h * 0.11, 0, Math.PI, 0)
-        ctx.fill()
-        // sideburns
-        ctx.fillRect(w * 0.33, h * 0.28, w * 0.05, h * 0.14)
-        ctx.fillRect(w * 0.62, h * 0.28, w * 0.05, h * 0.14)
-        // tricolor sash across the chest
-        const franja = h * 0.045
-        ctx.save()
-        ctx.translate(w * 0.5, h * 0.78)
-        ctx.rotate(-0.45)
-        ctx.fillStyle = '#f5c518'
-        ctx.fillRect(-w * 0.55, -franja * 1.5, w * 1.1, franja)
-        ctx.fillStyle = '#2b4faa'
-        ctx.fillRect(-w * 0.55, -franja * 0.5, w * 1.1, franja)
-        ctx.fillStyle = '#c0392b'
-        ctx.fillRect(-w * 0.55, franja * 0.5, w * 1.1, franja)
-        ctx.restore()
-      }, 256, 320),
-    [],
-  )
+  // Real Bolívar portrait, loaded async (shows once ready)
+  const [retrato, setRetrato] = useState(null)
+  useEffect(() => {
+    new THREE.TextureLoader().load('/textures/bolivar.webp', (tex) => {
+      tex.colorSpace = THREE.SRGBColorSpace
+      setRetrato(tex)
+    })
+  }, [])
 
   // "Nuevo Ideal Nacional" brochure lying on the desk
   const folleto = useMemo(
@@ -97,17 +59,20 @@ export function DecoEscritorio() {
 
   return (
     <group>
-      {/* Bolívar portrait on the wall, right of the window */}
-      <group position={[40, 62, -81.4]}>
+      {/* Bolívar portrait on the wall, right of the window.
+          Canvas is 25x33.5 to match the painting's 3:4 aspect. */}
+      <group position={[180, 95, -81.4]}>
         {/* golden frame */}
         <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[30, 37, 1.6]} />
+          <boxGeometry args={[29, 37.5, 1.6]} />
           <meshStandardMaterial color="#c9a227" flatShading />
         </mesh>
-        <mesh position={[0, 0, 0.6]}>
-          <planeGeometry args={[26, 33]} />
-          <meshBasicMaterial map={retrato} />
-        </mesh>
+        {retrato && (
+          <mesh position={[0, 0, 0.6]}>
+            <planeGeometry args={[25, 33.5]} />
+            <meshBasicMaterial map={retrato} />
+          </mesh>
+        )}
       </group>
 
       {/* Brochure lying on the desk, slightly rotated */}

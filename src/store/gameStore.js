@@ -56,6 +56,8 @@ export const useGameStore = create((set, get) => ({
   escena: cargarEscena(), // desk-scene tuning (lamp position, pinned sun)
   panelEscena: false,     // scene-editing panel open?
   resetCamara: 0,         // bump to ask the active maqueta to re-center its camera
+  camaraLibre: false,     // fly/levitate camera mode (maqueta A)
+  arrastreHumano: false,  // scale-reference figure being dragged (pauses camera)
 
   nuevaPartida(nivel) {
     set({ pantalla: 'partida', game: createInitialState(nivel), lugarSeleccionado: null, menuPausa: false })
@@ -131,6 +133,20 @@ export const useGameStore = create((set, get) => ({
 
   pedirResetCamara() {
     set((s) => ({ resetCamara: s.resetCamara + 1 }))
+  },
+
+  setArrastreHumano(v) {
+    set({ arrastreHumano: v })
+  },
+
+  toggleCamaraLibre() {
+    const activar = !get().camaraLibre
+    // leaving fly mode: re-frame with the standard camera so MapControls
+    // doesn't resume orbiting around a stale target from mid-air
+    set((s) => ({
+      camaraLibre: activar,
+      resetCamara: activar ? s.resetCamara : s.resetCamara + 1,
+    }))
   },
 
   /** Merge scene tuning (lamp/sun/room light) and persist it. */

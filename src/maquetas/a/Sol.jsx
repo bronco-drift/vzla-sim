@@ -38,6 +38,14 @@ export function colorCielo(dia, out) {
   return out.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
 }
 
+// Window glass wants a real daytime sky (light blue), not the deep
+// world-backdrop blue above — otherwise noon looks like night indoors.
+const VIDRIO_NOCHE = new THREE.Color('#101c30')
+const VIDRIO_DIA = new THREE.Color('#8fc7e8')
+export function colorVidrio(dia, out) {
+  return out.lerpColors(VIDRIO_NOCHE, VIDRIO_DIA, dia)
+}
+
 export function Sol() {
   const luzSolRef = useRef()
   const solRef = useRef()
@@ -85,7 +93,9 @@ export function Sol() {
     luzSolRef.current.intensity = dia * 1.8 // ZERO below the horizon
     solRef.current.position.set(sx, sy, PROFUNDIDAD)
     solRef.current.scale.setScalar(tamano)
-    solRef.current.visible = solAltura > -0.12
+    // Desk mode is INDOORS now: the glowing sphere would float inside the
+    // room like a stray lamp. Only the world view shows the sun's disc.
+    solRef.current.visible = mundoGlobal && solAltura > -0.12
 
     // ---- Moon: opposite side of the orbit ----
     const lx = -sx
@@ -96,7 +106,7 @@ export function Sol() {
     luzLunaRef.current.intensity = Math.max(0, lunaAltura) * 0.55
     lunaRef.current.position.set(lx, ly, PROFUNDIDAD)
     lunaRef.current.scale.setScalar(tamano)
-    lunaRef.current.visible = lunaAltura > -0.12
+    lunaRef.current.visible = mundoGlobal && lunaAltura > -0.12
 
     // Ambient floor keeps the night readable without "sunlight"
     ambienteRef.current.intensity = 0.35 + dia * 0.4
@@ -124,10 +134,13 @@ export function Sol() {
         castShadow
         shadow-mapSize={[2048, 2048]}
         shadow-bias={-0.0002}
-        shadow-camera-left={-40}
-        shadow-camera-right={40}
-        shadow-camera-top={30}
-        shadow-camera-bottom={-30}
+        shadow-normalBias={0.4}
+        // Frustum covers the whole desk (lamp included): anything OUTSIDE
+        // the shadow camera smears the map's edge into curved dark blobs.
+        shadow-camera-left={-260}
+        shadow-camera-right={260}
+        shadow-camera-top={190}
+        shadow-camera-bottom={-190}
       />
       <mesh ref={solRef} position={[RADIO, ALTURA, PROFUNDIDAD]}>
         <sphereGeometry args={[2.2, 16, 16]} />
