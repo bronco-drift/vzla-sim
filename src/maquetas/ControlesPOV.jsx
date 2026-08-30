@@ -177,13 +177,15 @@ export function ControlesPOV() {
       prox.x = prev.x
     }
 
-    // Mezzanine railings are solid while you're up there
+    // Mezzanine railings are solid while you're up there. They mirror
+    // the visible rails exactly: west/east edges up to the south slab,
+    // the full south rail, and the west side of the stair opening. The
+    // opening's north side is the walkway — no rail, no block.
     if (yPieActual > 200) {
-      if (prox.z > -86 && prox.z < 593 && cruza(prev.x, prox.x, -495)) prox.x = prev.x
-      if (prox.z > -86 && prox.z < 592 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
-      if (prox.x > -500 && prox.x < 220 && cruza(prev.z, prox.z, 512)) prox.z = prev.z
+      if (prox.z > -86 && prox.z < 507 && cruza(prev.x, prox.x, -495)) prox.x = prev.x
+      if (prox.z > -86 && prox.z < 507 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
+      if (prox.x > -500 && prox.x < 500 && cruza(prev.z, prox.z, 510)) prox.z = prev.z
       if (prox.z > 592 && prox.z < 707 && cruza(prev.x, prox.x, 215)) prox.x = prev.x
-      if (prox.x > 220 && prox.x < 500 && cruza(prev.z, prox.z, 597)) prox.z = prev.z
     }
 
     // stay inside the sky cylinder

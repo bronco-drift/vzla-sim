@@ -476,28 +476,24 @@ export function Cuarto() {
           <boxGeometry args={[280, 14, 85]} />
           <meshStandardMaterial color={MADERA_CLARA} flatShading />
         </mesh>
-        {/* short railings guarding the stair opening */}
-        <mesh position={[215, 302, 649.5]}>
-          <boxGeometry args={[10, 70, 115]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        <mesh position={[360, 302, 594]}>
-          <boxGeometry args={[280, 70, 10]} />
-          <meshStandardMaterial color={MADERA} flatShading />
-        </mesh>
-        {/* railings on the inner edges, matching each slab's free edge:
-            west strip is free z -86..507 (it meets the south slab there),
-            east strip is free z -86..592 (the stair landing needs a gap) */}
+        {/* railings: CONTINUOUS around the central void (west edge, full
+            south edge, east edge) plus one guarding the west side of the
+            stair opening. The opening's NORTH side stays open — it's the
+            walkway from the stair landing to the south corridor. */}
         <mesh position={[-495, 302, 210.5]}>
           <boxGeometry args={[10, 70, 593]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        <mesh position={[495, 302, 253]}>
-          <boxGeometry args={[10, 70, 678]} />
+        <mesh position={[495, 302, 210.5]}>
+          <boxGeometry args={[10, 70, 593]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
-        <mesh position={[-140, 302, 512]}>
-          <boxGeometry args={[720, 70, 10]} />
+        <mesh position={[0, 302, 510]}>
+          <boxGeometry args={[1000, 70, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        <mesh position={[215, 302, 649.5]}>
+          <boxGeometry args={[10, 70, 115]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
       </group>
