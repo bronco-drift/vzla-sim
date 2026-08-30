@@ -43,8 +43,8 @@ function crearTexturaPlaca() {
   return tex
 }
 
-const BRONCE_ESTATUA = '#3d4238'
-const GRANITO = '#26292e'
+const BRONCE_ESTATUA = '#59614f' // verdigris bronze, readable at night
+const GRANITO = '#3a3f47'
 
 /** Wooden sign texture: carved Latin title + its combination digit. */
 function crearTexturaCartel(lineas, numero) {
@@ -269,6 +269,26 @@ export function Exterior() {
           <planeGeometry args={[96, 48]} />
           <meshBasicMaterial map={texturaPlaca} />
         </mesh>
+
+        {/* plaza uplights: two warm floods at the base, always on —
+            they read as monument lighting at night, invisible by day */}
+        {[-90, 90].map((dz) => (
+          <pointLight
+            key={dz}
+            position={[130, 40, dz]}
+            color="#ffd9a0"
+            intensity={900}
+            distance={620}
+            decay={1.3}
+          />
+        ))}
+        <pointLight
+          position={[-120, 60, 0]}
+          color="#ffd9a0"
+          intensity={600}
+          distance={520}
+          decay={1.3}
+        />
 
         {/* rearing horse + rider, bronze (built facing +x) */}
         <group position={[0, 256, 0]} scale={1.35}>
