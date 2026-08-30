@@ -496,6 +496,17 @@ export function Cuarto() {
           <boxGeometry args={[10, 70, 115]} />
           <meshStandardMaterial color={MADERA} flatShading />
         </mesh>
+        {/* north side of the stair opening: railed EXCEPT over the top
+            landing (x 434..500), where the last step meets the walkway */}
+        <mesh position={[327, 302, 594]}>
+          <boxGeometry args={[214, 70, 10]} />
+          <meshStandardMaterial color={MADERA} flatShading />
+        </mesh>
+        {/* landing deck: bridges the last step and the east slab */}
+        <mesh position={[484, 260, 646.5]} castShadow>
+          <boxGeometry args={[32, 14, 109]} />
+          <meshStandardMaterial color={MADERA_CLARA} flatShading />
+        </mesh>
       </group>
 
       {/* -- Temple-style top for the WEST (front) facade: entablature,

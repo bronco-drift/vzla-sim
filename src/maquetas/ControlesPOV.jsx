@@ -186,6 +186,8 @@ export function ControlesPOV() {
       if (prox.z > -86 && prox.z < 507 && cruza(prev.x, prox.x, 495)) prox.x = prev.x
       if (prox.x > -500 && prox.x < 500 && cruza(prev.z, prox.z, 510)) prox.z = prev.z
       if (prox.z > 592 && prox.z < 707 && cruza(prev.x, prox.x, 215)) prox.x = prev.x
+      // stair-opening north rail: only the landing stretch stays open
+      if (prox.x > 220 && prox.x < 434 && cruza(prev.z, prox.z, 592)) prox.z = prev.z
     }
 
     // stay inside the sky cylinder
