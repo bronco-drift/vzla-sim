@@ -109,20 +109,33 @@ export function DecoEscritorio() {
         <meshBasicMaterial map={rosa} transparent />
       </mesh>
 
-      {/* Bolívar portrait on the wall, right of the window.
-          Canvas is 25x33.5 to match the painting's 3:4 aspect. */}
-      <group position={[180, 95, -81.4]}>
+      {/* Bolívar portrait, doubled in size, centered in the pier between
+          the central and right windows. Canvas keeps the 3:4 aspect. */}
+      <group position={[175, 150, -81.4]}>
         {/* golden frame */}
         <mesh position={[0, 0, -0.3]}>
-          <boxGeometry args={[29, 37.5, 1.6]} />
+          <boxGeometry args={[58, 75, 2.4]} />
           <meshStandardMaterial color="#c9a227" flatShading />
         </mesh>
         {retrato && (
-          <mesh position={[0, 0, 0.6]}>
-            <planeGeometry args={[25, 33.5]} />
+          <mesh position={[0, 0, 1]}>
+            <planeGeometry args={[50, 67]} />
             <meshBasicMaterial map={retrato} />
           </mesh>
         )}
+      </group>
+
+      {/* Matching frame in the LEFT pier, awaiting Marcel's image —
+          dark canvas placeholder for now */}
+      <group position={[-175, 150, -81.4]}>
+        <mesh position={[0, 0, -0.3]}>
+          <boxGeometry args={[58, 75, 2.4]} />
+          <meshStandardMaterial color="#c9a227" flatShading />
+        </mesh>
+        <mesh position={[0, 0, 1]}>
+          <planeGeometry args={[50, 67]} />
+          <meshStandardMaterial color="#3a2c26" />
+        </mesh>
       </group>
 
       {/* Brochure lying on the desk, slightly rotated */}
