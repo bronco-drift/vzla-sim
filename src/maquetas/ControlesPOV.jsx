@@ -176,10 +176,15 @@ export function ControlesPOV() {
       window.removeEventListener('keyup', sube)
       window.removeEventListener('blur', soltarTodo)
       document.removeEventListener('visibilitychange', soltarTodo)
-      // leave the blue figure standing where the walk ended
-      useGameStore
-        .getState()
-        .setEscena({ humano2: { x: camera.position.x, z: camera.position.z } })
+      // leave the blue figure standing where the walk ended — but never
+      // INSIDE the desk block: step him out to its south front instead
+      let hx = camera.position.x
+      let hz = camera.position.z
+      if (Math.abs(hx) < 225 && Math.abs(hz) < 140) {
+        hz = 155
+        hx = Math.max(-200, Math.min(200, hx))
+      }
+      useGameStore.getState().setEscena({ humano2: { x: hx, z: hz } })
     }
   }, [camera, gl])
 
