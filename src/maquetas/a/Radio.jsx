@@ -15,25 +15,48 @@ export function Radio() {
   const toggleRadio = useGameStore((s) => s.toggleRadio)
   const { camera } = useThree()
   const audioRef = useRef(null)
+  const ctxRef = useRef(null)
+  const gainRef = useRef(null)
   const acumulador = useRef(0)
 
   useEffect(() => {
     const audio = new Audio('/audio/radio.mp3')
     audio.loop = true
-    audio.volume = 0
     audioRef.current = audio
+    // Old-radio voicing: band-limit the signal like a vintage AM set
+    // (cut lows under 500Hz and highs over 2.4kHz), volume via gain.
+    const ctx = new (window.AudioContext || window.webkitAudioContext)()
+    const fuente = ctx.createMediaElementSource(audio)
+    const graves = ctx.createBiquadFilter()
+    graves.type = 'highpass'
+    graves.frequency.value = 500
+    const agudos = ctx.createBiquadFilter()
+    agudos.type = 'lowpass'
+    agudos.frequency.value = 2400
+    const gain = ctx.createGain()
+    gain.gain.value = 0
+    fuente.connect(graves)
+    graves.connect(agudos)
+    agudos.connect(gain)
+    gain.connect(ctx.destination)
+    ctxRef.current = ctx
+    gainRef.current = gain
     return () => {
       audio.pause()
+      ctx.close()
       audioRef.current = null
+      ctxRef.current = null
+      gainRef.current = null
     }
   }, [])
 
   // play/pause follows the switch (the click IS the user gesture the
-  // browser needs to allow playback)
+  // browser needs to allow playback and to resume the AudioContext)
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
     if (encendido) {
+      ctxRef.current?.resume()
       audio.play().catch(() => {
         /* file missing or blocked: stay silent */
       })
@@ -42,19 +65,19 @@ export function Radio() {
     }
   }, [encendido])
 
-  // distance-based volume, updated a few times per second
+  // distance-based volume (halved overall), updated a few times/second
   useFrame((_, delta) => {
     acumulador.current += delta
     if (acumulador.current < 0.2) return
     acumulador.current = 0
-    const audio = audioRef.current
-    if (!audio || !encendido) return
+    const gain = gainRef.current
+    if (!gain || !encendido) return
     const dx = camera.position.x - POSICION[0]
     const dy = camera.position.y - (POSICION[1] + 80)
     const dz = camera.position.z - POSICION[2]
     const dist = Math.sqrt(dx * dx + dy * dy + dz * dz)
     const vol = Math.max(0, 1 - dist / ALCANCE)
-    audio.volume = Math.pow(vol, 1.6)
+    gain.gain.value = 0.5 * Math.pow(vol, 1.6)
   })
 
   return (
