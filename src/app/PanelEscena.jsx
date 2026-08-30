@@ -43,6 +43,24 @@ export function PanelEscena() {
       />
 
       <div className="escena-modo">
+        <span>🌅 Órbita del sol y la luna</span>
+        <div className="escena-segmentos">
+          {[
+            [true, 'Mundo'],
+            [false, 'Escritorio'],
+          ].map(([valor, texto]) => (
+            <button
+              key={texto}
+              className={(escena.orbitaMundo ?? true) === valor ? 'seg activo' : 'seg'}
+              onClick={() => setEscena({ orbitaMundo: valor })}
+            >
+              {texto}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="escena-modo">
         <span>🔆 Luz del cuarto</span>
         <div className="escena-segmentos">
           {[

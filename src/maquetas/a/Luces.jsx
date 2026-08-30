@@ -1,8 +1,8 @@
 // Placeable light sources: floor lamp (person-height), wall sconce, and
 // torch (wall or floor). Placement raycasts against LOGICAL planes (the
 // floor and the four room walls) so it works from any camera mode; the
-// list persists in escena.luces. Right-click a light to remove it.
-// Torch flames flicker via a per-torch phase in one shared useFrame.
+// list persists in escena.luces. Left-drag moves a light (walls included),
+// right-click removes it. Torch flames flicker in one shared useFrame.
 import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
@@ -197,7 +197,48 @@ function Antorcha({ luz, quitar, registrarLlama }) {
 export function Luces() {
   const luces = useGameStore((s) => s.escena.luces) ?? []
   const quitarLuz = useGameStore((s) => s.quitarLuz)
+  const moverLuz = useGameStore((s) => s.moverLuz)
+  const setArrastreHumano = useGameStore((s) => s.setArrastreHumano)
+  const { camera, gl, controls } = useThree()
+  const arrastre = useRef(null) // { indice, tipo }
   const llamas = useRef([])
+
+  // Drag a placed light: left-press it, move, release. Re-uses the same
+  // plane raycast as placement, so lights can even hop between walls.
+  useEffect(() => {
+    const raycaster = new THREE.Raycaster()
+    const ndc = new THREE.Vector2()
+    const mover = (e) => {
+      if (!arrastre.current) return
+      if (e.buttons === 0) return soltar()
+      const r = gl.domElement.getBoundingClientRect()
+      ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1)
+      raycaster.setFromCamera(ndc, camera)
+      const hit = golpear(raycaster, arrastre.current.tipo)
+      if (!hit) return
+      moverLuz(arrastre.current.indice, {
+        superficie: hit.tipo,
+        x: hit.x,
+        y: hit.y,
+        z: hit.z,
+        nx: hit.nx ?? 0,
+        nz: hit.nz ?? 0,
+      })
+    }
+    const soltar = () => {
+      if (!arrastre.current) return
+      arrastre.current = null
+      setArrastreHumano(false)
+      if (controls) controls.enabled = true
+      document.body.style.cursor = 'auto'
+    }
+    window.addEventListener('pointermove', mover)
+    window.addEventListener('pointerup', soltar)
+    return () => {
+      window.removeEventListener('pointermove', mover)
+      window.removeEventListener('pointerup', soltar)
+    }
+  }, [camera, gl, controls, moverLuz, setArrastreHumano])
 
   // torch flames flicker (scale + tint), each with its own phase
   useFrame(({ clock }) => {
@@ -216,9 +257,18 @@ export function Luces() {
     <group>
       {luces.map((luz, i) => {
         const quitar = (e) => {
-          if (e.button !== 2) return
+          if (e.button === 2) {
+            e.stopPropagation()
+            quitarLuz(i)
+            return
+          }
+          if (e.button !== 0) return
+          // left press: start dragging this light
           e.stopPropagation()
-          quitarLuz(i)
+          arrastre.current = { indice: i, tipo: luz.tipo }
+          setArrastreHumano(true)
+          if (controls) controls.enabled = false
+          document.body.style.cursor = 'grabbing'
         }
         const registrarLlama = (m) => m && llamas.current.push(m)
         if (luz.tipo === 'pie') return <LamparaPie key={i} luz={luz} quitar={quitar} />

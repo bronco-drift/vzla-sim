@@ -57,15 +57,18 @@ export function Sol() {
   const anguloVisual = useRef(Math.PI / 2) // start at noon
   const escalaVisual = useRef(1) // 1 = Venezuela orbit, ~16 = world orbit
   const cielo = useRef(new THREE.Color())
+  const fondoMundo = useRef(0) // eased 0=desk palette, 1=world palette
   const { scene } = useThree()
 
   useFrame((_, delta) => {
     const { game, mundoGlobal, escena } = useGameStore.getState()
     if (!game || !luzSolRef.current) return
 
-    // World view: the sun rises on one edge of the planet and sets on the
-    // other — same orbit, giant scale. Eased so the toggle feels smooth.
-    const escalaObjetivo = mundoGlobal ? 16 : 1
+    // Orbit scale: world view x16; desk mode either hugs the old desk
+    // orbit (x1) or — with escena.orbitaMundo, the default — sweeps the
+    // WHOLE 100m diorama sky, rising and setting at the horizon.
+    const orbitaMundo = escena.orbitaMundo ?? true
+    const escalaObjetivo = mundoGlobal ? 16 : orbitaMundo ? 145 : 1
     escalaVisual.current += (escalaObjetivo - escalaVisual.current) * Math.min(1, delta * 2.5)
     const radio = RADIO * escalaVisual.current
     const alturaOrbita = ALTURA * escalaVisual.current
@@ -95,9 +98,9 @@ export function Sol() {
     luzSolRef.current.intensity = dia * 1.8 // ZERO below the horizon
     solRef.current.position.set(sx, sy, PROFUNDIDAD)
     solRef.current.scale.setScalar(tamano)
-    // Desk mode is INDOORS now: the glowing sphere would float inside the
-    // room like a stray lamp. Only the world view shows the sun's disc.
-    solRef.current.visible = mundoGlobal && solAltura > -0.12
+    // The sun's disc shows in world view and in the big diorama orbit;
+    // only the tiny desk orbit hides it (a glowing ball indoors is odd).
+    solRef.current.visible = (mundoGlobal || orbitaMundo) && solAltura > -0.12
 
     // ---- Moon: opposite side of the orbit ----
     const lx = -sx
@@ -108,18 +111,19 @@ export function Sol() {
     luzLunaRef.current.intensity = Math.max(0, lunaAltura) * 0.55
     lunaRef.current.position.set(lx, ly, PROFUNDIDAD)
     lunaRef.current.scale.setScalar(tamano)
-    lunaRef.current.visible = mundoGlobal && lunaAltura > -0.12
+    lunaRef.current.visible = (mundoGlobal || orbitaMundo) && lunaAltura > -0.12
 
     // Ambient floor keeps the night readable without "sunlight"
     ambienteRef.current.intensity = 0.35 + dia * 0.4
 
     // ---- Background/fog day-night blend ----
     // (Dawn/dusk orange tint removed for now — Marcel's call, 24-ago.)
-    // t blends the palette: 0 = desk (wood), 1 = world (sky).
-    const t = Math.min(1, Math.max(0, (escalaVisual.current - 1) / 15))
+    // Palette follows the VIEW (desk wood vs world sky), independent of
+    // orbit scale — the big diorama orbit must keep the wood backdrop.
+    fondoMundo.current += ((mundoGlobal ? 1 : 0) - fondoMundo.current) * Math.min(1, delta * 2.5)
     cielo.current.lerpColors(MADERA_NOCHE, MADERA_DIA, dia)
     auxiliar.lerpColors(CIELO_NOCHE, CIELO_DIA, dia)
-    cielo.current.lerp(auxiliar, t)
+    cielo.current.lerp(auxiliar, fondoMundo.current)
     if (scene.background?.isColor) scene.background.copy(cielo.current)
     if (scene.fog) scene.fog.color.copy(cielo.current)
   })

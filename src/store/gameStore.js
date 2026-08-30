@@ -182,6 +182,12 @@ export const useGameStore = create((set, get) => ({
     const luces = get().escena.luces ?? []
     get().setEscena({ luces: luces.filter((_, i) => i !== indice) })
   },
+  moverLuz(indice, cambios) {
+    const luces = get().escena.luces ?? []
+    get().setEscena({
+      luces: luces.map((l, i) => (i === indice ? { ...l, ...cambios } : l)),
+    })
+  },
   quitarLuces() {
     get().setEscena({ luces: [] })
     set({ menuLuces: false })
